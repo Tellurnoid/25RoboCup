@@ -2861,6 +2861,12 @@
 		)
 	)
 	(junction
+		(at 575.31 246.38)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "01a79369-c377-42ad-bc3e-fc8a02fc8426")
+	)
+	(junction
 		(at 274.32 546.1)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3041,6 +3047,12 @@
 		(uuid "39e844e7-0907-46b0-82f7-3e361448db33")
 	)
 	(junction
+		(at 556.26 273.05)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3d318e51-c654-4cdf-9909-43a4741eb758")
+	)
+	(junction
 		(at 641.35 415.29)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3057,12 +3069,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "435205ba-2240-4c4f-b8e5-1cf3ba298b26")
-	)
-	(junction
-		(at 575.31 246.38)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "43591d01-8b14-4ec1-afc6-8e558fa69520")
 	)
 	(junction
 		(at 445.77 546.1)
@@ -3125,10 +3131,10 @@
 		(uuid "5841d34f-ce0b-4594-a221-2a3d1a5490a1")
 	)
 	(junction
-		(at 571.5 273.05)
+		(at 617.22 256.54)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "5f1d66ed-fe4d-4a0e-875f-70627bc6fe93")
+		(uuid "5dbc95a5-6c44-4d2c-9e01-1314664529d6")
 	)
 	(junction
 		(at 293.37 546.1)
@@ -3143,10 +3149,10 @@
 		(uuid "670b6bb8-657b-4140-8948-4113a6c235d5")
 	)
 	(junction
-		(at 645.16 276.86)
+		(at 571.5 273.05)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "68078b8c-36e4-46df-b389-35177290f069")
+		(uuid "68230133-7d1f-4d63-b0d2-bc39085f3b2b")
 	)
 	(junction
 		(at 359.41 546.1)
@@ -3183,12 +3189,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "71c4ce50-570e-40c2-8d39-cba98be6fce2")
-	)
-	(junction
-		(at 556.26 273.05)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "73e4508f-b713-4c3a-b5ce-cadba0f3abf6")
 	)
 	(junction
 		(at 541.02 519.43)
@@ -3239,10 +3239,22 @@
 		(uuid "7b59631f-b9bc-4c3d-9430-2aa53d12b933")
 	)
 	(junction
+		(at 601.98 256.54)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "7b8f9947-a021-43d2-8b7d-1c32aebdf023")
+	)
+	(junction
 		(at 388.62 562.61)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "7c7bf8ea-fbac-4743-bde3-578d7ee52b5e")
+	)
+	(junction
+		(at 660.4 276.86)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "7de5a8f7-3cb8-483b-8168-663a58f3e2d9")
 	)
 	(junction
 		(at 554.99 519.43)
@@ -3341,10 +3353,10 @@
 		(uuid "95fd5673-8ff9-4b91-80a0-f0c424f53bcf")
 	)
 	(junction
-		(at 660.4 276.86)
+		(at 560.07 246.38)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "99c5599c-e57a-4db8-94e1-a7962504b60a")
+		(uuid "9941eb91-05a3-4af5-a1c7-162a51540135")
 	)
 	(junction
 		(at 403.86 401.32)
@@ -3377,12 +3389,6 @@
 		(uuid "a1f5668a-9278-40c9-8064-a705da6368bc")
 	)
 	(junction
-		(at 560.07 246.38)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a6aadf0a-545f-438f-85ca-5747a0732189")
-	)
-	(junction
 		(at 553.72 623.57)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3393,12 +3399,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "a860789a-cdec-46b8-92e3-1d57efdf2b57")
-	)
-	(junction
-		(at 617.22 256.54)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a8637edd-1e3e-447a-88ff-5ff5e43afed3")
 	)
 	(junction
 		(at 523.24 541.02)
@@ -3447,6 +3447,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "b0ca1aac-5050-4e24-b43d-5cf1a1fe7f00")
+	)
+	(junction
+		(at 645.16 276.86)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "b246c2f3-e7e7-4ac3-a6ca-fa6b96c03824")
 	)
 	(junction
 		(at 463.55 279.4)
@@ -3603,12 +3609,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e89d8a46-d131-4d51-8226-39abcd7e2e7a")
-	)
-	(junction
-		(at 601.98 256.54)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "e96b95ab-764a-4d92-8a86-6c7af39f3fe6")
 	)
 	(junction
 		(at 331.47 546.1)
@@ -4036,16 +4036,6 @@
 	)
 	(wire
 		(pts
-			(xy 575.31 246.38) (xy 575.31 255.27)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1b797bb6-3656-410b-b953-6dbd5b8d0a79")
-	)
-	(wire
-		(pts
 			(xy 566.42 422.91) (xy 624.84 422.91)
 		)
 		(stroke
@@ -4083,16 +4073,6 @@
 			(type default)
 		)
 		(uuid "1ce3a5a6-443b-4941-9180-db8ab2521ede")
-	)
-	(wire
-		(pts
-			(xy 645.16 285.75) (xy 645.16 276.86)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1de38a36-8898-412e-83d9-ac79a9bcbc5e")
 	)
 	(wire
 		(pts
@@ -4356,16 +4336,6 @@
 	)
 	(wire
 		(pts
-			(xy 556.26 273.05) (xy 553.72 273.05)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3486b923-891b-4085-8783-0557d4bb4927")
-	)
-	(wire
-		(pts
 			(xy 656.59 285.75) (xy 660.4 285.75)
 		)
 		(stroke
@@ -4373,6 +4343,16 @@
 			(type default)
 		)
 		(uuid "379e57d1-bca0-4509-8b81-7e3ca3f91075")
+	)
+	(wire
+		(pts
+			(xy 560.07 246.38) (xy 560.07 255.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "37b182e5-db42-4dc0-b08e-2583301786cb")
 	)
 	(wire
 		(pts
@@ -4886,7 +4866,7 @@
 	)
 	(wire
 		(pts
-			(xy 556.26 281.94) (xy 556.26 273.05)
+			(xy 556.26 273.05) (xy 556.26 281.94)
 		)
 		(stroke
 			(width 0)
@@ -5453,6 +5433,16 @@
 			(type default)
 		)
 		(uuid "7be87394-1bcc-4ec1-bc1e-946ef984796d")
+	)
+	(wire
+		(pts
+			(xy 553.72 273.05) (xy 556.26 273.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7d3c6826-824f-4805-aa5f-05baa08bae25")
 	)
 	(wire
 		(pts
@@ -6063,16 +6053,6 @@
 			(type default)
 		)
 		(uuid "9f858fd9-fa6f-40c2-9858-2fcbf34ab868")
-	)
-	(wire
-		(pts
-			(xy 560.07 255.27) (xy 560.07 246.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9feb265c-a811-43f8-a561-4d361585a05e")
 	)
 	(wire
 		(pts
@@ -6956,6 +6936,16 @@
 	)
 	(wire
 		(pts
+			(xy 645.16 276.86) (xy 645.16 285.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d43284fb-0abc-4526-b05f-0ce109944859")
+	)
+	(wire
+		(pts
 			(xy 415.29 311.15) (xy 415.29 321.31)
 		)
 		(stroke
@@ -7483,6 +7473,16 @@
 			(type default)
 		)
 		(uuid "f37f2680-912c-4bdc-9236-bba70e51147c")
+	)
+	(wire
+		(pts
+			(xy 575.31 246.38) (xy 575.31 255.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f3bbda2c-98d1-47e3-97d5-655fc5bc6678")
 	)
 	(wire
 		(pts
@@ -9154,6 +9154,94 @@
 		)
 	)
 	(symbol
+		(lib_id "Comparator:LM393")
+		(at 576.58 537.21 270)
+		(unit 2)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1f79a5a4-d91b-4e2a-8022-99ad7df049d4")
+		(property "Reference" "U9"
+			(at 582.93 535.9399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "LM393"
+			(at 582.93 538.4799 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 576.58 537.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm393.pdf"
+			(at 576.58 537.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Low-Power, Low-Offset Voltage, Dual Comparators, DIP-8/SOIC-8/TO-99-8"
+			(at 576.58 537.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "4"
+			(uuid "35ba9ba6-2329-441f-ad1c-44c6d87b7ce6")
+		)
+		(pin "6"
+			(uuid "38135632-ca52-4f9d-8cd3-ec5c520b6dd6")
+		)
+		(pin "1"
+			(uuid "a0769b5c-0bbd-452c-b184-242492fd591e")
+		)
+		(pin "7"
+			(uuid "d6d5d5da-a33e-499c-a1c8-8546c6209c11")
+		)
+		(pin "2"
+			(uuid "c7abe4b9-f51b-48fe-884f-c41ce879b95a")
+		)
+		(pin "5"
+			(uuid "b8b137ae-1aec-47ee-a51b-48edb4be64f0")
+		)
+		(pin "3"
+			(uuid "5ff74aab-a1fb-40b9-a34c-33dabca9db3c")
+		)
+		(pin "8"
+			(uuid "d619fb2d-97fd-4243-a75e-79a664a06d24")
+		)
+		(instances
+			(project ""
+				(path "/acb76ddc-37df-49ad-a534-a7b141941dd0"
+					(reference "U9")
+					(unit 2)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R")
 		(at 397.51 558.8 0)
 		(unit 1)
@@ -10343,7 +10431,7 @@
 	)
 	(symbol
 		(lib_id "Comparator:LM393")
-		(at 609.6 259.08 270)
+		(at 609.6 254 90)
 		(unit 3)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -10368,7 +10456,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
-			(at 609.6 259.08 0)
+			(at 609.6 254 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10377,7 +10465,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm393.pdf"
-			(at 609.6 259.08 0)
+			(at 609.6 254 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10386,7 +10474,7 @@
 			)
 		)
 		(property "Description" "Low-Power, Low-Offset Voltage, Dual Comparators, DIP-8/SOIC-8/TO-99-8"
-			(at 609.6 259.08 0)
+			(at 609.6 254 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12757,7 +12845,7 @@
 	)
 	(symbol
 		(lib_id "Comparator:LM393")
-		(at 563.88 275.59 270)
+		(at 563.88 270.51 90)
 		(unit 3)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -12782,7 +12870,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
-			(at 563.88 275.59 0)
+			(at 563.88 270.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12791,7 +12879,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm393.pdf"
-			(at 563.88 275.59 0)
+			(at 563.88 270.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12800,7 +12888,7 @@
 			)
 		)
 		(property "Description" "Low-Power, Low-Offset Voltage, Dual Comparators, DIP-8/SOIC-8/TO-99-8"
-			(at 563.88 275.59 0)
+			(at 563.88 270.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13858,6 +13946,94 @@
 			(project "LineSensor"
 				(path "/acb76ddc-37df-49ad-a534-a7b141941dd0"
 					(reference "D34")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Comparator:LM393")
+		(at 596.9 537.21 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7a196f42-d792-47af-9fdd-e865675dfa75")
+		(property "Reference" "U9"
+			(at 603.25 535.9399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "LM393"
+			(at 603.25 538.4799 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 596.9 537.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm393.pdf"
+			(at 596.9 537.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Low-Power, Low-Offset Voltage, Dual Comparators, DIP-8/SOIC-8/TO-99-8"
+			(at 596.9 537.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "4"
+			(uuid "35ba9ba6-2329-441f-ad1c-44c6d87b7ce7")
+		)
+		(pin "6"
+			(uuid "38135632-ca52-4f9d-8cd3-ec5c520b6dd7")
+		)
+		(pin "1"
+			(uuid "a0769b5c-0bbd-452c-b184-242492fd591f")
+		)
+		(pin "7"
+			(uuid "d6d5d5da-a33e-499c-a1c8-8546c6209c12")
+		)
+		(pin "2"
+			(uuid "c7abe4b9-f51b-48fe-884f-c41ce879b95b")
+		)
+		(pin "5"
+			(uuid "b8b137ae-1aec-47ee-a51b-48edb4be64f1")
+		)
+		(pin "3"
+			(uuid "5ff74aab-a1fb-40b9-a34c-33dabca9db3d")
+		)
+		(pin "8"
+			(uuid "d619fb2d-97fd-4243-a75e-79a664a06d25")
+		)
+		(instances
+			(project ""
+				(path "/acb76ddc-37df-49ad-a534-a7b141941dd0"
+					(reference "U9")
 					(unit 1)
 				)
 			)
@@ -16140,94 +16316,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Comparator:LM393")
-		(at 576.58 537.21 90)
-		(mirror x)
-		(unit 2)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "9d0a0552-1d5b-4134-b170-3e3e073dfc14")
-		(property "Reference" "U1"
-			(at 570.23 535.9399 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "LM393"
-			(at 570.23 538.4799 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
-			(at 576.58 537.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm393.pdf"
-			(at 576.58 537.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Low-Power, Low-Offset Voltage, Dual Comparators, DIP-8/SOIC-8/TO-99-8"
-			(at 576.58 537.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "3"
-			(uuid "d1534aae-4e31-48ff-b42a-37623a2068d9")
-		)
-		(pin "2"
-			(uuid "c08bff37-5fc3-4d99-9e1f-c2e1f55124f1")
-		)
-		(pin "7"
-			(uuid "b58b40b2-ecf9-4d61-bb3c-76a8de308244")
-		)
-		(pin "8"
-			(uuid "bd907741-373b-40b6-95b4-db3d6ceeec2d")
-		)
-		(pin "4"
-			(uuid "ff2ba065-379b-4f13-b943-7b12ab4d24b9")
-		)
-		(pin "1"
-			(uuid "4c2aa313-6135-4733-ba58-3bf3dfb11f04")
-		)
-		(pin "6"
-			(uuid "cd345cf4-8357-4f7d-8e5f-5aa22218598f")
-		)
-		(pin "5"
-			(uuid "2f18ccab-d380-4b00-a69f-7c285be69cbb")
-		)
-		(instances
-			(project ""
-				(path "/acb76ddc-37df-49ad-a534-a7b141941dd0"
-					(reference "U1")
-					(unit 2)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
 		(at 673.1 491.49 180)
 		(unit 1)
@@ -16625,7 +16713,7 @@
 	)
 	(symbol
 		(lib_id "Comparator:LM393")
-		(at 652.78 279.4 270)
+		(at 652.78 274.32 90)
 		(unit 3)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -16650,7 +16738,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
-			(at 652.78 279.4 0)
+			(at 652.78 274.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -16659,7 +16747,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm393.pdf"
-			(at 652.78 279.4 0)
+			(at 652.78 274.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -16668,7 +16756,7 @@
 			)
 		)
 		(property "Description" "Low-Power, Low-Offset Voltage, Dual Comparators, DIP-8/SOIC-8/TO-99-8"
-			(at 652.78 279.4 0)
+			(at 652.78 274.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17709,94 +17797,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Comparator:LM393")
-		(at 596.9 537.21 90)
-		(mirror x)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "bc82e4b0-063b-4044-b518-1f8c134fa0d4")
-		(property "Reference" "U1"
-			(at 590.55 535.9399 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "LM393"
-			(at 590.55 538.4799 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
-			(at 596.9 537.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm393.pdf"
-			(at 596.9 537.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Low-Power, Low-Offset Voltage, Dual Comparators, DIP-8/SOIC-8/TO-99-8"
-			(at 596.9 537.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "3"
-			(uuid "d1534aae-4e31-48ff-b42a-37623a2068da")
-		)
-		(pin "2"
-			(uuid "c08bff37-5fc3-4d99-9e1f-c2e1f55124f2")
-		)
-		(pin "7"
-			(uuid "b58b40b2-ecf9-4d61-bb3c-76a8de308245")
-		)
-		(pin "8"
-			(uuid "bd907741-373b-40b6-95b4-db3d6ceeec2e")
-		)
-		(pin "4"
-			(uuid "ff2ba065-379b-4f13-b943-7b12ab4d24ba")
-		)
-		(pin "1"
-			(uuid "4c2aa313-6135-4733-ba58-3bf3dfb11f05")
-		)
-		(pin "6"
-			(uuid "cd345cf4-8357-4f7d-8e5f-5aa222185990")
-		)
-		(pin "5"
-			(uuid "2f18ccab-d380-4b00-a69f-7c285be69cbc")
-		)
-		(instances
-			(project ""
-				(path "/acb76ddc-37df-49ad-a534-a7b141941dd0"
-					(reference "U1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
 		(at 633.73 405.13 0)
 		(unit 1)
@@ -18773,7 +18773,7 @@
 	)
 	(symbol
 		(lib_id "Comparator:LM393")
-		(at 567.69 248.92 270)
+		(at 567.69 243.84 90)
 		(unit 3)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -18798,7 +18798,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
-			(at 567.69 248.92 0)
+			(at 567.69 243.84 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18807,7 +18807,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm393.pdf"
-			(at 567.69 248.92 0)
+			(at 567.69 243.84 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18816,7 +18816,7 @@
 			)
 		)
 		(property "Description" "Low-Power, Low-Offset Voltage, Dual Comparators, DIP-8/SOIC-8/TO-99-8"
-			(at 567.69 248.92 0)
+			(at 567.69 243.84 0)
 			(effects
 				(font
 					(size 1.27 1.27)
