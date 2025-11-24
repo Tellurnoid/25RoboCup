@@ -2968,6 +2968,12 @@
 		(uuid "0500aafc-9e49-4990-a1b9-d40f32ac8d81")
 	)
 	(junction
+		(at 693.42 495.3)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "05c604d7-6a35-4fbc-9606-5823e44e31a6")
+	)
+	(junction
 		(at 312.42 546.1)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3334,12 +3340,6 @@
 		(uuid "78f5d02b-1546-4ea0-8817-83df4e94b886")
 	)
 	(junction
-		(at 693.42 495.3)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "7b1d39f9-cf90-4fff-a02d-e4f9ababd50e")
-	)
-	(junction
 		(at 535.94 561.34)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3454,12 +3454,6 @@
 		(uuid "8dcc9644-6cb6-45d4-8a66-e2f86a57a61c")
 	)
 	(junction
-		(at 673.1 495.3)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "8fd40f2c-c22b-4e22-ae7c-2c893154b37c")
-	)
-	(junction
 		(at 431.8 486.41)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3502,6 +3496,12 @@
 		(uuid "9fc4d2ef-8111-4fcf-8723-aae9f293cd47")
 	)
 	(junction
+		(at 673.1 495.3)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "a0b18f74-fb4a-432e-9972-57e479330b3d")
+	)
+	(junction
 		(at 509.27 541.02)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3536,12 +3536,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "ac314f44-fe34-4ec7-bd56-232701aee2f5")
-	)
-	(junction
-		(at 693.42 505.46)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ac621739-0d50-4ed9-887a-77a38baf95fd")
 	)
 	(junction
 		(at 350.52 546.1)
@@ -3596,6 +3590,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "bcc21e01-b0f2-4030-9a3a-575c3eb48328")
+	)
+	(junction
+		(at 693.42 505.46)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "beb9ba67-c2bc-4c15-91c8-92636c6ac2a5")
 	)
 	(junction
 		(at 350.52 562.61)
@@ -3673,7 +3673,7 @@
 		(at 673.1 505.46)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "e2c1d00e-4dd4-4493-8ab6-322092fe82e8")
+		(uuid "e19c36a6-87cf-4732-8edb-9895ec0ba509")
 	)
 	(junction
 		(at 331.47 562.61)
@@ -3807,7 +3807,7 @@
 	)
 	(wire
 		(pts
-			(xy 693.42 505.46) (xy 713.74 505.46)
+			(xy 673.1 505.46) (xy 693.42 505.46)
 		)
 		(stroke
 			(width 0)
@@ -5867,16 +5867,6 @@
 	)
 	(wire
 		(pts
-			(xy 673.1 505.46) (xy 693.42 505.46)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9941bf9f-9ada-4d6d-ab19-30c9fb0e43d4")
-	)
-	(wire
-		(pts
 			(xy 189.23 412.75) (xy 189.23 415.29)
 		)
 		(stroke
@@ -6264,6 +6254,16 @@
 			(type default)
 		)
 		(uuid "ac84f216-dcbd-4b6d-851d-97c4736d288c")
+	)
+	(wire
+		(pts
+			(xy 693.42 505.46) (xy 713.74 505.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ac9ddf36-fd28-4dd4-94fb-68dc16f27364")
 	)
 	(wire
 		(pts
@@ -7699,7 +7699,7 @@
 	)
 	(global_label "U9A"
 		(shape bidirectional)
-		(at 541.02 427.99 180)
+		(at 541.02 430.53 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -7709,7 +7709,7 @@
 		)
 		(uuid "0cba82ba-971b-452f-b579-74c82cf3b19f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 533.2949 427.99 0)
+			(at 533.2949 430.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7719,24 +7719,24 @@
 			)
 		)
 	)
-	(global_label "U3A"
+	(global_label "U4A"
 		(shape bidirectional)
-		(at 541.02 438.15 180)
+		(at 566.42 425.45 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right)
+			(justify left)
 		)
 		(uuid "15390bad-3f37-4541-8a6a-2cf55c4d460a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 533.2949 438.15 0)
+			(at 574.1451 425.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -7807,7 +7807,7 @@
 	)
 	(global_label "U6B"
 		(shape bidirectional)
-		(at 566.42 433.07 0)
+		(at 566.42 435.61 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -7817,7 +7817,7 @@
 		)
 		(uuid "2cb51be8-f5e3-4560-97af-47de95b6f1d8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 574.3265 433.07 0)
+			(at 574.3265 435.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7873,7 +7873,7 @@
 	)
 	(global_label "U6A"
 		(shape bidirectional)
-		(at 566.42 435.61 0)
+		(at 566.42 433.07 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -7883,7 +7883,7 @@
 		)
 		(uuid "3b4b4f0f-d0f1-472a-b088-03f9f1ac0322")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 574.1451 435.61 0)
+			(at 574.1451 433.07 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8109,24 +8109,24 @@
 			)
 		)
 	)
-	(global_label "U3B"
+	(global_label "U4B"
 		(shape bidirectional)
-		(at 541.02 435.61 180)
+		(at 566.42 422.91 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right)
+			(justify left)
 		)
 		(uuid "80cce75c-d1f7-45d7-ad93-767c92a322b2")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 533.1135 435.61 0)
+			(at 574.3265 422.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -8165,7 +8165,7 @@
 	)
 	(global_label "U9B"
 		(shape bidirectional)
-		(at 541.02 430.53 180)
+		(at 541.02 427.99 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -8175,7 +8175,7 @@
 		)
 		(uuid "86f2acd0-6d31-426e-a95a-4a3bd85169cf")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 533.1135 430.53 0)
+			(at 533.1135 427.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8219,22 +8219,22 @@
 	)
 	(global_label "U3A"
 		(shape bidirectional)
-		(at 566.42 425.45 0)
+		(at 541.02 435.61 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left)
+			(justify right)
 		)
 		(uuid "88036bd1-0716-4486-a531-c62801d43689")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 574.1451 425.45 0)
+			(at 533.2949 435.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 				(hide yes)
 			)
 		)
@@ -8327,22 +8327,22 @@
 	)
 	(global_label "U3B"
 		(shape bidirectional)
-		(at 566.42 422.91 0)
+		(at 541.02 438.15 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left)
+			(justify right)
 		)
 		(uuid "bc12ac7d-9b68-46f6-8a1f-0a050ce960bf")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 574.3265 422.91 0)
+			(at 533.1135 438.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 				(hide yes)
 			)
 		)
@@ -10976,7 +10976,7 @@
 	)
 	(symbol
 		(lib_id "Device:Q_Photo_NPN")
-		(at 690.88 500.38 0)
+		(at 670.56 500.38 0)
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
@@ -10986,7 +10986,7 @@
 		(fields_autoplaced yes)
 		(uuid "309e95fc-e8db-4e83-b724-cb0c264d15d7")
 		(property "Reference" "Q7"
-			(at 695.96 502.3994 0)
+			(at 675.64 502.3994 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10995,7 +10995,7 @@
 			)
 		)
 		(property "Value" "Q_Photo_NPN"
-			(at 695.96 499.8594 0)
+			(at 675.64 499.8594 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11004,7 +11004,7 @@
 			)
 		)
 		(property "Footprint" "NJL7502R:NJL7502R"
-			(at 695.96 502.92 0)
+			(at 675.64 502.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11013,7 +11013,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 690.88 500.38 0)
+			(at 670.56 500.38 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11022,7 +11022,7 @@
 			)
 		)
 		(property "Description" "NPN phototransistor, collector/emitter"
-			(at 690.88 500.38 0)
+			(at 670.56 500.38 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13645,7 +13645,7 @@
 	)
 	(symbol
 		(lib_id "Device:Q_Photo_NPN")
-		(at 670.56 500.38 0)
+		(at 690.88 500.38 0)
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
@@ -13655,7 +13655,7 @@
 		(fields_autoplaced yes)
 		(uuid "66c3b2cb-d411-445e-94c9-c5b9fe991143")
 		(property "Reference" "Q8"
-			(at 675.64 502.3994 0)
+			(at 695.96 502.3994 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13664,7 +13664,7 @@
 			)
 		)
 		(property "Value" "Q_Photo_NPN"
-			(at 675.64 499.8594 0)
+			(at 695.96 499.8594 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13673,7 +13673,7 @@
 			)
 		)
 		(property "Footprint" "NJL7502R:NJL7502R"
-			(at 675.64 502.92 0)
+			(at 695.96 502.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13682,7 +13682,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 670.56 500.38 0)
+			(at 690.88 500.38 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13691,7 +13691,7 @@
 			)
 		)
 		(property "Description" "NPN phototransistor, collector/emitter"
-			(at 670.56 500.38 0)
+			(at 690.88 500.38 0)
 			(effects
 				(font
 					(size 1.27 1.27)
