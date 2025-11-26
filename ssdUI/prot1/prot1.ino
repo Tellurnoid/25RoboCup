@@ -6,10 +6,10 @@
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
-#define RightPin 2
-#define LeftPin  3
-#define OKPin    4
-#define BackPin  5
+#define RightPin 10
+#define LeftPin  9
+#define OKPin    11
+#define BackPin  12
  
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -24,9 +24,11 @@ void setup() {
   randomSeed(analogRead(0));  
   display.clearDisplay();
   //drawJa("日本語表示",0,32-8,2);
-  display.display();                      // 画面更新
-  delay(500);
-  display.clearDisplay();
+  pinMode(RightPin, INPUT_PULLUP);
+  pinMode(LeftPin, INPUT_PULLUP);
+  pinMode(OKPin, INPUT_PULLUP);
+  pinMode(BackPin, INPUT_PULLUP);
+  startUpShow();
   draw_HomeMenu();
 }
 
@@ -40,8 +42,15 @@ void loop(){
     else if(app==2){app2();}
     else if(app==3){app3();}
     else if(app==4){app4();}
+    Serial.print("cursor:");Serial.print(cursor);
+    Serial.print(", app:");Serial.println(app);
+  delay(30); 
   }
 }
+
+
+
+
 
 //ボタンが押されたかの判定
 bool IsPress_Right(){
@@ -56,6 +65,7 @@ bool IsPress_OK(){
 bool IsPress_Back(){
   return digitalRead(BackPin) == LOW;
 }
+
 
 //以下日本語絵画用関数
 //-----------------------------------------------------------------------------------
@@ -95,13 +105,31 @@ void drawJa( char *str,uint16_t x,uint16_t y,int16_t ex){//"文字",x,y,サイ�
 }
 //-----------------------------------------------------------------------------------
 
+//お飾り
+void startUpShow(){
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
+  //display.fillRect(0,0,128,64,0);
+  display.display();
+}
 
 void draw_HomeMenu(){
   display.clearDisplay();
 }
 
+//const int cursorCircleX,cursorCircleY,cursorCircleR = 10,10,10;
+const int cursorCircleX = 3;
+const int cursorCircleY = 3;
+const int cursorCircleR = 3;
 void inHomeMenu_AppPreview(){//HomeMenuに内包された絵画用関数(カーソル移動のたびに実行)
-    display.setCursor(0,15);
+    display.clearDisplay();
+    display.drawCircle(cursorCircleX                                        , cursorCircleY, cursorCircleR,1);//1
+    display.drawCircle(cursorCircleX+cursorCircleR*(2*(  1  ))+3*(  1  ), cursorCircleY, cursorCircleR,1);//1
+    display.drawCircle(cursorCircleX+cursorCircleR*(2*(  2  ))+3*(  2  ), cursorCircleY, cursorCircleR,1);//2
+    display.drawCircle(cursorCircleX+cursorCircleR*(2*(  3  ))+3*(  3  ), cursorCircleY, cursorCircleR,1);//3
+    display.drawCircle(cursorCircleX+cursorCircleR*(2*(  4  ))+3*(  4  ), cursorCircleY, cursorCircleR,1);//4
+    display.setTextSize(2);
+    display.setCursor(5,20);
     display.setTextColor(SSD1306_WHITE);
     display.print(cursor);
     display.print(":");
@@ -123,40 +151,35 @@ void inHomeMenu_AppPreview(){//HomeMenuに内包された絵画用関数(カー�
         display.print("[app4]");
         break;
     }
+    display.fillCircle(cursorCircleX+cursorCircleR*(2*(cursor))+3*(cursor), cursorCircleY, cursorCircleR,1);//2
+    display.display();
 }
 void homemenu(){
   //カーソル移動
-  if(IsPress_Right){
-    if(cursor<HowManyApps){
-      cursor=cursor+1;
-    }
-    else
-    {
+  if(IsPress_Right()){
+    cursor=cursor+1;
+    if(cursor>HowManyApps){
       cursor=0;
     }
-    inHomeMenu_AppPreview();
+    //inHomeMenu_AppPreview();
+    while(IsPress_Right());
   }
 
-  else if(IsPress_Left){
-    if(cursor>=0){
-      cursor=cursor-1;
+  else if(IsPress_Left()){
+    cursor=cursor-1;
+    if(cursor<0){
+      cursor=HowManyApps;
     }
-    else
-    {
-      cursor=HowManyApps+1;
-    }
-    inHomeMenu_AppPreview();
+    while(IsPress_Left());
   }
-
+  
   //Okが押されたアプリを開く
-  else if(IsPress_OK){
+  else if(IsPress_OK()){
     switch(cursor){
       case 1:
-        app=1;
         draw_app1();
         break;
       case 2:
-        app=2;
         draw_app2();
         break;
       case 3:
@@ -164,23 +187,24 @@ void homemenu(){
         draw_app3();
         break;
       case 4:
-        app=4;
         draw_app4();
         break;
 
-      default:
-        app=0;
-        draw_HomeMenu();
-        break;
+     // default:
+       // draw_HomeMenu();
+    //    break;
     }
+    app=cursor;
   }
+  inHomeMenu_AppPreview();
 }
 void draw_app1(){}
 void draw_app2(){}
 void draw_app3(){}
 void draw_app4(){}
+void app1(){
 
-void app1(){}
+}
 void app2(){}
 void app3(){}
 void app4(){}
