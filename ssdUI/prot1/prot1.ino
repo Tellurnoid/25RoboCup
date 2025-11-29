@@ -1,40 +1,56 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <misakiUTF16.h> //日本語
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-#define RightPin 10
-#define LeftPin  9
-#define OKPin    11
-#define BackPin  12
+#define RightPin A1
+#define LeftPin  A0
+#define OKPin    A3
+#define BackPin  A2
+#define SPKPin   6
  
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-uint8_t font[8];                           // フォント格納バッファ
+const char* app1Name = "App1";
+const char* app2Name = "App2";
+const char* app3Name = "App3";
+const char* app4Name = "App4";
+
+volatile int app=0;//割り込みでいつでもapp=0(ホーム)に戻るためvolatileをつける
+int cursor=0;
+int HowManyApps=4;
+
+
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("Hello");
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 ERROR"));
     for(;;); 
 }
-  randomSeed(analogRead(0));  
   display.clearDisplay();
-  //drawJa("日本語表示",0,32-8,2);
+
   pinMode(RightPin, INPUT_PULLUP);
   pinMode(LeftPin, INPUT_PULLUP);
   pinMode(OKPin, INPUT_PULLUP);
   pinMode(BackPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(2), backToHome, RISING);
+  randomSeed(analogRead(0));  
   startUpShow();
-  draw_HomeMenu();
+ // delay(900);
+ // draw_HomeMenu();
 }
 
-int app=0;
-int cursor=0;
-int HowManyApps=4;
+void backToHome(){
+    draw_HomeMenu();
+    inHomeMenu_AppPreview();
+    app=0;
+}
+
+
 void loop(){
   for(;;){
     if(app==0){homemenu();}
@@ -49,8 +65,30 @@ void loop(){
 }
 
 
+void printString_int(const char* ValName,int yourVal,int printIntX,int printIntY,int textSize){
+  display.setCursor(printIntX,printIntY);
+  display.setTextSize(textSize);
+  display.print(ValName);
+  display.print(":");
+  display.print(yourVal);
+  display.display();
+}
+void printString_float(const char* ValName,int yourVal,int printIntX,int printIntY,int textSize){
+  display.setCursor(printIntX,printIntY);
+  display.setTextSize(textSize);
+  display.print(ValName);
+  display.print(":");
+  display.print(yourVal);
+  display.display();
+}
 
-
+//デバッグ用関数。削除可
+void buttonTest_Serial(){
+  Serial.print("R:");Serial.print(digitalRead(RightPin));
+  Serial.print(", L:");Serial.print(digitalRead(LeftPin));
+  Serial.print(", OK:");Serial.print(digitalRead(OKPin));
+  Serial.print(", Back:");Serial.println(digitalRead(BackPin));
+}
 
 //ボタンが押されたかの判定
 bool IsPress_Right(){
@@ -67,54 +105,25 @@ bool IsPress_Back(){
 }
 
 
-//以下日本語絵画用関数
-//-----------------------------------------------------------------------------------
-// ビットマップの拡大描画
-void drawBitmapEx(int16_t x, int16_t y, const uint8_t *bitmap, int16_t w, int16_t h,
-                  uint16_t color,uint16_t bgcolor, uint16_t ex) {
-  int16_t i, j,b=(w+7)/8;
-  for( j = 0; j < h; j++) {
-    for(i = 0; i < w; i++ ) { 
-      if(*(bitmap + j*b + i / 8) & (128 >> (i & 7))) {
-        // ドットあり
-        if (ex == 1)  display.drawPixel(x+i, y+j, color); //1倍
-        else          display.fillRect(x + i * ex, y + j * ex, ex, ex, color); // ex倍
-      } else {
-        // ドットなし
-        if (ex == 1)  display.drawPixel(x+i, y+j, bgcolor);
-        else          display.fillRect(x + i * ex, y + j * ex, ex, ex, bgcolor);
-       }
-     }
-   }
-}
-void drawJa( char *str,uint16_t x,uint16_t y,int16_t ex){//"文字",x,y,サイズ(x,yはなん文字分か)
-  char *ptr = str;
-  while(*ptr) {                         // 文字列分ループ
-     ptr = getFontData(font, ptr,true); // 1文字分のフォント取得
-     if (!ptr)
-        break;                          // エラーの場合は終
-     drawBitmapEx(x,y,font,8,8,1,0,ex); // フレームバッファにフォント書き込み 
-     if (128-8*ex > x) {                // 表示位置更新
-       x+=8*ex;
-     } else {
-       x=0;
-       y+=8*ex;
-     }
-  }
-
-}
-//-----------------------------------------------------------------------------------
-
-//お飾り
+//お飾り(起動時)
 void startUpShow(){
-  display.clearDisplay();
+  display.drawCircle(random(10, 118),random(10, 54),random(5, 80),1);
+  display.drawCircle(random(10, 118),random(10, 54),random(5, 30),1);
+  for(int i=0; i<20; i++){
+    display.drawPixel(random(1,127),random(1, 63),1);
+    delay(3);
+  }
+  display.setTextSize(2);
+  display.setCursor(5,20);
   display.setTextColor(SSD1306_WHITE);
-  //display.fillRect(0,0,128,64,0);
+  display.print("Beolsae");
   display.display();
+  //delay(1000);
 }
 
 void draw_HomeMenu(){
   display.clearDisplay();
+  inHomeMenu_AppPreview();
 }
 
 //const int cursorCircleX,cursorCircleY,cursorCircleR = 10,10,10;
@@ -139,16 +148,16 @@ void inHomeMenu_AppPreview(){//HomeMenuに内包された絵画用関数(カー�
         display.print("[app0]");
         break;
       case 1:
-        display.print("[app1]");
+        display.print(app1Name);
         break;
       case 2:
-        display.print("[app2]");
+        display.print(app2Name);
         break;
       case 3:
-        display.print("[app3]");
+        display.print(app3Name);
         break;
       case 4:
-        display.print("[app4]");
+        display.print(app4Name);
         break;
     }
     display.fillCircle(cursorCircleX+cursorCircleR*(2*(cursor))+3*(cursor), cursorCircleY, cursorCircleR,1);//2
@@ -163,6 +172,7 @@ void homemenu(){
     }
     //inHomeMenu_AppPreview();
     while(IsPress_Right());
+    inHomeMenu_AppPreview();
   }
 
   else if(IsPress_Left()){
@@ -171,10 +181,12 @@ void homemenu(){
       cursor=HowManyApps;
     }
     while(IsPress_Left());
+    inHomeMenu_AppPreview();
   }
-  
+
   //Okが押されたアプリを開く
   else if(IsPress_OK()){
+    app=cursor;
     switch(cursor){
       case 1:
         draw_app1();
@@ -194,17 +206,90 @@ void homemenu(){
        // draw_HomeMenu();
     //    break;
     }
-    app=cursor;
+    
   }
-  inHomeMenu_AppPreview();
 }
-void draw_app1(){}
-void draw_app2(){}
-void draw_app3(){}
-void draw_app4(){}
+void draw_app1(){
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.setTextSize(1);
+  display.print(app1Name);
+  display.display();  
+}
+void draw_app2(){
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.setTextSize(1);
+  display.print(app2Name);
+  display.display();
+}
+void draw_app3(){
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.setTextSize(1);
+  display.print(app3Name);
+  display.display();
+}
+void draw_app4(){
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.setTextSize(1);
+  display.print(app4Name);
+  display.display();
+}
 void app1(){
+  if(digitalRead(BackPin)==LOW){
+    draw_HomeMenu();
+    inHomeMenu_AppPreview();
+    app=0;
+  }
+  else{
+  //ここに記述
 
+    for(int i=0; i<100; i++){
+      display.clearDisplay();
+      printString_int("i",i,10,32,2);
+    }
+  
+  
+  }
 }
-void app2(){}
-void app3(){}
-void app4(){}
+
+void app2(){
+  if(digitalRead(BackPin)==LOW){
+    draw_HomeMenu();
+    inHomeMenu_AppPreview();
+    app=0;
+  }
+  else{
+    
+
+
+  }
+}
+
+void app3(){
+  if(digitalRead(BackPin)==LOW){
+    draw_HomeMenu();
+    inHomeMenu_AppPreview();
+    app=0;
+  }
+  else{
+    
+
+
+  }
+}
+
+void app4(){
+  if(digitalRead(BackPin)==LOW){
+    draw_HomeMenu();
+    inHomeMenu_AppPreview();
+    app=0;
+  }
+  else{
+    
+
+
+  }
+}
