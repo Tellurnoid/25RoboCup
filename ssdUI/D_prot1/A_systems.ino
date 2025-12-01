@@ -1,6 +1,23 @@
 //ホームメニューとその他グローバル関数
 //FreeSansBoldOblique9pt7b
 
+//デバッグ用--------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void backToHome(){
     draw_HomeMenu();
     inHomeMenu_AppPreview();
@@ -81,10 +98,14 @@ void inHomeMenu_AppPreview(){//HomeMenuに内包された絵画用関数(カー�
 void homemenu(){
   //カーソル移動
   if(IsPress_Left()){
+    tone(SPKPin, 440, 20);
     cursor=cursor+1;
     if(cursor>HowManyApps){
       cursor=0;
     }
+     myData.ROM_cursor = cursor;
+     EEPROM.put(offsetof(DataFormat,ROM_cursor),myData.ROM_cursor);
+
     //inHomeMenu_AppPreview();
     //三角
     //display.drawTriangle(128-TriangleLength*2,20+TriangleLength,    127-TriangleLength,19,    126,20+TriangleLength,1);
@@ -95,10 +116,13 @@ void homemenu(){
   }
 
   else if(IsPress_Right()){
+    tone(SPKPin, 440, 20);
     cursor=cursor-1;
     if(cursor<0){
       cursor=HowManyApps;
     }
+     myData.ROM_cursor = cursor;
+     EEPROM.put(offsetof(DataFormat,ROM_cursor),myData.ROM_cursor);
     display.fillTriangle(128-TriangleLength*2,20+TriangleLength,    127-TriangleLength,19,    126,20+TriangleLength,1);
     //display.drawTriangle(128-TriangleLength*2,64-20-TriangleLength, 127-TriangleLength,64-19, 126,64-20-TriangleLength,1);
     display.display();
@@ -108,6 +132,13 @@ void homemenu(){
 
   //Okが押されたアプリを開く
   else if(IsPress_OK()){
+    if(cursor==0){
+      tone(SPKPin,110,100);
+    }
+    else{
+    tone(SPKPin, 550, 50);
+    delay(80);
+    tone(SPKPin, 750, 100);
     app=cursor;
     switch(cursor){
       case 1:
@@ -130,6 +161,7 @@ void homemenu(){
      // default:
        // draw_HomeMenu();
     //    break;
+    }
     }
   }
     display.fillTriangle(128-TriangleLength*2,20+TriangleLength,    127-TriangleLength,19,    126,20+TriangleLength,0);
@@ -166,6 +198,7 @@ int setYourVal_int(int yourIntValMin,int yourIntValMax){//StructTypeには共通
       if(yourIntVal>yourIntValMax){
         yourIntVal=yourIntValMin;
       }
+      tone(SPKPin, 440, 20);
       display.fillRect(0,9,128,64-9,0);
       display.setCursor(52,35);
       display.setTextSize(1);
@@ -186,6 +219,7 @@ int setYourVal_int(int yourIntValMin,int yourIntValMax){//StructTypeには共通
       if(yourIntVal>yourIntValMax){
         yourIntVal=yourIntValMin;
       }
+      tone(SPKPin, 440, 20);
       display.fillRect(0,9,128,64-9,0);
       display.setCursor(52,35);
       display.setTextSize(1);
@@ -213,6 +247,7 @@ int setYourVal_int(int yourIntValMin,int yourIntValMax){//StructTypeには共通
         yourIntVal=yourIntValMax;
       }
       //while(IsPress_Left());
+      tone(SPKPin, 440, 20);
       display.fillRect(0,9,128,64-9,0);
       display.fillRect(0,9,128,64-9,0);
       display.setCursor(52,35);
@@ -234,6 +269,7 @@ int setYourVal_int(int yourIntValMin,int yourIntValMax){//StructTypeには共通
       if(yourIntVal<yourIntValMin){
         yourIntVal=yourIntValMax;
       }
+      tone(SPKPin, 440, 20);
       display.fillRect(0,9,128,64-9,0);
       display.setCursor(52,35);
       display.setTextSize(1);
@@ -274,6 +310,7 @@ float setYourVal_float(float yourFloatValMin,float yourFloatValMax){//StructType
       if(yourFloatVal>yourFloatValMax){
         yourFloatVal=yourFloatValMin;
       }
+      tone(SPKPin, 440, 20);
       display.fillRect(0,9,128,64-9,0);
       display.setCursor(49,28);
       display.setTextSize(2);
@@ -292,6 +329,7 @@ float setYourVal_float(float yourFloatValMin,float yourFloatValMax){//StructType
       if(yourFloatVal>yourFloatValMax){
         yourFloatVal=yourFloatValMin;
       }
+      tone(SPKPin, 440, 20);
       display.fillRect(0,9,128,64-9,0);
       display.setCursor(49,28);
       display.setTextSize(2);
@@ -317,6 +355,7 @@ float setYourVal_float(float yourFloatValMin,float yourFloatValMax){//StructType
         yourFloatVal=yourFloatValMax;
       }
       //while(IsPress_Left());
+      tone(SPKPin, 440, 20);
       display.fillRect(0,9,128,64-9,0);
       display.fillRect(0,9,128,64-9,0);
       display.setCursor(49,28);
@@ -336,6 +375,7 @@ float setYourVal_float(float yourFloatValMin,float yourFloatValMax){//StructType
       if(yourFloatVal<yourFloatValMin){
         yourFloatVal=yourFloatValMax;
       }
+      tone(SPKPin, 440, 20);
       display.fillRect(0,9,128,64-9,0);
       display.setCursor(49,28);
       display.setTextSize(2);
@@ -359,3 +399,61 @@ float setYourVal_float(float yourFloatValMin,float yourFloatValMax){//StructType
     }
     return yourFloatVal;
 }
+
+
+
+
+//以下Bool用
+
+// 1. 名前配列を定義
+const char* BoolValsNames[] = {
+  "BoolVal1",
+  "BoolVal2",
+  "BoolVal3"
+};
+// 2. 名前配列の要素数をコンパイル時に取得
+constexpr int boolCursorMax = sizeof(BoolValsNames) / sizeof(BoolValsNames[0]);
+// 3. BoolVals 配列を boolCursorMax で定義
+bool BoolVals[boolCursorMax] = {false}; // 全要素を false で初期化
+int cursor_settingBool = 0;
+
+void setYourVal_Bool_preview(){
+      tone(SPKPin, 440, 20);
+      display.fillRect(0,0,128,8,0);
+      display.setCursor(20,0);
+      display.setTextSize(1);
+      display.print(cursor_settingBool);
+      display.print(":");
+      display.print(BoolValsNames[cursor_settingBool]);
+      display.fillRect(10,8,3,64,0);
+      display.fillRect(10,8+cursor_settingBool*8,3,8,1);
+      display.display();
+}
+
+int setYourVal_Bool(){//StructTypeには共通でmyDataを入れる
+    DataFormat myData;
+    //上
+    if(IsPress_Left()){
+      cursor_settingBool=cursor_settingBool+1;
+      if(cursor_settingBool>boolCursorMax){
+        cursor_settingBool=0;
+      }
+      
+      while(IsPress_Left());
+      setYourVal_Bool_preview();
+    }
+    //下
+    if(IsPress_Right()){
+      cursor_settingBool=cursor_settingBool-1;
+      if(cursor_settingBool<0){
+        cursor_settingBool=boolCursorMax;
+      }
+      //while(IsPress_Left());
+      
+      while(IsPress_Right());
+      setYourVal_Bool_preview();
+    }
+    
+    return cursor_settingBool;
+}
+

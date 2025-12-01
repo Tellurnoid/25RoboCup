@@ -38,6 +38,10 @@ struct DataFormat {
     DataFormat readData;
     EEPROM.get(0, readData);
     if(digitalRead(BackPin)==LOW){
+     cursor=readData.ROM_cursor;
+      tone(SPKPin,550,50);
+      delay(80);
+      tone(SPKPin,110,100);
       draw_HomeMenu();
       inHomeMenu_AppPreview();
       app=0;
@@ -45,6 +49,11 @@ struct DataFormat {
     else if(IsPress_OK()){
     myData.ROM_LED_output = setYourVal_int(0,255);//値調整UI関数で取得した値をEEPROM用の仮保存変数に適用
     EEPROM.put(offsetof(DataFormat,ROM_LED_output),myData.ROM_LED_output);//EEPROMに書き込み
+    tone(SPKPin, 550, 50);
+    delay(70);
+    tone(SPKPin, 750, 50);
+    delay(70);
+    tone(SPKPin, 900, 100);
     display.fillRect(0,64-8,128,8,0);
 
     //intの場合↓
@@ -55,6 +64,9 @@ struct DataFormat {
     //floatの場合↓
     //float writtenFloatData = myData.ROM_LED_output;
     //printString_float("saved as",writtenFloatData,58,64-8,1);
+    if(IsPress_OK){
+    while(IsPress_OK());
+    }
     }
     else{
        setYourVal_int(0,255);//値調整UIを回し続ける
@@ -68,13 +80,52 @@ struct DataFormat {
     DataFormat readData;
     EEPROM.get(0, readData);
     if(digitalRead(BackPin)==LOW){
+      myData.ROM_BoolVal1 = BoolVals[0];
+      myData.ROM_BoolVal2 = BoolVals[1];
+      myData.ROM_BoolVal3 = BoolVals[2];
+      EEPROM.put(offsetof(DataFormat,ROM_BoolVal1),myData.ROM_BoolVal1);//EEPROMに書き込み
+      EEPROM.put(offsetof(DataFormat,ROM_BoolVal2),myData.ROM_BoolVal2);//EEPROMに書き込み
+      EEPROM.put(offsetof(DataFormat,ROM_BoolVal3),myData.ROM_BoolVal3);//EEPROMに書き込み
+      cursor=readData.ROM_cursor;
+      tone(SPKPin,550,50);
+      delay(80);
+      tone(SPKPin,110,100);
       draw_HomeMenu();
       inHomeMenu_AppPreview();
       app=0;
     }
-    else{
+    else if(IsPress_OK()){
+    //myData.ROM_LED_output = setYourVal_int(0,255);//値調整UI関数で取得した値をEEPROM用の仮保存変数に適用
+    //EEPROM.put(offsetof(DataFormat,ROM_LED_output),myData.ROM_LED_output);//EEPROMに書き込み
+  //  display.fillRect(0,64-8,128,8,0);
+  //  display.setFont(NULL);
+   // display.setTextSize(1);
+   // bool writtenIntData = myData.ROM_LED_output;
+   // printString_int("saved as",writtenIntData,52,64-8);
+   BoolVals[cursor_settingBool]=!BoolVals[cursor_settingBool]; 
+    tone(SPKPin, 550, 50);
+    delay(70);
+    tone(SPKPin, 750, 50);
+    delay(70);
+    tone(SPKPin, 900, 100);
 
+     display.fillRect(128-6*5,8,128-6*5,64-8,0);
+     for(int i=0; i<boolCursorMax; i++){
+      //printString_char(BoolValsNames[i],15,8+i*8);
+       if(BoolVals[i]==0){
+        printString_char("TRUE",128-6*5,8+i*8);
+       }
+       else{
+        printString_char("FALSE",128-6*5,8+i*8);
+       }
+      }
+    if(IsPress_OK){
+    while(IsPress_OK());
     }
+    }
+    else{
+       setYourVal_Bool();//値調整UIを回し続ける
+   } 
   }
 
 void app3(){
@@ -82,6 +133,10 @@ void app3(){
     DataFormat readData;
     EEPROM.get(0, readData);
   if(digitalRead(BackPin)==LOW){
+    cursor=readData.ROM_cursor;
+      tone(SPKPin,550,50);
+      delay(80);
+      tone(SPKPin,110,100);
     draw_HomeMenu();
     inHomeMenu_AppPreview();
     app=0;
@@ -96,6 +151,10 @@ void app4(){
   DataFormat readData;
   EEPROM.get(0, readData);
   if(digitalRead(BackPin)==LOW){
+    cursor=readData.ROM_cursor;
+      tone(SPKPin,550,50);
+      delay(80);
+      tone(SPKPin,110,100);
     draw_HomeMenu();
     inHomeMenu_AppPreview();
     app=0;
@@ -110,6 +169,10 @@ void app5(){
     DataFormat readData;
     EEPROM.get(0, readData);
   if(digitalRead(BackPin)==LOW){
+    cursor=readData.ROM_cursor;
+      tone(SPKPin,550,50);
+      delay(80);
+      tone(SPKPin,110,100);
     draw_HomeMenu();
     inHomeMenu_AppPreview();
     app=0;

@@ -2,15 +2,14 @@
 //以下画面に文字、変数を表示する関数----------------------------------------------------------------------------------
 void printString_int(const char* ValName, int yourVal, int printIntX, int printIntY) {
   display.setCursor(printIntX, printIntY);
-
   display.print(ValName);
   display.print(":");
   display.print(yourVal);
   display.display();
 }
+
 void printString_float(const char* ValName, int yourVal, int printIntX, int printIntY) {
   display.setCursor(printIntX, printIntY);
-
   display.print(ValName);
   display.print(":");
   display.print(yourVal);
@@ -18,7 +17,6 @@ void printString_float(const char* ValName, int yourVal, int printIntX, int prin
 }
 void printString_char(char* yourVal, int printIntX, int printIntY) {
   display.setCursor(printIntX, printIntY);
-
   display.print(yourVal);
   display.display();
 }
@@ -47,6 +45,9 @@ void startUpShow() {
 
 //以下アプリを開いたときに一度実行する関数---------------------------------------------------------------------------
 void draw_HomeMenu() {
+  DataFormat readData;
+  EEPROM.get(0, readData);
+  cursor=readData.ROM_cursor;
   display.clearDisplay();
   //お飾り。起動画面と同じ
   //display.drawCircle(random(10, 118),random(10, 54),random(5, 80),1);
@@ -65,10 +66,12 @@ void draw_app0() {
   printString_char("EEPROM", 20, 10);
   display.setFont(NULL);
   display.setTextSize(1);
-  printString_char(readData.ROM_teamName, 20, 19);
-  printString_int("LED", readData.ROM_LED_output, 20, 19 + 8);
-  int eepromSize = EEPROM.length();  // EEPROM の総バイト数
-  printString_int("EEPROM-length", eepromSize, 20, 19 + 8 + 8);
+  printString_int("LED", readData.ROM_LED_output, 20, 15);
+  printString_char("Bools:{",20,15+8);
+  if(BoolVals[0]==1){printString_char("TRUE",27,15+8*2);}else{printString_char("FALSE",27,15+8*2);}
+  if(BoolVals[1]==2){printString_char("TRUE",27,15+8*3);}else{printString_char("FALSE",27,15+8*3);}
+  if(BoolVals[2]==3){printString_char("TRUE",27,15+8*4);}else{printString_char("FALSE",27,15+8*4);}
+  printString_char("}",20,15+8*5);
 }
 
 void draw_app1() {
@@ -91,8 +94,7 @@ void draw_app1() {
   display.setFont(NULL);
   printString_char("press OK to save", 0, 64 - 8);
   if (IsPress_OK())
-    while (IsPress_OK())
-      ;
+    while (IsPress_OK());
 }
 void draw_app2() {
   display.clearDisplay();
@@ -100,6 +102,21 @@ void draw_app2() {
   display.setFont(NULL);
   display.setTextSize(1);
   display.print(app2Name);
+  //-----------------------------------------------EEPROMに書き込む場合ここに変数読み込みの関数を書く
+  DataFormat readData;
+  EEPROM.get(0, readData);
+  BoolVals[0] = readData.ROM_BoolVal1;
+  BoolVals[1] = readData.ROM_BoolVal2;
+  BoolVals[2] = readData.ROM_BoolVal3;
+     for(int i=0; i<boolCursorMax; i++){
+      printString_char(BoolValsNames[i],15,8+i*8);
+       if(BoolVals[i]==0){
+        printString_char("TRUE",128-6*5,8+i*8);
+       }
+       else{
+        printString_char("FALSE",128-6*5,8+i*8);
+       }
+      }
   display.display();
 }
 void draw_app3() {
