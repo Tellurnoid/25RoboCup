@@ -1,0 +1,82 @@
+デフォルト
+TextSize 1 → 6×8
+TextSize 2 → 12×16
+TextSize 3 → 18×24
+TextSize 4 → 24×32
+
+
+
+カスタムフォントの多くは:
+7x11
+9x16
+13x23
+17x31
+
+
+デフォルトを
+1⇒ 7x11
+2⇒ 12x16
+3⇒ 12x23
+4⇒ 24x32
+
+
+
+| フォント                      | 高さ yAdvance (px) | 幅目安 (px) | 縦横比 (幅÷高さ) |
+| ------------------------- | ---------------- | -------- | ---------- |
+| FreeMono9pt7b             | 11               | 7        | 0.64       |
+| FreeMono12pt7b            | 16               | 9        | 0.56       |
+| FreeMono18pt7b            | 23               | 13       | 0.57       |
+| FreeMono24pt7b            | 31               | 17       | 0.55       |
+| FreeMonoBold9pt7b         | 11               | 7        | 0.64       |
+| FreeMonoBold12pt7b        | 16               | 9        | 0.56       |
+| FreeMonoBold18pt7b        | 23               | 13       | 0.57       |
+| FreeMonoBold24pt7b        | 31               | 17       | 0.55       |
+| FreeMonoOblique9pt7b      | 11               | 7        | 0.64       |
+| FreeMonoOblique12pt7b     | 16               | 9        | 0.56       |
+| FreeMonoOblique18pt7b     | 23               | 13       | 0.57       |
+| FreeMonoOblique24pt7b     | 31               | 17       | 0.55       |
+| FreeMonoBoldOblique9pt7b  | 11               | 7        | 0.64       |
+| FreeMonoBoldOblique12pt7b | 16               | 9        | 0.56       |
+| FreeMonoBoldOblique18pt7b | 23               | 13       | 0.57       |
+| FreeMonoBoldOblique24pt7b | 31               | 17       | 0.55       |
+
+
+| フォント                      | 高さ yAdvance (px) | 幅目安 (px) | 縦横比 (幅÷高さ) |
+| ------------------------- | ---------------- | -------- | ---------- |
+| FreeSans9pt7b             | 11               | 6〜7      | 0.55〜0.64  |
+| FreeSans12pt7b            | 16               | 8〜10     | 0.50〜0.63  |
+| FreeSans18pt7b            | 23               | 12〜14    | 0.52〜0.61  |
+| FreeSans24pt7b            | 31               | 16〜18    | 0.52〜0.58  |
+| FreeSansBold9pt7b         | 11               | 7        | 0.64       |
+| FreeSansBold12pt7b        | 16               | 9        | 0.56       |
+| FreeSansBold18pt7b        | 23               | 13       | 0.57       |
+| FreeSansBold24pt7b        | 31               | 17       | 0.55       |
+| FreeSansOblique9pt7b      | 11               | 6〜7      | 0.55〜0.64  |
+| FreeSansOblique12pt7b     | 16               | 8〜10     | 0.50〜0.63  |
+| FreeSansOblique18pt7b     | 23               | 12〜14    | 0.52〜0.61  |
+| FreeSansOblique24pt7b     | 31               | 16〜18    | 0.52〜0.58  |
+| FreeSansBoldOblique9pt7b  | 11               | 7        | 0.64       |
+| FreeSansBoldOblique12pt7b | 16               | 9        | 0.56       |
+| FreeSansBoldOblique18pt7b | 23               | 13       | 0.57       |
+| FreeSansBoldOblique24pt7b | 31               | 17       | 0.55       |
+
+
+| フォント                      | 高さ yAdvance (px) | 幅目安 (px) | 縦横比 (幅÷高さ) |
+| ------------------------- | ---------------- | -------- | ---------- |
+| FreeSerif9pt7b            | 11               | 7〜8      | 0.64〜0.73  |
+| FreeSerif12pt7b           | 16               | 10       | 0.63       |
+| FreeSerif18pt7b           | 23               | 14       | 0.61       |
+| FreeSerif24pt7b           | 31               | 18       | 0.58       |
+| FreeSerifBold9pt7b        | 11               | 8        | 0.73       |
+| FreeSerifBold12pt7b       | 16               | 10       | 0.63       |
+| FreeSerifBold18pt7b       | 23               | 14       | 0.61       |
+| FreeSerifBold24pt7b       | 31               | 18       | 0.58       |
+| FreeSerifItalic9pt7b      | 11               | 7〜8      | 0.64〜0.73  |
+| FreeSerifItalic12pt7b     | 16               | 10       | 0.63       |
+| FreeSerifItalic18pt7b     | 23               | 14       | 0.61       |
+| FreeSerifItalic24pt7b     | 31               | 18       | 0.58       |
+| FreeSerifBoldItalic9pt7b  | 11               | 8        | 0.73       |
+| FreeSerifBoldItalic12pt7b | 16               | 10       | 0.63       |
+| FreeSerifBoldItalic18pt7b | 23               | 14       | 0.61       |
+| FreeSerifBoldItalic24pt7b | 31               | 18       | 0.58       |
+
