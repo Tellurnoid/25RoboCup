@@ -1,20 +1,14 @@
 //FreeSansBoldOblique9pt7b
 //以下画面に文字、変数を表示する関数----------------------------------------------------------------------------------
-void printString_int(const char* ValName, int yourVal, int printIntX, int printIntY) {
-  display.setCursor(printIntX, printIntY);
-  display.print(ValName);
-  display.print(":");
-  display.print(yourVal);
-  display.display();
+template <typename T>
+void printString(const char* ValName, T yourVal, int printX, int printY) {
+display.setCursor(printX, printY);
+display.print(ValName);
+display.print(":");
+display.print(yourVal);
+display.display();
 }
 
-void printString_float(const char* ValName, int yourVal, int printIntX, int printIntY) {
-  display.setCursor(printIntX, printIntY);
-  display.print(ValName);
-  display.print(":");
-  display.print(yourVal);
-  display.display();
-}
 void printString_char(char* yourVal, int printIntX, int printIntY) {
   display.setCursor(printIntX, printIntY);
   display.print(yourVal);
@@ -37,8 +31,7 @@ void startUpShow() {
   display.setTextColor(SSD1306_WHITE);
   display.print("Beolsae");
   display.display();
-  display.setFont(NULL);
-  display.setTextSize(1);
+
   //delay(1000);
 }
 
@@ -49,13 +42,6 @@ void draw_HomeMenu() {
   EEPROM.get(0, readData);
   cursor=readData.ROM_cursor;
   display.clearDisplay();
-  //お飾り。起動画面と同じ
-  //display.drawCircle(random(10, 118),random(10, 54),random(5, 80),1);
-  //display.drawCircle(random(10, 118),random(10, 54),random(5, 30),1);
-  for (int i = 0; i < 20; i++) {
-    display.drawPixel(random(1, 127), random(1, 63), 1);
-    delay(3);
-  }
   inHomeMenu_AppPreview();
 }
 
@@ -66,7 +52,7 @@ void draw_app0() {
   printString_char("EEPROM", 20, 10);
   display.setFont(NULL);
   display.setTextSize(1);
-  printString_int("LED", readData.ROM_LED_output, 20, 15);
+  printString("LED", readData.ROM_LED_output, 20, 15);
   printString_char("Bools:{",20,15+8);
   if(BoolVals[0]==1){printString_char("TRUE",27,15+8*2);}else{printString_char("FALSE",27,15+8*2);}
   if(BoolVals[1]==2){printString_char("TRUE",27,15+8*3);}else{printString_char("FALSE",27,15+8*3);}
@@ -127,20 +113,54 @@ void draw_app3() {
   display.print(app3Name);
   display.display();
 }
-void draw_app4() {
+
+//int costom1_nums[]={0,0,0,0,0};//systems.inoで定義済み
+//const int FontDistX=4;//フォント使用によるドットずれの補正。systems.inoで定義済み
+//const int FontDistY=6;
+int costom1_nums[]={0,0,0,0,0};
+//int costom1_nums[]={0,0,0,0,0};
+int cursor_BigInt=0;
+const int FontDistX=4;//フォント使用によるドットずれの補正
+const int FontDistY=6;
+long sum_bigInt;
+
+void draw_app4(int costoms) {
+  DataFormat readData;
+  EEPROM.get(0, readData);
+  sum_bigInt = readData.ROM_costom1;
+  costom1_nums[0] = sum_bigInt / 10000 % 10;
+  costom1_nums[1] = sum_bigInt / 1000  % 10;
+  costom1_nums[2] = sum_bigInt / 100   % 10;
+  costom1_nums[3] = sum_bigInt / 10    % 10;
+  costom1_nums[4] = sum_bigInt % 10;
+
+  cursor_BigInt=0;
   display.clearDisplay();
   display.setCursor(0, 0);
   display.setFont(NULL);
   display.setTextSize(1);
-  display.print(app4Name);
-  display.display();
+  display.print("costom");
+  display.print(costoms);
+      display.fillRect(0,25-FontDistY,128,64-25-FontDistY,0);
+      //数字と三角のポインター
+      display.setCursor(36,35);//左端x=37、右端x=37+30=67
+      display.setTextSize(1);
+      display.setFont(&FreeSans9pt7b);
+      for(int i=0; i<5; i++){
+        display.drawTriangle(36+10*i-2+FontDistX,35-5-FontDistY, 36+10*i+FontDistX,35-5-5-FontDistY, 36+10*i+2+FontDistX,35-5-FontDistY ,1);
+        display.print(costom1_nums[i]);
+        display.drawTriangle(36+10*i-2+FontDistX,35+11+7-FontDistY, 36+10*i+FontDistX,35+11+5+7-FontDistY, 36+10*i+2+FontDistX,35+11+7-FontDistY ,1);
+      }
+      //ガイド
+      display.setFont(NULL);
+      display.setCursor(6,32);
+      display.print("< OK");
+      display.setCursor(92,32);
+      display.print("Back >");
+      display.display();
+
 }
 void draw_app5() {
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  display.setFont(NULL);
-  display.setTextSize(1);
-  display.print(app5Name);
-  display.display();
+
 }
 //-----------------------------------------------------------------------------------------------

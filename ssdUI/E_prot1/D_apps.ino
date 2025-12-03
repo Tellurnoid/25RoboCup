@@ -34,6 +34,7 @@ struct DataFormat {
 //以下各アプリ
 
   void app1(){//LEDの明るさ調整
+    sp0.UISendHead = 1;
     DataFormat myData;
     DataFormat readData;
     EEPROM.get(0, readData);
@@ -49,21 +50,18 @@ struct DataFormat {
     else if(IsPress_OK()){
     myData.ROM_LED_output = setYourVal_int(0,255);//値調整UI関数で取得した値をEEPROM用の仮保存変数に適用
     EEPROM.put(offsetof(DataFormat,ROM_LED_output),myData.ROM_LED_output);//EEPROMに書き込み
-    tone(SPKPin, 550, 50);
-    delay(70);
-    tone(SPKPin, 750, 50);
-    delay(70);
-    tone(SPKPin, 900, 100);
+      decidedSound();
     display.fillRect(0,64-8,128,8,0);
 
     //intの場合↓
     display.setFont(NULL);
     display.setTextSize(1);
     int writtenIntData = myData.ROM_LED_output;
-    printString_int("saved as",writtenIntData,52,64-8);
+    printString("saved as",writtenIntData,52,64-8);
     //floatの場合↓
     //float writtenFloatData = myData.ROM_LED_output;
-    //printString_float("saved as",writtenFloatData,58,64-8,1);
+    //printString
+    //printString("saved as",writtenFloatData,58,64-8,1);
     if(IsPress_OK){
     while(IsPress_OK());
     }
@@ -101,13 +99,9 @@ struct DataFormat {
   //  display.setFont(NULL);
    // display.setTextSize(1);
    // bool writtenIntData = myData.ROM_LED_output;
-   // printString_int("saved as",writtenIntData,52,64-8);
+   // printString("saved as",writtenIntData,52,64-8);
    BoolVals[cursor_settingBool]=!BoolVals[cursor_settingBool]; 
-    tone(SPKPin, 550, 50);
-    delay(70);
-    tone(SPKPin, 750, 50);
-    delay(70);
-    tone(SPKPin, 900, 100);
+      decidedSound();
 
      display.fillRect(128-6*5,8,128-6*5,64-8,0);
      for(int i=0; i<boolCursorMax; i++){
@@ -147,41 +141,114 @@ void app3(){
   }
 }
 
-void app4(){
-  DataFormat readData;
-  EEPROM.get(0, readData);
-  if(digitalRead(BackPin)==LOW){
-    cursor=readData.ROM_cursor;
-      tone(SPKPin,550,50);
-      delay(80);
-      tone(SPKPin,110,100);
-    draw_HomeMenu();
-    inHomeMenu_AppPreview();
-    app=0;
-  }
-  else{
-
-  }
+void preview_SetYourVal_BigInt(){
+  //display.clearDisplay();
+  //display.setCursor(0, 0);
+  display.setFont(NULL);
+  display.setTextSize(1);
+  //display.print(app4Name);
+  display.fillRect(35,8,53,64-16,0);
+      //数字と三角のポインター
+      //display.setTextSize(1);
+      display.setCursor(36,35);//左端x=37、右端x=37+30=67
+      display.setFont(&FreeSans9pt7b);
+      for(int i=0; i<5; i++){
+        display.drawTriangle(36+10*i-2+FontDistX,35-5-FontDistY, 36+10*i+FontDistX,35-5-5-FontDistY, 36+10*i+2+FontDistX,35-5-FontDistY ,1);
+        display.print(costom1_nums[i]);
+        display.drawTriangle(36+10*i-2+FontDistX,35+11+7-FontDistY, 36+10*i+FontDistX,35+11+5+7-FontDistY, 36+10*i+2+FontDistX,35+11+7-FontDistY ,1);
+      }
+      display.fillTriangle(36+10*(5-cursor_BigInt)-2+FontDistX,35-5-FontDistY, 36+10*(5-cursor_BigInt)+FontDistX,35-5-5-FontDistY, 36+10*(5-cursor_BigInt)+2+FontDistX,35-5-FontDistY ,1);
+      display.fillTriangle(36+10*(5-cursor_BigInt)-2+FontDistX,35+11+7-FontDistY, 36+10*(5-cursor_BigInt)+FontDistX,35+11+5+7-FontDistY, 36+10*(5-cursor_BigInt)+2+FontDistX,35+11+7-FontDistY ,1);
+      display.drawRoundRect(34+10*(5-cursor_BigInt)-2+FontDistX-1,34-5-5-FontDistY-1, 12,38,2,1);
+      display.display();
 }
 
-void app5(){
-    DataFormat myData;
+void app_costoms(int costoms){//costom1
+  DataFormat myData;
     DataFormat readData;
     EEPROM.get(0, readData);
-  if(digitalRead(BackPin)==LOW){
-    cursor=readData.ROM_cursor;
-      tone(SPKPin,550,50);
-      delay(80);
-      tone(SPKPin,110,100);
+  if(IsPress_OK()){
+    if(cursor_BigInt>4){
+      sum_bigInt = costom1_nums[0]*10^5 +
+                   costom1_nums[1]*10^4 +
+                   costom1_nums[2]*10^3 +
+                   costom1_nums[3]*10^2 +
+                   costom1_nums[4]*10^1 +
+                   costom1_nums[5];
+      cursor_BigInt=5;
+      if(costoms==1){
+      readData.ROM_costom1=sum_bigInt;
+      EEPROM.put(offsetof(DataFormat,ROM_costom1),myData.ROM_costom1);//EEPROMに書き込み
+      }
+      else if(costoms==2){
+      readData.ROM_costom2=sum_bigInt;
+      EEPROM.put(offsetof(DataFormat,ROM_costom2),myData.ROM_costom2);//EEPROMに書き込み
+      }
+      decidedSound();
+    
     draw_HomeMenu();
     inHomeMenu_AppPreview();
     app=0;
-  }
-  else{
-    
+      //ここに送信、EEPROM書き込みなど保存関数
+    }
+    else{
+      cursor_BigInt++;
+      preview_SetYourVal_BigInt();
+    }
+    if(IsPress_OK()){while(IsPress_OK());}
+   }
+   else if(IsPress_Back()){
+    cursor_BigInt--;
+    if(cursor_BigInt<1){
+      /*
+      sum_bigInt = costom1_nums[0]*10^5 +
+                   costom1_nums[1]*10^4 +
+                   costom1_nums[2]*10^3 +
+                   costom1_nums[3]*10^2 +
+                   costom1_nums[4]*10^1 +
+                   costom1_nums[5];     
+      //戻るはキャンセルとみなす
+      */
+      tone(SPKPin,550,50);
+      delay(80);
+      tone(SPKPin,110,100);
+      
 
+    draw_HomeMenu();
+    inHomeMenu_AppPreview();
+    app=0;
+    } 
+    else{
+      preview_SetYourVal_BigInt();
+    }
+    if(IsPress_Back()){while(IsPress_Back());}
+    
   }
+  else if(IsPress_UP()){
+    costom1_nums[5-cursor_BigInt] ++;
+    if(costom1_nums[5-cursor_BigInt]>9){
+      costom1_nums[5-cursor_BigInt]=0;
+    }
+    if(IsPress_UP()){while(IsPress_UP());}
+    preview_SetYourVal_BigInt();
+  }
+  else if(IsPress_Down()){
+    costom1_nums[5-cursor_BigInt] --;
+    if(costom1_nums[5-cursor_BigInt]<0){
+      costom1_nums[5-cursor_BigInt]=9;
+    }
+    if(IsPress_Down()){while(IsPress_Down());}
+    preview_SetYourVal_BigInt();
+  }
+  
 }
+
+
+void app4(){//costom1
+  
+}
+void app5(){}
+
 /*
 文字サイズと使用するピクセル
 TextSize 1 → 6×8
