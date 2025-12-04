@@ -36,7 +36,7 @@ DataFormat writeData;
 
 void setup(){
   Serial.begin(9600);
-  //ここにディスプレイ初期化関数
+  oled.begin(screenWidth, screenHeight, sizeof(tiny4koled_init_128x64br), tiny4koled_init_128x64br);  
   randomSeed(analogRead(0));
   startUpShow();
   pinMode(UpPin, INPUT_PULLUP);
@@ -56,7 +56,7 @@ void loop()
   if (app == 0) {
     homemenu();
   } else if (app == 1) {
-    
+    app1();
   } else if (app == 2) {
     
   } else if (app == 3) {

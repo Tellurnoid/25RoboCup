@@ -22,7 +22,11 @@ void decidedSound(){
     delay(70);
     tone(SPKPin, 900, 100);
 }
-
+void cancelSound(){
+      tone(SPKPin,550,50);
+      delay(80);
+      tone(SPKPin,110,100);
+}
 //ホームメニュー
 void preview_homemenu(){}
 void homemenu(){}

@@ -12,7 +12,9 @@ void printString_char(char* yourVal, int printIntX, int printIntY) {
   oled.print(yourVal);
 }
 
-void startUpShow(){}
+void startUpShow(){
+  oled.clear();
+}
 
 void draw_homemenu(){}
 
