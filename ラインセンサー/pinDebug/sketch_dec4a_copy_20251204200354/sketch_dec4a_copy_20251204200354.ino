@@ -22,7 +22,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   
-  analogWrite(10, 170);
+  analogWrite(10, 130);
   Serial.print("A5:");Serial.print(digitalRead(A5));//OK
   Serial.print(", 2:");Serial.print(digitalRead(2));
   Serial.print(", 3:");Serial.print(digitalRead(3));
