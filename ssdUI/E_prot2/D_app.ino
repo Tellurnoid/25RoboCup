@@ -11,13 +11,13 @@ int app_setIntVal(uint8_t intValMin , uint8_t intValMax){
     if(IsPress_UP() && !lastUPButtonState){
       buttonPressStart = millis();
       counter++; // 単押しとして1加算
-      yourIntVal=yourIntVal+1;
-      if(yourIntVal>yourIntValMax){
-        yourIntVal=yourIntValMin;
+      cursor=cursor+1;
+      if(cursor>intValMax){
+        cursor=cursorMin;
       }
       preview_IntVal();
-      display.fillTriangle(59, 23, 64, 18, 69, 23, SSD1306_WHITE);
-      display.drawTriangle(59, 46, 64, 51, 69, 46, SSD1306_WHITE);
+      fillTriangle(59, 23, 64, 18, 69, 23);
+      drawTriangle(59, 46, 64, 51, 69, 46, SSD1306_WHITE);
       display.display();
     }
     if (UPbuttonState) {// ボタンが押され続けている場合
@@ -25,13 +25,13 @@ int app_setIntVal(uint8_t intValMin , uint8_t intValMax){
       if (pressDuration >= longPressTime) {
         // 長押し判定：押している間毎ループ加算
         counter++;
-        yourIntVal=yourIntVal+1;
-      if(yourIntVal>yourIntValMax){
-        yourIntVal=yourIntValMin;
+        cursor=cursor+1;
+      if(cursor>intValMax){
+        cursor=cursorMin;
       }
       preview_IntVal();
-      display.fillTriangle(61, 23, 64, 18, 67, 23, SSD1306_WHITE);
-      display.drawTriangle(59, 46, 64, 51, 69, 46, SSD1306_WHITE);
+      fillTriangle(61, 23, 64, 18, 67, 23);
+      drawTriangle(59, 46, 64, 51, 69, 46, SSD1306_WHITE);
       display.display();
         //delay(30);
       }
@@ -45,14 +45,14 @@ int app_setIntVal(uint8_t intValMin , uint8_t intValMax){
     if(IsPress_Down() && !lastDOWNButtonState){
       buttonPressStart = millis();
       counter++; // 単押しとして1加算
-      yourIntVal=yourIntVal-1;
-      if(yourIntVal<yourIntValMin){
-        yourIntVal=yourIntValMax;
+      cursor=cursor-1;
+      if(cursor<cursorMin){
+        cursor=intValMax;
       }
       //while(IsPress_Down());
       preview_IntVal();
-      display.drawTriangle(59, 23, 64, 18, 69, 23, SSD1306_WHITE);
-      display.fillTriangle(59, 46, 64, 51, 69, 46, SSD1306_WHITE);
+      drawTriangle(59, 23, 64, 18, 69, 23, SSD1306_WHITE);
+      fillTriangle(59, 46, 64, 51, 69, 46);
       display.display();
 
     }
@@ -61,13 +61,13 @@ int app_setIntVal(uint8_t intValMin , uint8_t intValMax){
       if (pressDuration >= longPressTime) {
         // 長押し判定：押している間毎ループ加算
         counter++;
-        yourIntVal=yourIntVal-1;
-      if(yourIntVal<yourIntValMin){
-        yourIntVal=yourIntValMax;
+        cursor=cursor-1;
+      if(cursor<cursorMin){
+        cursor=intValMax;
       }
       preview_IntVal();
-      display.drawTriangle(61, 23, 64, 18, 67, 23, SSD1306_WHITE);
-      display.fillTriangle(61, 47, 64, 52, 67, 47, SSD1306_WHITE);
+      drawTriangle(61, 23, 64, 18, 67, 23, SSD1306_WHITE);
+      fillTriangle(61, 47, 64, 52, 67, 47);
       display.display();
         //delay(30);
       }
@@ -76,13 +76,11 @@ int app_setIntVal(uint8_t intValMin , uint8_t intValMax){
     lastDOWNButtonState = DOWNbuttonState;
 
     if(!IsPress_Down() && !IsPress_UP()){
-      display.fillTriangle(59, 23, 64, 18, 69, 23, 0);
-      display.fillTriangle(59, 46, 64, 51, 69, 46, 0);
-      display.drawTriangle(59, 23, 64, 18, 69, 23, 1);
-      display.drawTriangle(59, 46, 64, 51, 69, 46, 1);
+      fillTriangle(59, 23, 64, 18, 69,lTriangle(59, 46, 64, 51, 69,play.drawTriangle(59, 23, 64, 18, 69, 23, 1);
+      drawTriangle(59, 46, 64, 51, 69, 46, 1);
       display.display();
     }
-    return yourIntVal;
+    return cursor;
 }
 
 void preview_setFloatVal(){}
