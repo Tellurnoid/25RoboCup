@@ -1,86 +1,6 @@
-
+//#include <ssdUI_vals.h>
 void preview_setIntVal(){}
 int app_setIntVal(uint8_t intValMin , uint8_t intValMax){
-   const unsigned long longPressTime = 500; // 長押しとみなす時間（ミリ秒）
-   uint16_t counter = 0;
-   bool lastUPButtonState = LOW;
-   bool lastDOWNButtonState = LOW;
-   unsigned long buttonPressStart = 0;
-
-  DataFormat myData;
-    if(IsPress_UP() && !lastUPButtonState){
-      buttonPressStart = millis();
-      counter++; // 単押しとして1加算
-      cursor=cursor+1;
-      if(cursor>intValMax){
-        cursor=cursorMin;
-      }
-      preview_IntVal();
-      fillTriangle(59, 23, 64, 18, 69, 23);
-      drawTriangle(59, 46, 64, 51, 69, 46, SSD1306_WHITE);
-      display.display();
-    }
-    if (UPbuttonState) {// ボタンが押され続けている場合
-      unsigned long pressDuration = millis() - buttonPressStart;
-      if (pressDuration >= longPressTime) {
-        // 長押し判定：押している間毎ループ加算
-        counter++;
-        cursor=cursor+1;
-      if(cursor>intValMax){
-        cursor=cursorMin;
-      }
-      preview_IntVal();
-      fillTriangle(61, 23, 64, 18, 67, 23);
-      drawTriangle(59, 46, 64, 51, 69, 46, SSD1306_WHITE);
-      display.display();
-        //delay(30);
-      }
-      
-    }
-    lastUPButtonState = UPbuttonState;
-
-
-    //下
-    bool DOWNbuttonState = digitalRead(DownPin) == LOW; // 押されているとき true
-    if(IsPress_Down() && !lastDOWNButtonState){
-      buttonPressStart = millis();
-      counter++; // 単押しとして1加算
-      cursor=cursor-1;
-      if(cursor<cursorMin){
-        cursor=intValMax;
-      }
-      //while(IsPress_Down());
-      preview_IntVal();
-      drawTriangle(59, 23, 64, 18, 69, 23, SSD1306_WHITE);
-      fillTriangle(59, 46, 64, 51, 69, 46);
-      display.display();
-
-    }
-    if (DOWNbuttonState) {// ボタンが押され続けている場合
-      unsigned long pressDuration = millis() - buttonPressStart;
-      if (pressDuration >= longPressTime) {
-        // 長押し判定：押している間毎ループ加算
-        counter++;
-        cursor=cursor-1;
-      if(cursor<cursorMin){
-        cursor=intValMax;
-      }
-      preview_IntVal();
-      drawTriangle(61, 23, 64, 18, 67, 23, SSD1306_WHITE);
-      fillTriangle(61, 47, 64, 52, 67, 47);
-      display.display();
-        //delay(30);
-      }
-      
-    }
-    lastDOWNButtonState = DOWNbuttonState;
-
-    if(!IsPress_Down() && !IsPress_UP()){
-      fillTriangle(59, 23, 64, 18, 69,lTriangle(59, 46, 64, 51, 69,play.drawTriangle(59, 23, 64, 18, 69, 23, 1);
-      drawTriangle(59, 46, 64, 51, 69, 46, 1);
-      display.display();
-    }
-    return cursor;
 }
 
 void preview_setFloatVal(){}
@@ -88,7 +8,7 @@ int app_setFloatVal(){}
 
 void app_costoms(uint8_t costoms){}
 
-
+void setYourVal_Bool(){}
 
 void app1(){
   sp0.UISendHead = 1;//LEDの送信用データのアドレスは1。式変える必要あり
@@ -117,6 +37,7 @@ void app1(){
 }
 
 void app2(){
+    uint8_t cursor_settingBool;
     DataFormat myData;
     DataFormat readData;
     EEPROM.get(0, readData);
@@ -130,7 +51,7 @@ void app2(){
       cursor=readData.ROM_cursor;
       cancelSound();
      // draw_HomeMenu();
-      inHomeMenu_AppPreview();
+     preview_homemenu();
       app=0;
     }
     else if(IsPress_OK()){

@@ -1,6 +1,12 @@
-//#include <ssdUI_vals.h>
+#include <EEPROM.h>
+#include <stddef.h>
+#include <Tiny4kOLED.h>
+//oled
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 // ========= パケット用データ =========
-struct ReadPacketData0 { int ball_angle; int goal_angle;};
+struct ReadPacketData0 {int16_t receive_data; };
 ReadPacketData0 rp0;
 
 
@@ -99,4 +105,89 @@ void UART() {
   //ball_angle = rp1.ball_angle;
   //ball_distance = rp1.ball_distance;
 
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+#define screenWidth 128
+#define screenHeight 64
+
+#define UpPin A1
+#define DownPin A0
+#define OKPin A3
+#define BackPin A2
+#define SPKPin 6
+
+
+//型を定義 EEPROMに書き込む変数を増やす場合はここに定義UpPin
+struct DataFormat {
+  int ROM_cursor;
+  char* ROM_teamName;
+  int ROM_LED_output;
+  bool ROM_BoolVal1;
+  bool ROM_BoolVal2;
+  bool ROM_BoolVal3;
+  long ROM_costom1;  //1 costom1 (int )
+  long ROM_costom2;  //5 costom2  intは16bit（-32768〜32767）
+};
+DataFormat writeData;
+
+//ボタン
+bool IsPress_UP(){
+  return digitalRead(UpPin) == LOW;
+}
+bool IsPress_Down(){
+  return digitalRead(DownPin) == LOW;
+}
+bool IsPress_OK(){
+  return digitalRead(OKPin) == LOW;
+}
+bool IsPress_Back(){
+  return digitalRead(BackPin) == LOW;
+}
+volatile uint8_t app;  //割り込みでいつでもapp=0(ホーム)に戻るためvolatileをつける
+uint8_t cursor;
+uint8_t howManyApps;
+
+
+uint8_t width = 128;
+uint8_t height = 64;
+
+
+
+void setup(){
+  initUART();
+  //Serial.begin(115200);
+  //oled.begin(width, height, sizeof(tiny4koled_init_128x64br), tiny4koled_init_128x64br);  
+  oled.setFont(FONT8X16);
+  oled.on();
+  randomSeed(analogRead(0));
+ // startUpShow();
+  pinMode(UpPin, INPUT_PULLUP);
+  pinMode(DownPin, INPUT_PULLUP);
+  pinMode(OKPin, INPUT_PULLUP);
+  pinMode(BackPin, INPUT_PULLUP);
+  DataFormat readData;
+  EEPROM.get(0, readData);
+  cursor = readData.ROM_cursor;
+  oled.clear();
+  oled.setCursor(8,1);
+  oled.print("HELLO");
+  if (!(IsPress_OK() || IsPress_Back() || IsPress_UP() || IsPress_Down())) {
+    while (!(IsPress_OK() || IsPress_Back() || IsPress_UP() || IsPress_Down()));
+  }
+
+}
+
+void loop()
+{
+readPacket(0,rp0);
+//oled.clear();
+oled.setCursor(0,64-8);
+oled.print("     ");
+oled.setCursor(0,64-8);
+int16_t readData = rp0.receive_data;
+oled.print(readData);
+//delay(1);
 }
