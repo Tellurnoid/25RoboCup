@@ -5,6 +5,7 @@
 
 class draw{
   public:
+     draw();
      void drawLine(uint8_t x1,uint8_t y1,uint8_t x2,uint8_t y2,bool color);
      void fillRect(uint8_t x,uint8_t y, uint8_t w, uint8_t t, bool color);
      void triangle(uint8_t x1,uint8_t y1,uint8_t x2,uint8_t y2,uint8_t x3,uint8_t y3,bool color);
@@ -17,6 +18,5 @@ class draw{
   
   private:
      U8X8_SSD1306_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
-
 };
 #endif

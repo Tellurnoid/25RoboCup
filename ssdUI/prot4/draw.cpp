@@ -3,10 +3,7 @@
 #include "draw.h"
 #include "app.h"
 
-draw::draw()
-   : u8x8(/* reset = */ U8X8_PIN_NONE)   // ここで初期化
-{}
-
+draw::draw(){}
 void draw::drawLine(uint8_t x1,uint8_t y1,uint8_t x2,uint8_t y2,bool color){}
 void draw::fillRect(uint8_t x,uint8_t y, uint8_t w, uint8_t t, bool color){}
 void draw::triangle(uint8_t x1,uint8_t y1,uint8_t x2,uint8_t y2,uint8_t x3,uint8_t y3,bool color){}

@@ -2,13 +2,13 @@
 #include "app.h"
 //#include <U8x8lib.h>
  //U8X8_SSD1306_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
-
+draw drawer;
 uint8_t app = 0;
 
 void setup(){
   u8x8.begin();
   u8x8.setFlipMode(0);
-  draw.startupShow();
+  drawer.startupShow();
 }
 
 void homeMenu(){
