@@ -70,6 +70,7 @@ void echo(){
   }
 }
 
+int last_line_angle;//見失ったとき
 void loop() {
   dis[2] = -1;
   dis[3] = -1;
@@ -145,10 +146,57 @@ void loop() {
     line_start = 400;
   }
 
-  Vector v = ball_v;
-  v = add(v, wall_v);
-  v = add(v, line_v);
-  // v = lenV(v, 200);
+  Vector goal_v;
+ // goal_v = fromPolar(deg, speed);//角度とスピードを得たら代入
+
+ // Vector v = fromPolar(90, ball_v.y);
+ // v = add(v, goal_v);//vとgoal_vの和
+
+  /*//壁とラインアウト回避
+   Vector v = ball_v;
+   v = add(v, wall_v);
+   v = add(v, line_v);
+  */
+
+//------以下小林追加
+    Vector v = fromPolar(0,0);
+  
+   Vector lineTrace_v;
+   if(ball_angle ==!400){
+     if(line_angle == 400){
+       Vector v = fromPolar(90 , ball_angle*255/90);
+      lineTrace_v = fromPolar(last_line_angle,150);
+     }
+     else{
+      if(90 - abs(line_angle) < 30){
+        lineTrace_v = fromPolar(0,150);
+        last_line_angle = line_angle;
+      }
+      else
+      {
+      lineTrace_v = fromPolar(line_angle,line_dis*1.5);
+      last_line_angle = line_angle;
+      } 
+    }
+   }
+   else{
+    v=fromPolar(0,0);
+   }
+   
+
+   v = add(v, lineTrace_v);
+   
+   //ラインアングルに向かって
+//------
+
+   //v = lenV(v, 200);
   moveVector(v, rotatePID(0));
+
+  //デバッグ用
+  Serial.print("LineAngle:");
+  Serial.print(line_angle);
+  Serial.print(", LineDis:");
+  Serial.println(line_dis);
+
 
 }

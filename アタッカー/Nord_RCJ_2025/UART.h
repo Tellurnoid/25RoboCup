@@ -17,7 +17,11 @@ extern int ball_distance;
 extern int ball_max;
 extern int16_t wall_dis;
 extern int16_t line_angle;
-extern int16_t line_dis;
+extern int16_t line_dis;//中心からの距離-100~100
 extern int16_t dis[4];
 
 #endif
+
+
+
+//

@@ -36,34 +36,25 @@ void initMotor() {//esp32ライブラリ3.3.2用
     ledcSetup(motors[i].ch1, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
     ledcSetup(motors[i].ch2, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
 
-    ledcAttachPin(motors[i].in1_pin, motors[i].ch1);
-    ledcAttachPin(motors[i].in2_pin, motors[i].ch2);
+    ledcAttach(motors[i].in1_pin, motors[i].ch1);
+    ledcAttach(motors[i].in2_pin, motors[i].ch2);
   }
 }
 */
 
-void initMotor() {////esp32ライブラリ3.3.3用
-  // ESP32 Arduino 3.3.3 では LEDC タイマーを共有する形が推奨
-  const int timerIndex = 0; // タイマー番号 0 を使用
-  ledcSetup(timerIndex, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
-
+void initMotor() {
   for (int i = 0; i < motor_quanty; i++) {
-    pinMode(motors[i].in1_pin, OUTPUT);
-    pinMode(motors[i].in2_pin, OUTPUT);
 
-    // 念のためデタッチ（3.3.3 推奨）
-    ledcDetachPin(motors[i].in1_pin);
-    ledcDetachPin(motors[i].in2_pin);
+    // PWMピンをアタッチ（freq と resolution を直接指定）
+    ledcAttach(motors[i].in1_pin, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
+    ledcAttach(motors[i].in2_pin, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
 
-    // 各チャンネルにタイマーを割り当てる
-    ledcAttachPin(motors[i].in1_pin, motors[i].ch1);
-    ledcAttachPin(motors[i].in2_pin, motors[i].ch2);
-
-    // チャンネル設定
-    ledcWrite(motors[i].ch1, 0);
-    ledcWrite(motors[i].ch2, 0);
+    // 初期 duty = 0
+    ledcWrite(motors[i].in1_pin, 0);
+    ledcWrite(motors[i].in2_pin, 0);
   }
 }
+
 
 void motor(char motorName, int pwm) {
   pwm = constrain(pwm, -VALUE_MAX, VALUE_MAX);  //最小値,最大値の範囲に収めてくれる

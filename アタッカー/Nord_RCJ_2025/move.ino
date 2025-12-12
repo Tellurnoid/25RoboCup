@@ -28,7 +28,7 @@ const int LEDC_TIMER_BIT = 8;   // 8bit = 0〜255
 const int LEDC_BASE_FREQ = 500; // PWM周波数
 const int VALUE_MAX = 255;      // PWM最大値
 
-void initMotor() {
+void initMotor() {//3.3.2
   for (int i = 0; i < motor_quanty; i++) {
     pinMode(motors[i].in1_pin, OUTPUT);
     pinMode(motors[i].in2_pin, OUTPUT);
@@ -40,6 +40,20 @@ void initMotor() {
     ledcAttachPin(motors[i].in2_pin, motors[i].ch2);
   }
 }
+/*
+void initMotor() {//3.3.3用？(失敗)
+  for (int i = 0; i < motor_quanty; i++) {
+
+    // PWMピンをアタッチ（freq と resolution を直接指定）
+    ledcAttach(motors[i].in1_pin, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
+    ledcAttach(motors[i].in2_pin, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
+
+    // 初期 duty = 0
+    ledcWrite(motors[i].in1_pin, 0);
+    ledcWrite(motors[i].in2_pin, 0);
+  }
+}
+*/
 
 void motor(char motorName, int pwm) {
   pwm = constrain(pwm, -VALUE_MAX, VALUE_MAX);  //最小値,最大値の範囲に収めてくれる
