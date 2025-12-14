@@ -57,7 +57,7 @@ int16_t line_dis;
 
 void loop() {
   UART();
-  analogWrite(10, 180);
+  analogWrite(10, 160);
 
   for (int i = 0; i < NUM_SENSORS; i++) {
     int line_total = 0;

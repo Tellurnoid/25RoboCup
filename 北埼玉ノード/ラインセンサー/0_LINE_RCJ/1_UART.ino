@@ -62,7 +62,9 @@ template <typename sendT>
 void sendPacket(int num_serial, sendT &d) {
 
     HardwareSerial *seri;
-    if (num_serial == 0) seri = &Serial;
+    //if (num_serial == 0) seri = &Serial;
+    if (num_serial == 0) seri = &Serial1;  // Micro用
+
 
     uint8_t* p = (uint8_t*)&d;
     uint8_t len = sizeof(sendT);

@@ -152,7 +152,7 @@ void initUART() {
   Serial.begin(115200);
   Serial1.begin(115200, SERIAL_8N1, 18, 19);  //TX, RX // to IR_ESP32
   Serial2.begin(115200, SERIAL_8N1, 16, 17);  // to LINE_ArduinoNano
-}
+} 
 
 int ball_angle;
 int ball_distance;
@@ -191,5 +191,5 @@ void UART() {
   // Serial.print(line_dis);
   // Serial.print(" : ");
   // Serial.println(line_angle);
-
+  Serial.println(rp1.ball_angle);
 }

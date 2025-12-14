@@ -7,13 +7,24 @@ struct Motor {
 };
 
 // モーターA〜Dの定義（ピン番号とチャンネルを確実に割り当て）
+
+//キーパー
+Motor motors[] = {
+  {'A', 5, 13, 8, 9},
+  {'B', 14,27, 14, 15},
+  {'C', 25,26, 12, 13},
+  {'D', 32,33, 10, 11},
+};
+
+/*
+//アタッカー
 Motor motors[] = {
   {'A', 32, 33, 8, 9},
   {'B', 13, 4, 14, 15},
   {'C', 27, 14, 12, 13},
   {'D', 25, 26, 10, 11},
 };
-
+*/
 const int motor_quanty = 4;
 //motors
 //A:B
@@ -40,14 +51,19 @@ void initMotor() {//esp32ライブラリ3.3.2用
     ledcAttach(motors[i].in2_pin, motors[i].ch2);
   }
 }
-*/
 
+*/
 void initMotor() {
   for (int i = 0; i < motor_quanty; i++) {
 
     // PWMピンをアタッチ（freq と resolution を直接指定）
-    ledcAttach(motors[i].in1_pin, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
-    ledcAttach(motors[i].in2_pin, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
+   // ledcAttach(motors[i].in1_pin, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
+   // ledcAttach(motors[i].in2_pin, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
+
+ledcSetup(motors[i].ch1, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
+ledcAttachPin(motors[i].in1_pin, motors[i].ch1);
+ledcSetup(motors[i].ch2, LEDC_BASE_FREQ, LEDC_TIMER_BIT);
+ledcAttachPin(motors[i].in2_pin, motors[i].ch2);
 
     // 初期 duty = 0
     ledcWrite(motors[i].in1_pin, 0);

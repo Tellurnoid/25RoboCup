@@ -183,10 +183,12 @@ void initIMU() {
   writeMPU6050(MPU6050_PWR_MGMT_1, 0x00);  // スリープ解除
   delay(100);
 
+/*
   if (!checkMPU6050()) {
     Serial.println("MPU6050 not found!");
     while (1) delay(100);
   }
+*/
 
   // センサ設定
   writeMPU6050(MPU6050_SMPLRT_DIV, 0x00);    // サンプルレート設定（1kHz）

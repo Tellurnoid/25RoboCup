@@ -1,3 +1,4 @@
+//キーパー
 #include "functions.h"
 #include "IMU.h"
 #include "move.h"
@@ -70,6 +71,8 @@ void echo(){
   }
 }
 
+
+char data;
 void loop() {
   dis[2] = -1;
   dis[3] = -1;
@@ -145,10 +148,10 @@ void loop() {
     line_start = 400;
   }
   Vector v = ball_v;
-  // Vector v = fromPolar(90, ball_v.y);  //横方向がball_v.y;
+    v = fromPolar(90, ball_angle*90/255);  //横方向がball_v.y;
   // v = add(v, wall_v);
   // v = add(v, line_v);
   // v = lenV(v, 200);
   moveVector(v, rotatePID(0));
-
+  
 }

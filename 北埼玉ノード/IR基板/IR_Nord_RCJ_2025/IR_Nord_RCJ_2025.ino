@@ -8,10 +8,10 @@ void setup() {
 
 void loop() {
   IR();
-  //UART();
-/*
+  UART();
+
   Serial.print("angle:");Serial.print(ball_angle);
   Serial.print(", distance:");Serial.println(ball_distance);
-  */
+  
 
 }
