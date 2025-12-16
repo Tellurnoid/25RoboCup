@@ -1,0 +1,7 @@
+{
+    "port": "/dev/ttyACM0",
+    "board": "arduino:avr:micro",
+    "sketch": "E_prot5.ino",
+    "C_Cpp.errorSquiggles": "Disabled",
+    "C_Cpp.intelliSenseEngineFallback": "Disabled"
+}
