@@ -1,0 +1,48 @@
+@CHARSET "UTF-8";
+
+footer {
+	margin: 30px 0 0;
+	background-color: #fff;
+}
+
+footer .gContact {
+    margin: 0;
+}
+
+footer .gContact a:visited {
+    text-decoration: initial;
+    color: #fff;;
+}
+
+footer .gContact a:link {
+    text-decoration: initial;
+    color: #fff;;
+}
+
+footer .gContact .btn {
+	/* IE11対応 */
+    /* text-indent: initial;*/
+    text-indent: 0px;
+    white-space: initial;
+    overflow: initial;
+}
+
+.gFooter_link>strong {
+    display: block;
+    padding: 0 1em;
+    font-size: 13px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.gFooter_link>span {
+    display: block;
+    padding: 0 1em;
+    font-size: 13px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.gFooterBase {
+	background-color:#fff;
+}

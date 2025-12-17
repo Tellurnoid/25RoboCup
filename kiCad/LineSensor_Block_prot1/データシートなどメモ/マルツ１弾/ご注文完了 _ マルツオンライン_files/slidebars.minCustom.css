@@ -1,0 +1,78 @@
+.sb-slidebar.sb-active {
+	display:none;
+}
+
+body,
+html{
+	overflow-x:visible;
+}
+
+#sb-site {
+	-webkit-transform: none;
+	-moz-transform: none;
+	-o-transform: none;
+	transform: none;
+}
+
+@media screen and (max-width:600px) {
+	body,
+	html {
+		overflow-x:hidden
+	}
+	.sb-slidebar {
+		background-color:#fff;
+		color:#333;
+		z-index:100;
+	}
+	.sb-slidebar.sb-active {
+		display:block;
+	}
+	#slideMenu-L, #slideMenu-R {
+		width:100%;
+		overflow:scroll;
+		-webkit-overflow-scrolling:touch;
+		overflow-y:scroll;
+		height:100%;
+		border-left:1px solid #ddd;
+	}
+	.close-r {
+		text-align:right;
+		padding:8% 3%;
+	}
+	.sb-close {
+		padding-right:3%;
+	}
+	.sb-close::before {
+		font-family:FontAwesome;
+		content:"\f057";
+		float:right;
+	}
+	.sectionList + .sectionList {
+		border-bottom:1px solid #ddd;
+	}
+	.sectionList > li {
+		border-top:1px solid #ddd;
+	}
+	.sectionList > li > a {
+		color:#333;
+		display:block;
+		padding:5% 4%;
+	}
+	.sectionList > li > a:hover {
+		text-decoration:none;
+	}
+	.sectionList > li > a:before {
+		font-family:FontAwesome;
+		padding-right:3%;
+		content:"\f105";
+		float:right;
+	}
+	.sectionList > .title {
+		background:#eee;
+		font-weight:bold;
+		padding:2% 4%;
+	}
+	.sb-close:hover {
+		text-decoration:none;
+	}
+}
