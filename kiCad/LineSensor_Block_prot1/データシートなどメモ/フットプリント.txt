@@ -1,0 +1,2 @@
+マルチプレクサ
+Package_SO:TSSOP-16_4.4x5mm_P0.65mm
