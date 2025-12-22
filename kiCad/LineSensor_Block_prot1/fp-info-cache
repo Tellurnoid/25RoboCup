@@ -1,4 +1,4 @@
-27590114708472893
+27597179550160606
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -96263,6 +96263,27 @@ mousebite stamp slot break tab 2mm edge on-edge
 0
 0
 0
+Pinsocket_and_pinheader
+PinHeader_1x07_P2.54mm_Horizontal_edited
+Through hole angled pin header, 1x07, 2.54mm pitch, 6mm pin length, single row
+Through hole angled pin header THT 1x07 2.54mm single row
+0
+7
+7
+Pinsocket_and_pinheader
+PinSocket_1x07_P2.54mm_Horizontal
+Through hole angled socket strip, 1x07, 2.54mm pitch, 8.51mm socket length, single row (from Kicad 4.0.7), script generated
+Through hole angled socket strip THT 1x07 2.54mm single row
+0
+7
+7
+Pinsocket_and_pinheader
+PinSocket_1x07_P2.54mm_Horizontal_edited
+Through hole angled socket strip, 1x07, 2.54mm pitch, 8.51mm socket length, single row (from Kicad 4.0.7), script generated
+Through hole angled socket strip THT 1x07 2.54mm single row
+0
+7
+7
 Potentiometer_SMD
 Potentiometer_ACP_CA6-VSMD_Vertical
 Potentiometer, vertical, ACP CA6-VSMD, http://www.acptechnologies.com/wp-content/uploads/2017/06/01-ACP-CA6.pdf
@@ -109941,3 +109962,10 @@ hankotei
 0
 3
 3
+seeeduino
+名称未設定
+
+
+0
+14
+14
