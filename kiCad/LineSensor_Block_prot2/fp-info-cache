@@ -1,4 +1,4 @@
-27598946208762733
+27602479538808272
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -96264,6 +96264,13 @@ mousebite stamp slot break tab 2mm edge on-edge
 0
 0
 Pinsocket_and_pinheader
+PinHeader_1x03_P2.54mm_Vertical_EDITED
+Through hole straight pin header, 1x03, 2.54mm pitch, single row
+Through hole pin header THT 1x03 2.54mm single row
+0
+3
+3
+Pinsocket_and_pinheader
 PinHeader_1x07_P2.54mm_Horizontal_edited
 Through hole angled pin header, 1x07, 2.54mm pitch, 6mm pin length, single row
 Through hole angled pin header THT 1x07 2.54mm single row
@@ -96291,6 +96298,13 @@ Through hole angled socket strip THT 1x09 2.54mm single row
 0
 9
 9
+Pinsocket_and_pinheader
+TO-251-3-1EP_Horizontal_TabDown_pin_EDITED
+TO-251-3, Horizontal, RM 2.29mm, IPAK, see https://www.diodes.com/assets/Package-Files/TO251.pdf, generated with kicad-footprint-generator TO_SOT_THT_generate.py
+TO-251-3 Horizontal RM 2.29mm IPAK
+0
+4
+4
 Potentiometer_SMD
 Potentiometer_ACP_CA6-VSMD_Vertical
 Potentiometer, vertical, ACP CA6-VSMD, http://www.acptechnologies.com/wp-content/uploads/2017/06/01-ACP-CA6.pdf
