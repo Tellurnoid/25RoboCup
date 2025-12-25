@@ -188,6 +188,7 @@
       ],
       "track_widths": [
         0.0,
+        0.2,
         0.3,
         0.5,
         0.6,
@@ -224,6 +225,10 @@
         {
           "diameter": 0.0,
           "drill": 0.0
+        },
+        {
+          "diameter": 0.7,
+          "drill": 0.4
         },
         {
           "diameter": 1.5,
@@ -485,7 +490,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "LineSensor_Block_prot1.kicad_pro",
+    "filename": "LineSensor_Block_prot2.kicad_pro",
     "version": 3
   },
   "net_settings": {
