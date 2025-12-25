@@ -9522,7 +9522,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ac71f8d2-2739-4725-8007-18622aa03a27")
-		(property "Reference" "U5"
+		(property "Reference" "U4"
 			(at 310.515 128.27 0)
 			(effects
 				(font
@@ -9610,7 +9610,7 @@
 		(instances
 			(project ""
 				(path "/8c5491fd-182b-4f1c-98d8-1c67ea1af98c"
-					(reference "U5")
+					(reference "U4")
 					(unit 1)
 				)
 			)

@@ -1,0 +1,109 @@
+(footprint "NJL7502R"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -8.4 -1.6 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "c30b732e-dfc6-4266-be59-daa12e917c6d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "NJL7502R"
+		(at -9.1 -0.1 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "b2f743ea-69eb-456e-9333-8eed31799060")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a525ed90-c0a3-4e6b-a4dc-3f07ec38b416")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "f5b98519-1aa5-4cf7-b449-54b485a628dd")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_poly
+		(pts
+			(xy 0.57 -0.771) (xy 0.57 0.738) (xy 0.568 0.74) (xy -0.57 0.74) (xy -0.573 0.737) (xy -0.573 -0.771)
+		)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill yes)
+		(layer "F.Fab")
+		(uuid "fbe49751-aa52-43c4-96e1-c1851defc660")
+	)
+	(fp_text user "E"
+		(at -0.5 -0.9 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "69811393-7f43-4700-ac9b-82b7b04c2d31")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+			(justify left bottom)
+		)
+	)
+	(fp_text user "${REFERENCE}"
+		(at -8.4 1.6 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "6d9b9435-5ceb-47d4-ae7b-2e32694b4d49")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at 0 0.4795)
+		(size 1.1 0.461)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.15)
+		(uuid "3b70805e-4f52-4a0b-a7e2-c5a42df9b2b5")
+	)
+	(pad "2" smd roundrect
+		(at 0 -0.4985)
+		(size 1.1 0.483)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.15)
+		(uuid "a3ebc677-fabc-4acc-8c1a-a8cb0eac0db4")
+	)
+	(embedded_fonts no)
+)
