@@ -2,7 +2,6 @@
 //   float x;
 //   float y;
 // };
-#include <Arduino.h>
 
 Vector fromPolar(float deg, float speed) {
   Vector v;
@@ -20,9 +19,9 @@ Vector add(Vector a, Vector b) {
 }
 
 const int NUM_SENSORS = 12;
-const int sensorPins[NUM_SENSORS] = {34, 35, 32, 33, 25, 26, 27, 14, 13, 4, 2, 15};//const int sensorPins[NUM_SENSORS] = {35, 32, 33, 25, 26, 27, 14, 2, 15};
-const int sensorDeg[NUM_SENSORS] = {30, 60, 90, 120, 150, 180, 210, 300, 330};//const int sensorDeg[NUM_SENSORS] = {0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330};
-const int DEG_DIFF = 270;
+const int sensorPins[NUM_SENSORS] = {34, 35, 32, 33, 25, 26, 27, 14, 13, 4, 2, 15};
+const int sensorDeg[NUM_SENSORS] = {0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330};
+const int DEG_DIFF = 90;
 const int MAX_VALUE = 4095;
 const int NUM_AVE = 40;
 const int NUM_SERCH_SENSORS = 4;
@@ -67,7 +66,6 @@ void readSensorsAve() {
     if (sensorValues[i] != 0) ball_distance++;
   }
 }
-
 
 int getMaxIndex() {
   int max_index = 0;
@@ -134,7 +132,7 @@ BallResult getBallAngleAndDistance() {
   // ==== 距離①：強度ベース ====
   float dist1 = 1.0f / sqrt(S0);
 
-  // ==== 距離②：ガウス幅ベース ==== 
+  // ==== 距離②：ガウス幅ベース ====
   float sigma2 = -(30.0f * 30.0f) / (2.0f * (log(SL) - log(S0)));
 
   if (!isfinite(sigma2) || sigma2 < 1.0f) sigma2 = 1.0f;
@@ -172,17 +170,5 @@ void IR(){
   int x = sensorValues[(getMaxIndex() - 1 + NUM_SENSORS) % NUM_SENSORS];
   if (x < sensorValues[(getMaxIndex() + 1 + NUM_SENSORS) % NUM_SENSORS]) x = sensorValues[(getMaxIndex() + 1 + NUM_SENSORS) % NUM_SENSORS];
   ball_max = x; //indexが負の数にならないようにする
-   //Serial.println(ball_angle);
-
-
-///デバッグ
-  // for (int i=0;i<NUM_SENSORS; i++){
-  //   Serial.print(", ");Serial.print(sensorPins[i]);Serial.print(":");Serial.print(analogRead(sensorPins[i]));
-  // }
-  // Serial.println();
-///////
-
-//Serial.print(", ");Serial.print("8");Serial.print(":");Serial.print(analogRead(sensorPins[13]));
-//Serial.print(", ");Serial.print("9");Serial.print(":");Serial.println(analogRead(sensorPins[4]));
-//Serial.print(analogRead(4));Serial.print(",");Serial.println(analogRead(2));//4ピンのみしんでる
+  // Serial.println(ball_angle);
 }

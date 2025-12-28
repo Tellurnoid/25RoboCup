@@ -223,6 +223,7 @@
                 "/home/carbonoid/.arduino15/packages/esp32/hardware/esp32/2.0.17/tools/sdk/esp32/qio_qspi/include",
                 "/home/carbonoid/.arduino15/packages/esp32/hardware/esp32/2.0.17/cores/esp32",
                 "/home/carbonoid/.arduino15/packages/esp32/hardware/esp32/2.0.17/variants/esp32",
+                "/home/carbonoid/.arduino15/packages/esp32/hardware/esp32/2.0.17/libraries/Wire/src",
                 "/home/carbonoid/.arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/esp-2021r2-patch5-8.4.0/xtensa-esp32-elf/include/c++/8.4.0",
                 "/home/carbonoid/.arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/esp-2021r2-patch5-8.4.0/xtensa-esp32-elf/include/c++/8.4.0/xtensa-esp32-elf",
                 "/home/carbonoid/.arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/esp-2021r2-patch5-8.4.0/xtensa-esp32-elf/include/c++/8.4.0/backward",
