@@ -38,3 +38,4 @@ struct Derivative {
   float last_value = 0;
   float value_d = 0;
 };
+

@@ -72,20 +72,25 @@ float getD(Derivative &d, float value, int time) {
 }
 
 
-float getCom(Vector v, float deg) {
-  float rad = deg * PI / 180.0f;
-  return v.x * cos(rad) + v.y * sin(rad);
-}
-
 
 const int ball_get_sensor = 34;
 
+void sound_calSuccess(){
+  digitalWrite(21, HIGH);
+  delay(50);
+  digitalWrite(21, LOW);
+  delay(50);
+  digitalWrite(21, HIGH);
+  delay(30);
+  digitalWrite(21, LOW);
+}
 void setup() {
+  pinMode(21, OUTPUT);//圧電スピーカー
   initUART();
   initIMU();
   initMotor();
-
   pinMode(ball_get_sensor, INPUT);
+  sound_calSuccess();
 }
 
 const int NUM_SENSORS = 13;
@@ -102,19 +107,25 @@ const int NUM_SENSORS = 13;
 // const int y_max_speed = 250;  //
 
 Derivative ballD;
-float approach_to_ball = 180;
+float approach_to_ball = 220;
 Vector ballV() {
   Vector v;
-  
-  v = makeV(ball_angle,approach_to_ball);
+  if(ball_angle != 400){
+    v = makeV(ball_angle,approach_to_ball);
+  }
+  else{
+     v = makeV(0,0);
+  }
   //Serial.println(v.y);
   return v;
 }
 
 
-Vector lost_line  = makeV(180,180);
+Vector lost_line  = makeV(180,220);
 uint8_t line_tolerance = 15;//線をはみ出したと判断するline_distanceのしきい値
-float approach_to_line = 0.90;//ライントレースの戻る力
+float approach_to_line = 1.10;//ライントレースの戻る力
+float approach_to_line_out_of_line = 1.10;//ラインを見失った後の戻る力
+
 Vector lineV() {
   /*
   ○角度
@@ -126,16 +137,16 @@ Vector lineV() {
   line_dis>0　&& abs(line_angle)>90　のとき、白線は機体より後ろに
   abs(line_angle)=90　⇔　line_dis=0  ⇒まっすぐライントレース
   */
-  Vector lineV_for_cal = makeV(0,0);
+  Vector v;
 
   if(line_dis>line_tolerance && abs(line_angle)<90){//白線が機体より前にある(ゴールエリア内にいる)
-    lineV_for_cal.x = lineV_for_cal.x + line_dis * approach_to_line;
+    v.x = v.x + line_dis * approach_to_line;
   }
   else if(line_dis>line_tolerance && abs(line_angle)>90){//白線が機体より後ろにある(前に出過ぎた)
-    lineV_for_cal.x = lineV_for_cal.x - line_dis * approach_to_line;
+    v.x = v.x - line_dis * approach_to_line;
   }
-  lost_line = makeV(line_angle,line_dis * 2);
-  return lineV_for_cal;
+  if(line_angle != 400){lost_line = makeV(line_angle,line_dis*approach_to_line_out_of_line);}
+  return v;
 }
 
 
@@ -176,8 +187,14 @@ float theta = atan2(l_y,l_x);//白線に対するベクトルの成分
 
 //line_angleは、機体正面に対する、
 //機体中央から白線におろした垂線(最短距離)の直線の角度
-Vector v;
+float getCom(Vector v, float deg) {
+  float rad = deg * PI / 180.0f;
+  return v.x * cos(rad) + v.y * sin(rad);
+}
 
+
+Vector v;
+float remove_angle;
 void loop() {
   IMU();
   UART();
@@ -186,18 +203,36 @@ void loop() {
   }
   else
   {
+    // v = lineV();
     v = ballV();
-      // v = lineV();
     v = addV(v, lineV());
-  }
-  //  v = addV(v, lineV());
-   Vector remove = makeV(180,approach_to_ball);
+
+    //打ち消し
+   if(abs(line_angle)>90){
+    remove_angle=line_angle;
+   }
+   else{
+    if(line_angle<=0){
+      remove_angle = 180 + line_angle;
+     }
+     else{//line_angle>0
+       remove_angle = line_angle - 180;
+     }
+   }
+   Vector remove = makeV(remove_angle,getCom(ballV(),remove_angle));
    v  = addV(v , remove);
-  int ball_get = analogRead(ball_get_sensor);
+  }
+
   moveVector(v, rotatePID(0, 0));
-  // Serial.print("angle:");Serial.print(line_angle);
-  // Serial.print(", dis:");Serial.print(line_dis);
-   Serial.print(", v:");
+
+   Serial.print("removeAngle:");Serial.print(remove_angle);
+   Serial.print(",getCom:");Serial.print(getCom(ballV(),remove_angle));
+   Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
+   Serial.print(",");Serial.print(ball_dis);
+   Serial.print("),");
+   Serial.print(",Line_angle,dis=(:");Serial.print(line_angle);
+   Serial.print(",");Serial.print(line_dis);
+   Serial.print("), v:");
    Serial.print("(");
    Serial.print(v.x);Serial.print(",");Serial.print(v.y);
    Serial.println(")");
