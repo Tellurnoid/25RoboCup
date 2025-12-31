@@ -84,6 +84,11 @@ void sound_calSuccess(){
   delay(30);
   digitalWrite(21, LOW);
 }
+void sound_beep(){
+  digitalWrite(21, HIGH);
+  delay(50);
+  digitalWrite(21, LOW);
+}
 void setup() {
   pinMode(21, OUTPUT);//圧電スピーカー
   initUART();
@@ -116,16 +121,17 @@ Vector ballV() {
   else{
      v = makeV(0,0);
   }
-  //Serial.println(v.y);
+  // //Serial.println(v.y);
   return v;
 }
 
-
 Vector lost_line  = makeV(180,220);
 uint8_t line_tolerance = 15;//線をはみ出したと判断するline_distanceのしきい値
-float approach_to_line = 1.10;//ライントレースの戻る力
-float approach_to_line_out_of_line = 1.10;//ラインを見失った後の戻る力
+float approach_to_line = 0.90;//ライントレースの戻る力
+float approach_to_line_out_of_line = 1.50;//ラインを見失った後の戻る力
 
+  float read_line_angle_1;
+  float read_line_angle_2;
 Vector lineV() {
   /*
   ○角度
@@ -138,14 +144,33 @@ Vector lineV() {
   abs(line_angle)=90　⇔　line_dis=0  ⇒まっすぐライントレース
   */
   Vector v;
-
   if(line_dis>line_tolerance && abs(line_angle)<90){//白線が機体より前にある(ゴールエリア内にいる)
     v.x = v.x + line_dis * approach_to_line;
   }
   else if(line_dis>line_tolerance && abs(line_angle)>90){//白線が機体より後ろにある(前に出過ぎた)
     v.x = v.x - line_dis * approach_to_line;
   }
-  if(line_angle != 400){lost_line = makeV(line_angle,line_dis*approach_to_line_out_of_line);}
+  if(line_angle != 400){
+    lost_line = makeV(line_angle,line_dis*approach_to_line_out_of_line);
+    read_line_angle_1 = line_angle;
+    delay(2);
+    UART();
+    read_line_angle_2 = line_angle - read_line_angle_1;
+    if(read_line_angle_2 > 0){
+      sound_beep();
+    }
+    if(abs(line_angle)<100){
+     line_tolerance = 20;//線をはみ出したと判断するline_distanceのしきい値
+     approach_to_line = 1.30;//ライントレースの戻る力 
+     approach_to_line_out_of_line = 2.00;
+    }
+    else{
+     line_tolerance = 15;//線をはみ出したと判断するline_distanceのしきい値
+     approach_to_line = 0.90;//ライントレースの戻る力
+     approach_to_line_out_of_line = 1.50;
+    }
+  
+  }
   return v;
 }
 
@@ -183,50 +208,112 @@ float line_coeffident = 1.0;
 float theta = atan2(l_y,l_x);//白線に対するベクトルの成分
 //白線に留まる成分の強さ
 //白線に対するベクトルとロボット正面方向の偏角float n_x,n_y;//白線と並行移動するベクトルの成
+/*
+//line_angle+180度を求める
+float oppositeAngle(float theta) {
+  float a;
+  // if(abs(theta)>90){
+  //   a = theta;
+  // }
+  // else{
+  //  a = theta + 180.0;
+  //  if (a > 180.0) {
+  //    a = -1 * (360 - a); 
+  //   }   
+  // }
+     a = theta + 180.0;
+   if (a > 180.0) {
+     a = -1 * (360 - a); 
+    }
+
+  return a;
+}
 
 
 //line_angleは、機体正面に対する、
 //機体中央から白線におろした垂線(最短距離)の直線の角度
 float getCom(Vector v, float deg) {
   float rad = deg * PI / 180.0f;
-  return v.x * cos(rad) + v.y * sin(rad);
+  float how_approach = 0.5;
+  return (v.x * cos(rad) + v.y * sin(rad))*how_approach;
+}
+*/
+
+//以下chatGPT
+float degToRad(float deg) {//度からラジアン
+  return deg * PI / 180.0;
+}
+float radToDeg(float rad) {//ラジアンから度
+  return rad * 180.0 / PI;
+}
+float normalizeAngle(float a) {//絶対値が180超えたとき変換、逆ベクトルの角度出すときに
+  while (a > 180.0)  a -= 360.0;//360を引く
+  while (a <= -180.0) a += 360.0;//360を加える
+  return a;
+}
+Polar makeP(float angle,float dis){//角度と距離から極座標を作る
+  Polar p;
+  p.angle = angle;
+  p.dis = dis;
+  return;
+}
+Vector polarToVector(const Polar& p) {//極座標からベクトル
+  Vector v;
+  // 度 → ラジアン変換
+  float rad = p.angle * DEG_TO_RAD;
+  // 前方0°、右回り正の座標系
+  v.x = p.dis * sin(rad);  // 右方向
+  v.y = p.dis * cos(rad);  // 前方向
+  return v;
+}
+Polar vectorToPolar(const Vector& v) {//ベクトルから極座標
+  Polar p;
+  // 距離
+  p.dis = sqrt(v.x * v.x + v.y * v.y);
+  // 角度
+  // 前方0°・右回り正 → atan2(x, y)
+  float rad = atan2(v.x, v.y);
+  p.angle = rad * RAD_TO_DEG;
+  // 念のため正規化（-180 ～ 180）
+  if (p.angle > 180.0)  p.angle -= 360.0;
+  if (p.angle <= -180.0) p.angle += 360.0;
+  return p;
 }
 
 
+
+
 Vector v;
+
 float remove_angle;
 void loop() {
-  IMU();
-  UART();
+ Vector remove;  
+   IMU();
+   UART();
   if(line_angle == 400){
     v = lost_line;      
+    remove = makeV(0,0);
   }
   else
   {
-    // v = lineV();
-    v = ballV();
+    v  = ballV();
     v = addV(v, lineV());
-
+    // v = lineV();
     //打ち消し
-   if(abs(line_angle)>90){
-    remove_angle=line_angle;
-   }
-   else{
-    if(line_angle<=0){
-      remove_angle = 180 + line_angle;
-     }
-     else{//line_angle>0
-       remove_angle = line_angle - 180;
-     }
-   }
-   Vector remove = makeV(remove_angle,getCom(ballV(),remove_angle));
+    //remove_angle = cancelLineEscapeAngle(ball_angle,line_angle);
+  //
+   //remove_angle = -1 * remove_angle;
+    remove = makeV(remove_angle,200);
+   //Vector remove = makeV(ballV().x,180);
    v  = addV(v , remove);
   }
-
+   if(abs(line_angle)<100){
+    v = addV(v , makeV(0,-90));
+   }
   moveVector(v, rotatePID(0, 0));
 
    Serial.print("removeAngle:");Serial.print(remove_angle);
-   Serial.print(",getCom:");Serial.print(getCom(ballV(),remove_angle));
+   //Serial.print(",getCom:");Serial.print(getCom(ballV(),remove_angle));
    Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
    Serial.print(",");Serial.print(ball_dis);
    Serial.print("),");
@@ -235,6 +322,7 @@ void loop() {
    Serial.print("), v:");
    Serial.print("(");
    Serial.print(v.x);Serial.print(",");Serial.print(v.y);
-   Serial.println(")");
+   Serial.print(")");
+   Serial.print(",dxLine:"); Serial.println(read_line_angle_2);
   //Serial.println(v);
 }

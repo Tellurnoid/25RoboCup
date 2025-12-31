@@ -3,6 +3,11 @@ struct Vector {
   float y;
 };
 
+struct Polar {//小林追加
+  float angle;
+  float dis;
+};
+
 Vector makeV(float deg, float speed) {  //角度と速さからベクトルを作る
   Vector v;
   float rad = deg * M_PI / 180.0;
