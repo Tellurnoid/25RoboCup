@@ -239,48 +239,76 @@ float getCom(Vector v, float deg) {
 }
 */
 
-//以下chatGPT
-float degToRad(float deg) {//度からラジアン
-  return deg * PI / 180.0;
-}
-float radToDeg(float rad) {//ラジアンから度
-  return rad * 180.0 / PI;
-}
-float normalizeAngle(float a) {//絶対値が180超えたとき変換、逆ベクトルの角度出すときに
-  while (a > 180.0)  a -= 360.0;//360を引く
-  while (a <= -180.0) a += 360.0;//360を加える
-  return a;
-}
-Polar makeP(float angle,float dis){//角度と距離から極座標を作る
-  Polar p;
-  p.angle = angle;
-  p.dis = dis;
-  return;
-}
-Vector polarToVector(const Polar& p) {//極座標からベクトル
-  Vector v;
-  // 度 → ラジアン変換
-  float rad = p.angle * DEG_TO_RAD;
-  // 前方0°、右回り正の座標系
-  v.x = p.dis * sin(rad);  // 右方向
-  v.y = p.dis * cos(rad);  // 前方向
-  return v;
-}
-Polar vectorToPolar(const Vector& v) {//ベクトルから極座標
-  Polar p;
-  // 距離
-  p.dis = sqrt(v.x * v.x + v.y * v.y);
-  // 角度
-  // 前方0°・右回り正 → atan2(x, y)
-  float rad = atan2(v.x, v.y);
-  p.angle = rad * RAD_TO_DEG;
-  // 念のため正規化（-180 ～ 180）
-  if (p.angle > 180.0)  p.angle -= 360.0;
-  if (p.angle <= -180.0) p.angle += 360.0;
-  return p;
+//モーターが動く最大値と最小値
+const int PWM_min = 70;
+const int PWM_max = 255;
+float PercentToPWM(int percent){//百分率をPWMに変換(最大値、最小値は調整してください)
+  return PWM_min + (PWM_max - PWM_min) * percent / 100;
 }
 
+float lineNormalization(float angle){//角度計算後の正規化
+  float theta;
+  if(angle > 180){
+    angle = -1  * (360 - angle);
+  }
+  else if(angle < -180){
+    angle = 360 - angle;
+  }
+  return angle;
+}
 
+float getRemoveAngle(){
+  float theta;
+  float line_left = lineNormalization(line_angle - 90);//白線に並行な線の角度(左)
+  float line_right = lineNormalization(line_angle + 90);//白線に並行な線の角度(右)
+  if(line_right < line_left){
+      if(line_angle > 0){//+-180度をまたいだかどうか
+        line_right = abs(180 + line_right) + 180; 
+      }
+      else{
+        line_right = 360 - abs(line_right);  
+      }
+    }
+    if(ball_angle >= line_left && ball_angle <= line_right){//白線から離れようとするベクトルの角度を出す(ロボットから見て白線の反対側にボールがあるとき)
+      theta = lineNormalization(line_angle + 180);
+    }
+    else{//白線に近づこうとするベクトルの角度を出す(ボールが白線の向こう側にあるとき)
+      theta = line_angle;
+    }   
+    
+  }
+
+
+float getRemovePower(int percent = 100){//percentにはボールへ向かう力を代入、デフォルトは100%(255)
+  float theta;
+    float line_left = lineNormalization(line_angle - 90);//白線に並行な線の角度(左)
+  float line_right = lineNormalization(line_angle + 90);//白線に並行な線の角度(右)
+  if(line_right > line_left){
+    if(ball_angle >= line_left && ball_angle <= line_right){//白線から離れようとするベクトルの角度を出す(ロボットから見て白線の反対側にボールがあるとき)
+      theta = 90 - abs(line_angle - ball_angle);
+    }
+    else{//白線に近づこうとするベクトルの角度を出す(ボールが白線の向こう側にあるとき)
+      theta = 90 - abs(ball_angle - lineNormalization(line_angle + 180));
+    }    
+  }
+  else{
+    if(line_angle > 0){//+-180度をまたいだかどうか
+      line_right = abs(180 + line_right) + 180; 
+    }
+    else{
+      line_right = 360 - abs(line_right);  
+    }
+    if(ball_angle >= line_left && ball_angle <= line_right){//白線から離れようとするベクトルの角度を出す(ロボットから見て白線の反対側にボールがあるとき)
+    //  line_right = lineNormalization(line_angle_rev + 90);
+    //  line_left = lineNormalization(line_angle_rev - 90);
+      theta = 90 - abs(ball_angle - lineNormalization(line_angle + 180));
+    }
+    else{//白線に近づこうとするベクトルの角度を出す(ボールが白線の向こう側にあるとき)
+        theta = 90 - abs(line_angle - ball_angle);
+    }        
+  }
+  return 255 * percent * ball_dis * sin(theta);
+}
 
 
 Vector v;
@@ -293,23 +321,14 @@ void loop() {
   if(line_angle == 400){
     v = lost_line;      
     remove = makeV(0,0);
-  }
+   }
   else
   {
+    remove = makeV(getRemoveAngle(),getRemovePower());
     v  = ballV();
-    v = addV(v, lineV());
-    // v = lineV();
-    //打ち消し
-    //remove_angle = cancelLineEscapeAngle(ball_angle,line_angle);
-  //
-   //remove_angle = -1 * remove_angle;
-    remove = makeV(remove_angle,200);
-   //Vector remove = makeV(ballV().x,180);
-   v  = addV(v , remove);
+    v  = addV(v, lineV());
+    v  = addV(v , remove);
   }
-   if(abs(line_angle)<100){
-    v = addV(v , makeV(0,-90));
-   }
   moveVector(v, rotatePID(0, 0));
 
    Serial.print("removeAngle:");Serial.print(remove_angle);
