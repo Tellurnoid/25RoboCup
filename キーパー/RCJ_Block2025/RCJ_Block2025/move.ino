@@ -93,7 +93,7 @@ void moveVector(Vector v, int omega){
   int D = -cos(rad) * speed + omega;
 
   float max_val = fmax(fmax(fabs(A), fabs(B)), fmax(fabs(C), fabs(D)));//max(整数のみ)、fmax(小数いける)は引数2つまでしか扱えない
-
+  
   if (max_val > pwm_max){
     float scale = pwm_max / max_val;
     A *= scale;
