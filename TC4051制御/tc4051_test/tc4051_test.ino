@@ -1,50 +1,80 @@
-const int S1 = 2;  // Aピン (TC4051BPのピン11)
-const int S2 = 3;  // Bピン (TC4051BPのピン10)
-const int S3 = 4;  // Cピン (TC4051BPのピン9)
-const int EN = 1;
-const int analogPin = A0; // TC4051BPのCOMピン (ArduinoのA0に接続)
+const int S1 = 1;
+const int S2 = 2;
+const int S3 = 3;
+const int EN_A = 10;
+const int EN_B = 5;
+const int EN_C = 4;
+const int EN_D = 9;
+const int analogPin = A0;
+const int enPins[4] = {EN_A, EN_B, EN_C, EN_D};//右から時計回り
 
-// 8つのポテンショメータの値を保存する配列
-int potValues[8];
+int sensor[4][6]{//素子とMUXのチャンネルはばらばらにつながっているので補正
+  // {3, 0, 1, 2, 6, 4},
+  // {6, 7, 3, 0, 1, 2},
+  // {5, 7, 3, 0, 1, 2},
+  // {3, 0, 1, 2, 6, 4}
+  {4,6,2,1,0,3},
+  {2,1,0,3,7,5},
+  {2,1,4,3,7,5},//６は✗ 4,5 325486
+  {4,6,2,1,0,3}
+};
 
-// マルチプレクサの制御信号を送るための関数
-void selectChannel(int channel) {
-  digitalWrite(S1, channel & 0x01);
-  digitalWrite(S2, (channel >> 1) & 0x01);
-  digitalWrite(S3, (channel >> 2) & 0x01);
-}
+int sensorValue[4][8];// 読み取り結果を格納、[マルチプレクサ選択][チャンネル]
+//4123865
 
-void setup() {
-  // 制御ピンを出力に設定
+
+void initMUX(){
   pinMode(S1, OUTPUT);
   pinMode(S2, OUTPUT);
   pinMode(S3, OUTPUT);
-  pinMode(EN, OUTPUT);
-  digitalWrite(EN, LOW);
-  
-  // シリアル通信の開始
-  Serial.begin(115200);
+  for (int i = 0; i < 4; i++) {
+    pinMode(enPins[i], OUTPUT);
+    digitalWrite(enPins[i], HIGH); // すべて無効
+  }
+}
+
+// チャンネル選択（0〜7）
+void selectChannel(int ch) {
+  digitalWrite(S1, ch & 0x01);
+  digitalWrite(S2, (ch >> 1) & 0x01);
+  digitalWrite(S3, (ch >> 2) & 0x01);
+}
+
+void readMUX(){
+  for (int mux = 0; mux < 4; mux++) {
+    for (int i = 0; i < 4; i++) { // 全MUX無効
+      digitalWrite(enPins[i], HIGH);
+    }
+    digitalWrite(enPins[mux], LOW);// 対象MUXのみ有効
+    delayMicroseconds(5); // 切り替え安定待ち
+
+    for (int ch = 0; ch < 6; ch++) {//読み込む
+      selectChannel(sensor[mux][ch]);
+      //selectChannel(ch);
+      delayMicroseconds(5); // チャンネル安定待ち
+      sensorValue[mux][ch] = analogRead(analogPin);
+    }  
+  }
+}
+
+void printAllMUX(){
+  for (int mux = 0; mux < 4; mux++) {
+      for (int ch = 0; ch < 6; ch++) {
+        Serial.print(",");
+        Serial.print(sensorValue[mux][ch]/100);
+      }
+    Serial.print("..");
+   }
+  Serial.println();
+}
+
+void setup() {
+  initMUX();
+  Serial.begin(250000);
 }
 
 void loop() {
-  // 8つのチャンネルの値を順番に読み取る
-  for (int i = 0; i < 8; i++) {
-    selectChannel(i); // チャンネルを選択
-    delay(5); // 安定するまで少し待つ
-    potValues[i] = analogRead(analogPin); // アナログ値を読み取る
-  }
-  /*
-  // 読み取った値をシリアルモニタに出力
-  Serial.println("Potentiometer Values:");
-  for (int i = 0; i < 8; i++) {
-    Serial.print(" ,pin");
-    Serial.print(i + 1);
-    Serial.print(": ");
-    Serial.print(potValues[i]);
-  }
-  */
-  Serial.print(potValues[0]);Serial.print(",");
- Serial.println(potValues[1]);
-  // 次の読み取りまで少し待つ
-  //delay(10); // 1秒待機
+  readMUX();
+  printAllMUX();
 }
+ 
