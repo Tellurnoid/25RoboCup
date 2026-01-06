@@ -33,7 +33,7 @@ struct DataFormat {
   long ROM_costom1;  //1 costom1 (int )
   long ROM_costom2;  //5 costom2  intは16bit（-32768〜32767）
 };
-DataFormat writeData;
+DataFormat writeData; 
 
 
 #endif

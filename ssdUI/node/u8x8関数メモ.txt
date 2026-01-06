@@ -1,0 +1,80 @@
+ホーム
+1:back to game (決定を押すと超音波センサーのUART送信開始)
+2:Serial monitor
+3:vals    intとfloatで、それぞれでもう一度分岐する
+4:line sensor  キャリブレーション、全体調整、個別調整
+5:bools     カメラ、超音波など一部機能の無効化
+
+
+
+
+u8x8基本関数
+u8x8.setPowerSave(0);  // 表示ON
+u8x8.setPowerSave(1);  // 表示OFF（省電力）
+u8x8.clear();
+u8x8.setCursor(x, y);
+   x：0～（横文字数-1）
+   y：0～（縦文字数-1）
+   SSD1306(128x64) → 16×8文字
+u8x8.print("Hello");
+u8x8.println("Hello");
+u8x8.print('A');//1文字は''
+u8x8.setFont(u8x8_font_chroma48medium8_r);
+   u8x8_font_chroma48medium8_r     // 標準
+   u8x8_font_amstrad_cpc_extended_f
+   u8x8_font_8x13B_1x2_f          // 縦2倍
+   u8x8_font_5x8_r
+   u8x8_font_pxplusibmcgathin_f
+u8x8.drawString(0,0,"Hello");//printより速い
+
+8x8ドット絵絵画
+uint8_t tile[8] = {
+  0b11111111,
+  0b10000001,
+  0b10000001,
+  0b10000001,
+  0b10000001,
+  0b10000001,
+  0b10000001,
+  0b11111111
+};
+u8x8.drawTile(x, y, 1, tile);
+
+
+
+16x16ドット絵絵画
+uint8_t icon16[32] = {
+  // tile0 左上
+  0b00111111,0b00111111,0b11000000,0b11000000,
+  0b11000000,0b11000000,0b00111111,0b00111111,
+  // tile1 右上
+  0b11111100,0b11111100,0b00000011,0b00000011,
+  0b00000011,0b00000011,0b11111100,0b11111100,
+  // tile2 左下
+  0b00111111,0b00111111,0b11000000,0b11000000,
+  0b11000000,0b11000000,0b00111111,0b00111111,
+  // tile3 右下
+  0b11111100,0b11111100,0b00000011,0b00000011,
+  0b00000011,0b00000011,0b11111100,0b11111100
+
+};
+  int x = 2;
+  int y = 2;
+  // 上段
+  u8x8.drawTile(x, y, 2, icon16);
+  // 下段
+  u8x8.drawTile(x, y + 1, 2, icon16 + 16);
+　　x	タイルX座標（8px単位）
+　　y	タイルY座標（8px単位）
+　　cnt	横方向に連続するタイル数
+　　tile_ptr	タイルデータへのポインタ
+
+
+
+u8x8.setInverseFont(1);  // 反転ON
+u8x8.setInverseFont(0);  // OFF
+
+u8x8.setFlipMode(1);  // 上下反転
+u8x8.setFlipMode(0);
+
+u8x8.setContrast(128);  //コントラスト 0〜255

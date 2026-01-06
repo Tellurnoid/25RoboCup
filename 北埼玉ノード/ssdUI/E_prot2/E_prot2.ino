@@ -5,10 +5,10 @@ void setup(){
   oled.begin(screenWidth, screenHeight, sizeof(tiny4koled_init_128x64br), tiny4koled_init_128x64br);  
   randomSeed(analogRead(0));
   startUpShow();
-  pinMode(UpPin, INPUT_PULLUP);
+  pinMode(UpPin, IN PUT_PULLUP);
   pinMode(DownPin, INPUT_PULLUP);
   pinMode(OKPin, INPUT_PULLUP);
-  pinMode(BackPin, INPUT_PULLUP);
+  pinMode(BackPin, INPUT_PULLUP); 
   DataFormat readData;
   EEPROM.get(0, readData);
   cursor = readData.ROM_cursor;
