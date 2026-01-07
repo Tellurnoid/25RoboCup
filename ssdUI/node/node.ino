@@ -9,6 +9,7 @@ UIsystem UIsystem;//A_system.hの中身
 draw draw;
 app app;
 
+
 /*
 メモ
 ホーム

@@ -1,5 +1,6 @@
 #include<Arduino.h>
 #include <U8x8lib.h>
+#include "A_system.h"
 #include "draw.h"
 #include "app.h"
 

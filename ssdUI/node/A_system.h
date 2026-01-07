@@ -3,6 +3,8 @@
 #include <Arduino.h>//.hファイルではuint8_tを使うために必要
 #include <U8x8lib.h>
 
+extern uint8_t appState;  //割り込みでいつでもapp=0(ホーム)に戻るためvolatileをつける
+extern uint8_t cursor;
 
 const char* appName[] = { "back To Game","Serial Monitor", "vals" , "Line Sensor", "Bools" };
 
@@ -12,8 +14,6 @@ const char* appName[] = { "back To Game","Serial Monitor", "vals" , "Line Sensor
 #define BackPin A2
 #define SPKPin 6
 
-volatile uint8_t appState = 0;  //割り込みでいつでもapp=0(ホーム)に戻るためvolatileをつける
-uint8_t  cursor = 0;
 
 //型を定義 EEPROMに書き込む変数を増やす場合はここに定義UpPin
 struct DataFormat {

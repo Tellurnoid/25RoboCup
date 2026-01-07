@@ -61,7 +61,7 @@ void printAllMUX(){
   for (int mux = 0; mux < 4; mux++) {
       for (int ch = 0; ch < 6; ch++) {
         Serial.print(",");
-        Serial.print(sensorValue[mux][ch]/100);
+        Serial.print(sensorValue[mux][ch]);
       }
     Serial.print("..");
    }

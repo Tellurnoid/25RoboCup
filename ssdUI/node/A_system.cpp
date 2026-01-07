@@ -1,5 +1,8 @@
 #include "A_system.h"
 #include <U8x8lib.h>  
+volatile uint8_t appState = 0;  //割り込みでいつでもapp=0(ホーム)に戻るためvolatileをつける
+uint8_t  cursor = 0;
+
 
 UIsystem::UIsystem(){}
 //ボタンが押されたかの判定
