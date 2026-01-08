@@ -1,13 +1,14 @@
+#pragma once
 #ifndef A_SYSTEM_h
 #define A_SYSTEM_h
 #include <Arduino.h>//.hファイルではuint8_tを使うために必要
 #include <U8x8lib.h>
 
-extern uint8_t appState;  //割り込みでいつでもapp=0(ホーム)に戻るためvolatileをつける
-extern uint8_t cursor;
-
-const char* appName[] = { "back To Game","Serial Monitor", "vals" , "Line Sensor", "Bools" };
-
+extern volatile int appState;  //割り込みでいつでもapp=0(ホーム)に戻るためvolatileをつける
+extern int cursor;
+// extern UIsystem UIsystem;
+//extern const char* appName[];
+//extern UIsystem UIsystem;
 #define UpPin A1
 #define DownPin A0
 #define OKPin A3
@@ -26,9 +27,9 @@ struct DataFormat {
   long ROM_costom1;  //1 costom1 (int )
   long ROM_costom2;  //5 costom2  intは16bit（-32768〜32767）
 };
-DataFormat writeData;
-DataFormat myData;
-DataFormat readData;
+//DataFormat writeData;
+extern DataFormat myData;
+//DataFormat readData;
 
 class UIsystem{
   public:
@@ -49,4 +50,6 @@ class UIsystem{
      // Do not define another U8X8 object here to avoid multiple-definition
      // and macro-expansion issues. Access `u8x8` directly from implementation.
 };
+// グローバル実体は1箇所に定義します（A_system.cppなど）
+extern UIsystem uisystem;//A_system.hの中身
 #endif

@@ -1,7 +1,13 @@
-#include "A_system.h"
 #include <U8x8lib.h>  
-volatile uint8_t appState = 0;  //割り込みでいつでもapp=0(ホーム)に戻るためvolatileをつける
-uint8_t  cursor = 0;
+#include "A_system.h"
+UIsystem uisystem;
+// #include "draw.h"
+// #include "app.h"
+volatile int appState = 0;  //割り込みでいつでもapp=0(ホーム)に戻るためvolatileをつける
+int  cursor = 0;
+DataFormat myData;
+const char* appName[] = { "back To Game","Serial Monitor", "vals" , "Line Sensor", "Bools" };
+
 
 
 UIsystem::UIsystem(){}
@@ -45,3 +51,4 @@ void UIsystem::cursorSound(){
 void UIsystem::errorSound(){
   tone(SPKPin,110,100);
 }
+

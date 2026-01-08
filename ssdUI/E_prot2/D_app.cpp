@@ -1,38 +1,37 @@
-#include "A_system.h"
-#include "draw.h"
-#include "app.h"
 #include <U8x8lib.h>  
 #include <EEPROM.h>
-UIsystem UIsystem;//A_system.hの中身
-draw draw;
+#include "A_system.h"
+#include "C_draw.h"
+#include "D_app.h"
+App app;
 
-void app::homeMenu(){
+void App::homeMenu(){
   uint8_t HowManyApps = 5;
   //カーソル下移動
-  if(UIsystem.IsPress_Down()){
-    UIsystem.cursorSound();
+  if(uisystem.IsPress_Down()){
+    uisystem.cursorSound();
     cursor=cursor+1;
     if(cursor>HowManyApps){
       cursor=0;
     }
     myData.ROM_cursor = cursor;
     EEPROM.put(offsetof(DataFormat,ROM_cursor),myData.ROM_cursor);
-    while(UIsystem.IsPress_Down());
-    draw.preview_homemenu();
+    while(uisystem.IsPress_Down());
+    drawObj.preview_homemenu();
   }
   //カーソル上移動
-  else if(UIsystem.IsPress_UP()){
-    UIsystem.cursorSound();
+  else if(uisystem.IsPress_UP()){
+    uisystem.cursorSound();
     cursor=cursor-1;
     if(cursor<0){
       cursor=HowManyApps;
     }
      myData.ROM_cursor = cursor;
      EEPROM.put(offsetof(DataFormat,ROM_cursor),myData.ROM_cursor);
-    while(UIsystem.IsPress_UP());
-    draw.preview_homemenu();
+    while(uisystem.IsPress_UP());
+    drawObj.preview_homemenu();
   }
 
 }
-void app::LEDBrightness(){}
-void app::SerialMonitor(){}
+void App::LEDBrightness(){}
+void App::SerialMonitor(){}
