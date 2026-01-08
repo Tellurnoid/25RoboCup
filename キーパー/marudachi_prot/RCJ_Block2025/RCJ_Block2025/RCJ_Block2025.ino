@@ -99,7 +99,7 @@ Derivative ballD;
 Vector ballV() {
   Vector v;
 
-  float ball_d = getD(ballD, ball_angle, 30);
+  float ball_d = getD(ballD, ball_angle, 30);//宣言したDerivative型変数、微分対象、時間
   if (abs(ball_d) < D_MIN)  ball_d = 0;
 
   if (ball_angle == 400) {

@@ -129,6 +129,42 @@ Vector lineV() {
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//超音波
+Derivative echoD_back;
+ float dis_back_d = getD(echoD_back, dis_back, 30);//宣言したDerivative型変数、微分対象、時間
+
+
+
+
+const int echo_wall = 180;
+const int echo_wall_another_side = 120;
+const float echo_wall_rep = 250;
+Vector echoV(){
+  Vector v = makeV(0,0);
+  
+  //横の壁に対する反発
+  if(dis_left < echo_wall && dis_right > echo_wall_another_side){//左壁
+    //sound_beep();
+    v.y =  255 * (echo_wall_rep - dis_left) / echo_wall;
+  }
+  else if(dis_right < echo_wall && dis_left > echo_wall_another_side){//右壁
+  //sound_beep();
+    v.y =  -255 * (echo_wall_rep - dis_right) / echo_wall;
+  }
+  if(dis_front < echo_wall && dis_back > echo_wall_another_side){//前壁
+ // sound_beep();
+    v.x =  -255 * (echo_wall_rep - dis_front) / echo_wall;
+  }
+  else if(dis_back < echo_wall && dis_front > echo_wall_another_side){//後壁
+  //  sound_beep();
+    v.x =  255 * (echo_wall_rep - dis_back) / echo_wall;
+  }
+  return v;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 int camera() {
   unsigned long c_now = millis();
   static unsigned long c_last_time = 0;
@@ -239,27 +275,44 @@ void loop() {//beep
  Vector remove;
    IMU();
    UART();
+
   if(line_angle == 400){
     v = lost_line;      
     remove = makeV(0,0);
    }
   else
   {
-    v  = ballV();
+    v  = ballV();Serial.print("echo().x = ");Serial.print(echoV().x);
     v  = addV(v, lineV());   
     remove = makeV(getRemoveAngle(line_angle,ball_angle),remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
     v  = addV(v , remove);
+    //v  = addV(v, echoV()); 
   }
+
+  // Vector wall_v = makeV(0,0);
+  // echo();
+  // Vector wall_U = makeV(180, wSpeed[1]);
+  // Vector wall_R = makeV(-90, wSpeed[0]);
+  // if (ballV().x > 0) wall_v = addV(wall_v, wall_U);
+  // if (ballV().y > 0) wall_v = addV(wall_v, wall_R);
+  // v = wall_v;
+  // //v = addV(v, ballV());
+
   moveVector(v, rotatePID(0, 0));
 
-
-  //  Serial.print("removeAngle,power:");Serial.print(getRemoveAngle(line_angle,ball_angle));Serial.print(",");Serial.print(remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
-  // //  //Serial.print(",getCom:");Serial.print(getCom(ballV(),remove_angle));
-  //  Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
-  //  Serial.print(",");Serial.print(ball_dis);
-  //  Serial.print("),");
-  //  Serial.print(",Line_angle,dis=(:");Serial.print(line_angle);
-  //  Serial.print(",");Serial.print(line_dis);
+    // Serial.print("echo()= ");Serial.print(v.x);Serial.print(",");Serial.print(v.y);
+    // Serial.print(",front:");Serial.print(dis_front);Serial.print("mm");
+    // Serial.print("back:");Serial.print(dis_back);Serial.print("mm");
+    // Serial.print("right:");Serial.print(dis_right);Serial.print("mm");
+    // Serial.print("left:");Serial.print(dis_left);Serial.print("mm");
+   Serial.print("removeAngle,power:");Serial.print(getRemoveAngle(line_angle,ball_angle));Serial.print(",");Serial.print(remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
+  //  //Serial.print(",getCom:");Serial.print(getCom(ballV(),remove_angle));
+   Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
+   Serial.print(",");Serial.print(ball_dis);
+   Serial.print("),");
+    Serial.print(",Line_angle,dis=(:");Serial.print(line_angle);
+    Serial.print(",");Serial.print(line_dis);
+    Serial.print(", backD:");Serial.print(dis_back_d);
   //   Serial.print("app_to_ball");Serial.print(approach_to_ball);
   //   Serial.print(",ball_dis:");Serial.print(ball_dis/6);
   //   Serial.print(",sin:");Serial.print(abs(sin(theta)));
@@ -267,5 +320,5 @@ void loop() {//beep
   //  Serial.print("(");
   //  Serial.print(v.x);Serial.print(",");Serial.print(v.y);
   //  Serial.println(")");
-
+Serial.println();
 }

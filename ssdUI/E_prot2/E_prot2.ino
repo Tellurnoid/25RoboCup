@@ -73,37 +73,43 @@ void setup(){
 }
 
 void loop(){
-  if(IsOnGame == true){
-    //超音波センサーの内容
-    for (int i = 0; i < NUM_SENSOR; i++) {
-      dis[i] = readUltrasonic1Pin(pin[i]);
-    }
-    UART_USsensor();
-    u8x8.clear();
-    u8x8.setCursor(0,0);
-    u8x8.setFont(u8x8_font_8x13B_1x2_f);
-    u8x8.print("A:");u8x8.print(dis[0]);u8x8.println("cm");
-    u8x8.print("B:");u8x8.print(dis[1]);u8x8.println("cm");
-    u8x8.print("C:");u8x8.print(dis[2]);u8x8.println("cm");
-    u8x8.print("D:");u8x8.print(dis[3]);u8x8.println("cm");
+  // if(IsOnGame == true){
+  //   //超音波センサーの内容
+  //   for (int i = 0; i < NUM_SENSOR; i++) {
+  //     dis[i] = readUltrasonic1Pin(pin[i]);
+  //   }
+  //   UART_USsensor();
+  //   // u8x8.clear();
+  //   // u8x8.setCursor(0,0);
+  //   // u8x8.setFont(u8x8_font_8x13B_1x2_f);
+  //   // u8x8.print("A:");u8x8.print(dis[0]);u8x8.println("cm");
+  //   // u8x8.print("B:");u8x8.print(dis[1]);u8x8.println("cm");
+  //   // u8x8.print("C:");u8x8.print(dis[2]);u8x8.println("cm");
+  //   // u8x8.print("D:");u8x8.print(dis[3]);u8x8.println("cm");
 
-    // Serial.print("A:");Serial.print(dis[0]);Serial.print("cm");
-    // Serial.print("B:");Serial.print(dis[1]);Serial.print("cm");
-    // Serial.print("C:");Serial.print(dis[2]);Serial.print("cm");
-    // Serial.print("D:");Serial.print(dis[3]);Serial.println("cm");
-    delay(10);  // 100Hz（これ以上速くするとセンサが不安定になる）
+  //   // Serial.print("A:");Serial.print(dis[0]);Serial.print("cm");
+  //   // Serial.print("B:");Serial.print(dis[1]);Serial.print("cm");
+  //   // Serial.print("C:");Serial.print(dis[2]);Serial.print("cm");
+  //   // Serial.print("D:");Serial.print(dis[3]);Serial.println("cm");
+  //   delay(10);  // 100Hz（これ以上速くするとセンサが不安定になる）
 
   
-  }
-  else{
-    if(appState==0){
-      app.homeMenu();
-    }
-    else if(appState==1){
-      app.LEDBrightness();
-    }
-    else if(appState==2){
-      app.SerialMonitor();
-    }
-  }
+  // }
+  // else{
+  //   if(appState==0){
+  //     app.homeMenu();
+  //   }
+  //   else if(appState==1){
+  //     app.LEDBrightness();
+  //   }
+  //   else if(appState==2){
+  //     app.SerialMonitor();
+  //   }
+  // }
+
+
+      Serial.print("A:");Serial.print(dis[0]);Serial.print("cm");
+    Serial.print("B:");Serial.print(dis[1]);Serial.print("cm");
+    Serial.print("C:");Serial.print(dis[2]);Serial.print("cm");
+    Serial.print("D:");Serial.print(dis[3]);Serial.println("cm");
 }

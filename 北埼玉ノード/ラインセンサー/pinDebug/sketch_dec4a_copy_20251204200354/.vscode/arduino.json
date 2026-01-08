@@ -1,0 +1,6 @@
+{
+    "configuration": "cpu=atmega328old",
+    "board": "arduino:avr:nano",
+    "port": "/dev/ttyUSB1",
+    "sketch": "sketch_dec4a_copy_20251204200354.ino"
+}
