@@ -51,14 +51,6 @@ int16_t readUltrasonic1Pin(uint8_t pin) {
 
 
 
-void USsensor(){
-  //超音波センサーの内容
-  for (int i = 0; i < NUM_SENSOR; i++) {
-    dis[i] = readUltrasonic1Pin(pin[i]);
-  }
-  UART_USsensor();
-  delay(10);  // 100Hz（これ以上速くするとセンサが不安定になる）
-}
 
 bool IsOnGame = true; //trueだと超音波センサー,falseでUI起動
 void setup(){
@@ -66,14 +58,15 @@ void setup(){
   if(uisystem.IsPress_UP() && uisystem.IsPress_Down()){
     IsOnGame = false;
     uisystem.decidedSound();
+    drawObj.startupShow();
+    EEPROM.get(0, myData);
+    cursor = myData.ROM_cursor;
   }
   u8x8.begin();
+  u8x8.setPowerSave(0);  // 表示ON
   u8x8.setFlipMode(0);
   //EEPROM
   //DataFormat readData;
-  EEPROM.get(0, myData);
-  cursor = myData.ROM_cursor;
-  drawObj.startupShow();
   if (IsOnGame == false && !(uisystem.IsPress_OK() || uisystem.IsPress_Back() || uisystem.IsPress_UP() || uisystem.IsPress_Down()) ) {
     while (!(uisystem.IsPress_OK() || uisystem.IsPress_Back() || uisystem.IsPress_UP() || uisystem.IsPress_Down()));
   }
@@ -81,7 +74,26 @@ void setup(){
 
 void loop(){
   if(IsOnGame == true){
-    USsensor();
+    //超音波センサーの内容
+    for (int i = 0; i < NUM_SENSOR; i++) {
+      dis[i] = readUltrasonic1Pin(pin[i]);
+    }
+    UART_USsensor();
+    u8x8.clear();
+    u8x8.setCursor(0,0);
+    u8x8.setFont(u8x8_font_8x13B_1x2_f);
+    u8x8.print("A:");u8x8.print(dis[0]);u8x8.println("cm");
+    u8x8.print("B:");u8x8.print(dis[1]);u8x8.println("cm");
+    u8x8.print("C:");u8x8.print(dis[2]);u8x8.println("cm");
+    u8x8.print("D:");u8x8.print(dis[3]);u8x8.println("cm");
+
+    // Serial.print("A:");Serial.print(dis[0]);Serial.print("cm");
+    // Serial.print("B:");Serial.print(dis[1]);Serial.print("cm");
+    // Serial.print("C:");Serial.print(dis[2]);Serial.print("cm");
+    // Serial.print("D:");Serial.print(dis[3]);Serial.println("cm");
+    delay(10);  // 100Hz（これ以上速くするとセンサが不安定になる）
+
+  
   }
   else{
     if(appState==0){
