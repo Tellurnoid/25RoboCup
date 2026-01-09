@@ -45,6 +45,7 @@ float dpsX, dpsY, dpsZ;
 
 // Core0で動くタスク：MPU6050読み取り＆角度計算
 void mpuTask(void* parameter) {
+
   // キャリブレーション用オフセット変数
   double offsetX = 0.0, offsetY = 0.0, offsetZ = 0.0;
   double gyro_angle_x = 0.0, gyro_angle_y = 0.0, gyro_angle_z = 0.0;
@@ -80,7 +81,20 @@ void mpuTask(void* parameter) {
 
     if (i % 1000 == 0) Serial.print(".");
     vTaskDelay(1 / portTICK_PERIOD_MS); // 1ms待つ
+
+
+    if ((i / 100) % 2 == 0) { ////////////////////////////////////////////////////////////////////////
+      digitalWrite(beep, HIGH);
+    } 
+    else {
+      digitalWrite(beep, LOW);
+    }
+
   }
+  digitalWrite(beep, HIGH);///////////////////////////////////////////////////////////////////////////////////
+  delay(500);
+  digitalWrite(beep, LOW);  //////////////////////////////////////////////////////////////////////////////////
+
   offsetX /= 3000.0;
   offsetY /= 3000.0;
   offsetZ /= 3000.0;
@@ -169,7 +183,6 @@ void mpuTask(void* parameter) {
     // Serial.print(" : ");
     // Serial.println(ay_world * 100);
     // // --- ax_world, ay_world が「地面座標のXY加速度」 ---
-
   }
 }
 
