@@ -1,7 +1,7 @@
 #include <Arduino.h>
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  Serial.begin(9600);
   pinMode(A5, INPUT);
   pinMode(2, INPUT);
   pinMode(3, INPUT);
@@ -23,7 +23,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   
-  analogWrite(10, 160);
+  analogWrite(10, 150);
   Serial.print("A5:");Serial.print(digitalRead(A5));//OK
   Serial.print(", 2:");Serial.print(digitalRead(2));
   Serial.print(", 3:");Serial.print(digitalRead(3));
@@ -41,9 +41,6 @@ void loop() {
   Serial.print(", A3:");Serial.print(digitalRead(A3));//OK
   Serial.print(", A2:");Serial.print(digitalRead(A2));
   Serial.print(", A4:");Serial.println(digitalRead(A4));
-  /*
-  Serial.print(", A5:");Serial.print(digitalRead(A5));//OK
-  Serial.print(", 6:");Serial.print(digitalRead(6));//OK
-  Serial.print(", 11:");Serial.println(digitalRead(11));//OK
-  */
+  delay(100);
+    // Serial.print(", 3:");Serial.println(digitalRead(3));
 }

@@ -2,5 +2,5 @@
     "port": "/dev/ttyUSB0",
     "configuration": "cpu=atmega328old",
     "board": "arduino:avr:nano",
-    "sketch": "0_LINE_RCJ.ino"
+    "sketch": "0_LINE_RCJ_out3.ino"
 }

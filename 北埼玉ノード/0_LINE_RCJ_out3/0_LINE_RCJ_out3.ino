@@ -1,5 +1,5 @@
 #include <math.h>
-
+//未反応：1 反応：0
 struct Vector {
   float x;
   float y;
@@ -37,7 +37,7 @@ Vector divide(Vector v, int num) {
 
 const int NUM_SENSORS = 16;
 // const int sensorPins[NUM_SENSORS] = {4,7,6,8,9,11,12,15,14,17,16,18,19,2,3,5};
-const int sensorPins[NUM_SENSORS] = {4,5,3,2,19,18,16,17,14,15,12,11,9,8,6,7};
+const int sensorPins[NUM_SENSORS] = {4,5,3,2,19,18,16,17,14,15,12,11,9,8,6,7};//５の次の３を除いています
 const float sensorDeg[NUM_SENSORS] = {0,22.5,45,67.5,90,111.5,130,155.5,180,202.5,225,247.5,270,292.5,315,337.5};
 
 int sensorValue[NUM_SENSORS];
@@ -45,9 +45,9 @@ int sensorValue[NUM_SENSORS];
 Vector line_v;
 
 void setup() {
-  initUART();
- //Serial.begin(9600); 
- for (int i = 0; i < NUM_SENSORS; i++) {                     
+ // initUART();
+ Serial.begin(9600);
+  for (int i = 0; i < NUM_SENSORS; i++) {                     
     pinMode(sensorPins[i], INPUT);
   }
 }
@@ -57,18 +57,20 @@ int16_t line_angle;
 int16_t line_dis;
 
 void loop() {
-  UART();
-  analogWrite(10, 160);
+ // UART();
+  analogWrite(10, 100);
 
   for (int i = 0; i < NUM_SENSORS; i++) {
+
+  
     int line_total = 0;
     for (int j = 0; j < NUM_READ; j++) {
-      if (i == 12 || i == 13) { // 値が逆転しちゃうやつだけ修正
-        line_total += (1 - digitalRead(sensorPins[i]));
-      }
-      else {
-        line_total += digitalRead(sensorPins[i]);
-      }
+      // if (i == 12 || i == 13) { // 値が逆転しちゃうやつだけ修正
+      //   line_total += (1 - digitalRead(sensorPins[i]));
+      // }
+      // else {
+      line_total += digitalRead(sensorPins[i]);
+      // }
     }
     int line = 1;
     if (line_total != NUM_READ) {
@@ -77,7 +79,6 @@ void loop() {
     sensorValue[i] = line;
     // Serial.print(sensorValue[i]);
   }
-  // Serial.println(" ");
   Vector line_v = {0, 0};
 
   float start = -1; // -1 == none
@@ -119,5 +120,6 @@ void loop() {
 
   // if (line_angle < 0) line_angle += 360.0;
   // Serial.print(" ");
-   //Serial.println(line_angle);
+   Serial.println(line_angle);
 }
+

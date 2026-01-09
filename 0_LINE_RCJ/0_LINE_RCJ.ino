@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include <Arduino.hKf>
 #include <math.h>
 
 const int S1 = 1;
