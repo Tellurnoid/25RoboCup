@@ -1,9 +1,14 @@
-#include <Arduino.h>
 // ========= パケット用データ =========
-struct ReadPacketData0 { int ball_angle; int goal_angle; };
+// struct ReadPacketData0 { int ball_angle; int goal_angle; };
+// struct ReadPacketData1 { int ball_angle; int ball_distance; };
+// struct ReadPacketData2 { int x; };
+#include "UART.h"
 ReadPacketData0 rp0;
 
-struct SendPacketData0 { int16_t line_angle; int16_t line_dis; };
+// struct SendPacketData0 { int ball_angle; int goal_angle; };
+// struct SendPacketData1 { int ball_angle; int goal_angle; };
+// struct SendPacketData2 { int x; };
+
 SendPacketData0 sp0;
 // ========= ユーティリティ =========
 uint8_t calcChecksum(uint8_t* data, uint8_t len) {
@@ -16,7 +21,7 @@ uint8_t calcChecksum(uint8_t* data, uint8_t len) {
 template <typename readT>
 bool readPacket(int num_serial, readT &d) {
 
-    Stream* seri;
+    HardwareSerial *seri;
     if (num_serial == 0) seri = &Serial;
 
     uint32_t start = millis();
@@ -58,12 +63,11 @@ bool readPacket(int num_serial, readT &d) {
     return true;
 }
 
-// ========= パケット送信 =========HardwareSerial
+// ========= パケット送信 =========
 template <typename sendT>
 void sendPacket(int num_serial, sendT &d) {
 
-//    HardwareSerial *seri;
-Stream* seri;
+    HardwareSerial *seri;
     if (num_serial == 0) seri = &Serial;
 
     uint8_t* p = (uint8_t*)&d;
@@ -83,8 +87,10 @@ void initUART() {
 
 // ========= UART 読み取り =========
 void UART() {
-  sp0.line_angle = line_angle;
-  sp0.line_dis = line_dis;
+  sp0.dis1 = dis[0];
+  sp0.dis2 = dis[1];
+  sp0.dis3 = dis[2];
+  sp0.dis4 = dis[3];
   sendPacket(0, sp0);
   // Serial.println(dis);
 }

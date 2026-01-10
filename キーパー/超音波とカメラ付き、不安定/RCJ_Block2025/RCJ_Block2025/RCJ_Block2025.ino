@@ -13,9 +13,9 @@ float PercentToPWM(int percent){//百分率をPWMに変換(最大値、最小値
 
 //以下重要な係数/////////////////////////////////////
 
-Vector lost_line  = makeV(180,PercentToPWM(70));
+Vector lost_line  = makeV(0,0);
 uint8_t line_tolerance = 16;//線をはみ出したと判断するline_distanceのしきい値
-float approach_to_line = 1.10;//ライントレースの戻る力
+float approach_to_line = 1.00;//ライントレースの戻る力
 float approach_to_line_out_of_line = 2.00;//ラインを見失った後の戻る力(最後のline_disの何倍か)
  float remove_power = 0.90;//打ち消し
 float approach_to_ball = PercentToPWM(100);//ボールを追う力
@@ -213,10 +213,10 @@ Vector lineV() {
 //      return v;
 // }
 Vector echoV(Vector v,int16_t line_angle,int cx,int dis_back,int dis_right,int dis_left){
-       if(dis_left < echo_wall_right_and_left && abs(90-abs(line_angle)) < 45){//ゴールが視野の端かつ左壁にぶつかりそう
+       if(dis_left < echo_wall_right_and_left){//ゴールが視野の端かつ左壁にぶつかりそう
         v.y = PercentToPWM(100);
        }
-       else if(dis_right < echo_wall_right_and_left && abs(90-abs(line_angle)) < 45){//ゴールが視野の端かつ右壁にぶつかりそう
+       else if(dis_right < echo_wall_right_and_left){//ゴールが視野の端かつ右壁にぶつかりそう
          v.y = -1 * PercentToPWM(100);
        }
        if(dis_back < 160){//後ろの壁にぶつかりそう
@@ -291,65 +291,45 @@ void loop() {//beep
  Vector remove;
    IMU();
    UART();
-  // //ラインを見失ってからの時間
-  // if(line_angle == 400){count_outofline++;}else{count_outofline = 0;}
+  //ラインを見失ってからの時間
+  if(line_angle == 400){count_outofline++;}else{count_outofline = 0;}
 
-  // if(
-  //     (count_outofline > switch_to_camera && line_angle==400 && dis_back>500)
-  //      || ((dis_left < echo_wall_right_and_left || dis_right < echo_wall_right_and_left) && abs(90-abs(line_angle)) < 60)
-  //   ){
-  //    if(cx != 400){//ゴールが見える
-  //        v.x = -1 * PercentToPWM(70);
-  //        v.y = cx * 2;
-  //        debugState = 4;
-  //        v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left);
-  //      }
-  //      else{//見えなければ壁を気をつけて後退
-  //       //後ろの壁が近くなければ下がりながら振る、あれば横にゆっくり
-        
-  //       if(abs(cx)<130){//ゴールが見えたら,白線に戻る
-  //         v = lost_line;
-  //         debugState = 6;
-  //       }
-  //       else{//超音波でなんとかコート中央に向かう
-  //         v = lostGoalV(v,line_angle,cx,dis_back,dis_right,dis_left);
-  //         debugState = 3;
-  //       }
-  //      }
-  // }
-  // else
-  // { 
-  // //ゴールエリアのライントレース
-  //     debugState = 1;
-  //     v  = ballV();
-  //     v  = addV(v, lineV());   
-  //     remove = makeV(getRemoveAngle(line_angle,ball_angle),remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
-  //     v  = addV(v , remove);
-  //     v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left);
-  //     v = notToOwnGoal(v);
-  // }
-  if(line_angle == 400){
-    if(dis_back > 500){
+  if(
+      (count_outofline > switch_to_camera && line_angle==400)
+       || ((dis_left < echo_wall_right_and_left || dis_right < echo_wall_right_and_left) && abs(90-abs(line_angle)) < 60)
+    ){
+     if(cx != 400){//ゴールが見える
          v.x = -1 * PercentToPWM(70);
          v.y = cx * 2;
          debugState = 4;
-         //v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left);
-    }
-    else{
-    v = lost_line;
-    v.x = v.x * 1.5;      
-    remove = makeV(0,0);
-    }
-   }
+         v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left);
+       }
+       else{//見えなければ壁を気をつけて後退
+        //後ろの壁が近くなければ下がりながら振る、あれば横にゆっくり
+        
+        if(abs(cx)<130){//ゴールが見えたら,白線に戻る
+          v = lost_line;
+          debugState = 6;
+        }
+        else{//超音波でなんとかコート中央に向かう
+          v = lostGoalV(v,line_angle,cx,dis_back,dis_right,dis_left);
+          debugState = 3;
+        }
+        
+       }
+  }
   else
   {
-    v  = ballV();
-    v  = addV(v, lineV());   
-    remove = makeV(getRemoveAngle(line_angle,ball_angle),remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
-    v  = addV(v , remove);
-    
+  //ゴールエリアのライントレース
+      debugState = 1;
+      v  = ballV();
+      v  = addV(v, lineV());   
+      remove = makeV(getRemoveAngle(line_angle,ball_angle),remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
+      v  = addV(v , remove);
+      v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left);
+      v = notToOwnGoal(v);
   }
-  v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left);
+
   moveVector(v, rotatePID(0, 0));
 
    
@@ -370,10 +350,6 @@ void loop() {//beep
   //宣言したDerivative型変数、微分対象、時間
   // dis_back_d = getD(echoD_back, dis_back, 30);
   //  Serial.print(", backD:");Serial.print(dis_back_d);
-   Serial.print(" ,last:");
-   Serial.print("(");
-   Serial.print(lost_line.x);Serial.print(",");Serial.print(lost_line.y);
-   Serial.print(")");
    Serial.print(" ,v:");
    Serial.print("(");
    Serial.print(v.x);Serial.print(",");Serial.print(v.y);

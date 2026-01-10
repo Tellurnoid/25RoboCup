@@ -75,9 +75,8 @@ void loop() {
       line = 0;
     }
     sensorValue[i] = line;
-    // Serial.print(sensorValue[i]);
   }
-  // Serial.println(" ");
+
   Vector line_v = {0, 0};
 
   float start = -1; // -1 == none

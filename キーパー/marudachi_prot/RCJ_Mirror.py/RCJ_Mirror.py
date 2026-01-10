@@ -14,7 +14,7 @@ sensor.skip_frames(time=2000)
 clock = time.clock()
 
 # 上下反転（左右反転は使わない）
-sensor.set_vflip(1)
+#sensor.set_vflip(1)
 # sensor.set_hmirror(1)  # ← 色ズレ防止でOFF
 
 # ===============================
@@ -51,7 +51,7 @@ def send_packet(data):
 # ===============================
 # LAB色空間で青色検出
 # ===============================
-blue_threshold = [(28, 59, 7, 49, -84, -39)]
+blue_threshold = [(3, 29, 27, 56, -83, -46)]
 #--------------------------------------------------------------------------koko
 cameraWidth  = 320 #QVGA
 cameraHeight = 240
