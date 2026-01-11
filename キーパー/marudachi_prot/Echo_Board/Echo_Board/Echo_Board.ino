@@ -4,10 +4,12 @@
 const int NUM_SENSOR = 4;
 const int pin[NUM_SENSOR] = {5, 4, 3, 2};
 
-int16_t dis[NUM_SENSOR];      // ESP32へ送る距離（cm）
+int dis[NUM_SENSOR];      // ESP32へ送る距離（cm）
+//int16_t
 
 void setup() {
-  initUART();
+ // initUART();
+ Serial.begin(115200);
 }
 
 int16_t readUltrasonic1Pin(uint8_t pin) {
@@ -38,15 +40,18 @@ void loop() {
   for (int i = 0; i < NUM_SENSOR; i++) {
     dis[i] = readUltrasonic1Pin(pin[i]);
   }
+//  UART();
 
-  // for (int i = 0; i < NUM_SENSOR; i++) {
-  //   Serial.print(dis[i]);
-  //   Serial.print(" : ");
-  // }
-  // Serial.println(" ");
-  // ✅ デバッグ表示（確認用）
-  // Serial.println(dis);
-  UART();
+ // ✅ デバッグ表示（確認用）
+  for (int i = 0; i < NUM_SENSOR; i++) {
+    Serial.print(i);
+    Serial.print(" : ");
+    Serial.print(dis[i]);
+
+  }
+Serial.println();
+
+
   // ✅ ここで ESP32 へ UART 送信するなら sendPacket() を呼ぶ
   // sendPacket(Serial, sp2); など
 

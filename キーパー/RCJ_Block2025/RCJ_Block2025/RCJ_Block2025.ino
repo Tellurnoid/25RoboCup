@@ -13,11 +13,11 @@ float PercentToPWM(int percent){//百分率をPWMに変換(最大値、最小値
 
 //以下重要な係数/////////////////////////////////////
 
-Vector lost_line  = makeV(180,PercentToPWM(70));
-uint8_t line_tolerance = 16;//線をはみ出したと判断するline_distanceのしきい値
+Vector lost_line  = makeV(180,PercentToPWM(20));
+uint8_t line_tolerance = 15;//線をはみ出したと判断するline_distanceのしきい値
 float approach_to_line = 1.10;//ライントレースの戻る力
-float approach_to_line_out_of_line = 2.00;//ラインを見失った後の戻る力(最後のline_disの何倍か)
- float remove_power = 0.90;//打ち消し
+float approach_to_line_out_of_line = 1.00;//ラインを見失った後の戻る力(最後のline_disの何倍か)
+ float remove_power = 1.00;//打ち消し
 float approach_to_ball = PercentToPWM(100);//ボールを追う力
 
 int switch_to_camera = 70;//ラインに戻る動きからゴールへ向かう動きへ切り替えるカウントのしきい値(小さいほどすぐカメラに切り替わる)
@@ -25,7 +25,7 @@ int switch_to_camera = 70;//ラインに戻る動きからゴールへ向かう�
 //超音波
 //int churitsuten = 580; //(超音波)自陣ゴールから最も近い中立点から後ろの壁の距離
 const int echo_wall_back = 120;
-const int echo_wall_right_and_left = 200;
+const int echo_wall_right_and_left = 300;
 ////////////////////////////////////////////////////
 
 
@@ -219,7 +219,7 @@ Vector echoV(Vector v,int16_t line_angle,int cx,int dis_back,int dis_right,int d
        else if(dis_right < echo_wall_right_and_left && abs(90-abs(line_angle)) < 45){//ゴールが視野の端かつ右壁にぶつかりそう
          v.y = -1 * PercentToPWM(100);
        }
-       if(dis_back < 160){//後ろの壁にぶつかりそう
+       if(dis_back < 170){//後ろの壁にぶつかりそう
          v.x = PercentToPWM(100);
        }
      return v;
@@ -287,59 +287,12 @@ void printState(int val){
 }
 
 void loop() {//beep
-  
  Vector remove;
    IMU();
    UART();
-  // //ラインを見失ってからの時間
-  // if(line_angle == 400){count_outofline++;}else{count_outofline = 0;}
-
-  // if(
-  //     (count_outofline > switch_to_camera && line_angle==400 && dis_back>500)
-  //      || ((dis_left < echo_wall_right_and_left || dis_right < echo_wall_right_and_left) && abs(90-abs(line_angle)) < 60)
-  //   ){
-  //    if(cx != 400){//ゴールが見える
-  //        v.x = -1 * PercentToPWM(70);
-  //        v.y = cx * 2;
-  //        debugState = 4;
-  //        v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left);
-  //      }
-  //      else{//見えなければ壁を気をつけて後退
-  //       //後ろの壁が近くなければ下がりながら振る、あれば横にゆっくり
-        
-  //       if(abs(cx)<130){//ゴールが見えたら,白線に戻る
-  //         v = lost_line;
-  //         debugState = 6;
-  //       }
-  //       else{//超音波でなんとかコート中央に向かう
-  //         v = lostGoalV(v,line_angle,cx,dis_back,dis_right,dis_left);
-  //         debugState = 3;
-  //       }
-  //      }
-  // }
-  // else
-  // { 
-  // //ゴールエリアのライントレース
-  //     debugState = 1;
-  //     v  = ballV();
-  //     v  = addV(v, lineV());   
-  //     remove = makeV(getRemoveAngle(line_angle,ball_angle),remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
-  //     v  = addV(v , remove);
-  //     v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left);
-  //     v = notToOwnGoal(v);
-  // }
   if(line_angle == 400){
-    if(dis_back > 500){
-         v.x = -1 * PercentToPWM(70);
-         v.y = cx * 2;
-         debugState = 4;
-         //v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left);
-    }
-    else{
-    v = lost_line;
-    v.x = v.x * 1.5;      
+    v = lost_line;  
     remove = makeV(0,0);
-    }
    }
   else
   {
@@ -347,9 +300,31 @@ void loop() {//beep
     v  = addV(v, lineV());   
     remove = makeV(getRemoveAngle(line_angle,ball_angle),remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
     v  = addV(v , remove);
-    
+  //  v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left); 
+    v.x = v.x * 0.8;
   }
-  v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left);
+  // if(line_angle == 400){
+  //   if(dis_back > 500){
+  //        v.x = -1 * PercentToPWM(70);
+  //        v.y = cx * 1.2;
+  //        debugState = 4;
+  //        v = lostGoalV(v,line_angle,cx,dis_back,dis_right,dis_left);
+  //   }
+  //   else{
+  //   v = lost_line;
+  //   v.x = v.x * 1.5;      
+  //   remove = makeV(0,0);
+  //   }
+  //  }
+  // else
+  // {
+  //   debugState = 1;
+  //   v  = ballV();
+  //   v  = addV(v, lineV());   
+  //   remove = makeV(getRemoveAngle(line_angle,ball_angle),remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
+  //   v  = addV(v , remove);
+  //    v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left); 
+  // }
   moveVector(v, rotatePID(0, 0));
 
    
