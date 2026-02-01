@@ -25,6 +25,7 @@ https://lang-ship.com/blog/work/circuits-007/
    ・素子：            r=68
    ・LED :          r=65
    ・LEDの抵抗(100Ω) r=62
+   ・ネジ：           r= 73
 
 360/32=11.25
 1倍：11.25
