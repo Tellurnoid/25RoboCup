@@ -3248,6 +3248,16 @@
 		)
 		(uuid "b77e65e8-3bd3-4f35-8cf8-b287234f2fea")
 	)
+	(text "１００ｋ"
+		(exclude_from_sim no)
+		(at 94.234 307.34 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "b79a43ab-0431-4478-8a85-3b3531ad5bfa")
+	)
 	(text "0.1uF"
 		(exclude_from_sim no)
 		(at 274.32 42.418 0)
@@ -17050,7 +17060,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_JST:JST_XH_S9B-XH-A-1_1x09_P2.50mm_Horizontal"
+		(property "Footprint" "Connector_JST2:JST_PH_S9B-PH-K_1x09_P2.00mm_Horizontal"
 			(at 38.1 107.95 0)
 			(effects
 				(font
