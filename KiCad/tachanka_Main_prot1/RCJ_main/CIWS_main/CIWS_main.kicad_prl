@@ -1,6 +1,6 @@
 {
   "board": {
-    "active_layer": 5,
+    "active_layer": 0,
     "active_layer_preset": "",
     "auto_track_width": true,
     "hidden_netclasses": [],
@@ -59,7 +59,7 @@
     "ssh_key": ""
   },
   "meta": {
-    "filename": "IR_Japan_prot1.kicad_prl",
+    "filename": "CIWS_main.kicad_prl",
     "version": 5
   },
   "net_inspector_panel": {
@@ -88,16 +88,16 @@
       9
     ],
     "col_widths": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
+      162,
+      147,
+      89,
+      70,
+      89,
+      89,
+      89,
+      53,
+      89,
+      89
     ],
     "custom_group_rules": [],
     "expanded_rows": [],
