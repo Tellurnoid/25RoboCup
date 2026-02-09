@@ -1,6 +1,0 @@
-{
-    "port": "/dev/ttyUSB1",
-    "configuration": "cpu=atmega328",
-    "board": "arduino:avr:nano",
-    "sketch": "0_LINE_RCJ.ino"
-}
