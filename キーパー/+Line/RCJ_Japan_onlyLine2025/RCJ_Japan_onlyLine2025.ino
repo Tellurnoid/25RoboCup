@@ -14,8 +14,8 @@ float PercentToPWM(int percent){//百分率をPWMに変換(最大値、最小値
 }
 
 //以下重要な係数/////////////////////////////////////
-
-Vector lost_line  = makeV(180,PercentToPWM(50));
+float lost_angle = 180;
+Vector lost_line  = makeV(lost_angle,PercentToPWM(50));
 uint8_t line_tolerance = 20;//線をはみ出したと判断するline_distanceのしきい値
 float approach_to_line = 0.85;//ライントレースの戻る力
 float approach_to_line_out_of_line = 90;//ラインを見失った後の戻る力(最後のline_disの何倍か)
@@ -185,36 +185,59 @@ Vector ballV() {
 
 float lineD;
 Derivative line_D;
-Vector lineV() {
+bool isOnCurve = false;
+Vector lineV(){
   Vector v = makeV(0,0);
   if(line_angle==400){
-    v = lost_line;
+    v=lost_line;
+    if(isOnCurve==true){
+      v.x = v.x * 0;
+      v.y = v.y * 0.5;
+    }
   }
-  else if(line_angle==500){
-    is_last_T = true;
-    v=makeV(0,PercentToPWM(100));
-  }
+  //T字の処理はloopに書く
   else{
-  
-  if(line_dis>line_tolerance && abs(line_angle)<90){//白線が機体より前にある(ゴールエリア内にいる)
-    v.x =  2.25 * (line_dis * approach_to_line *abs(lineD)*0.001 - 40);
+    isOnCurve = false;
+    if(abs(line_angle)<170 && abs(line_angle) > 20){
+      isOnCurve = true;
+    }
+    lineD = getD(line_D,line_dis,50);//第3引数はms
+    lost_angle = line_angle;
+    lost_line = makeV(line_angle,90+abs(lineD)*0.001 * 155);
+    v = makeV(line_angle,85 + line_dis * 0.01 * 110 + abs(lineD)*0.001*60);
   }
-  else if(line_dis>line_tolerance && abs(line_angle)>90){//白線が機体より後ろにある(前に出過ぎた)
-    v.x =  -2.25 *( line_dis * approach_to_line *abs(lineD)*0.001  - 40);
-  }
-  lineD = getD(line_D,line_dis,50);//第3引数はms
-  lost_line = makeV(line_angle,100+abs(lineD)*0.001 * 155);
-    // if(is_last_T==true){
-    //   line_angle = last_line_angle_tate;
-    //   lost_line = makeV(last_line_angle_tate,PercentToPWM(100)*approach_to_line_out_of_line);
-    //   while(!(abs(line_angle)<150 && abs(line_angle)>30)){moveVector(lost_line, rotatePID(0, 0));}
-    //   is_last_T = false;
-    // }
-    
-  }
-  
   return v;
 }
+// Vector lineV() {
+//   Vector v = makeV(0,0);
+//   if(line_angle==400){
+//     v = lost_line;
+//   }
+//   else if(line_angle==500){
+//     is_last_T = true;
+//     v=makeV(0,PercentToPWM(100));
+//   }
+//   else{
+  
+//   if(line_dis>line_tolerance && abs(line_angle)<90){//白線が機体より前にある(ゴールエリア内にいる)
+//     v.x =  2.25 * (line_dis * approach_to_line *abs(lineD)*0.001 - 40);
+//   }
+//   else if(line_dis>line_tolerance && abs(line_angle)>90){//白線が機体より後ろにある(前に出過ぎた)
+//     v.x =  -2.25 *( line_dis * approach_to_line *abs(lineD)*0.001  - 40);
+//   }
+//   lineD = getD(line_D,line_dis,50);//第3引数はms
+//   lost_line = makeV(line_angle,100+abs(lineD)*0.001 * 155);
+//     // if(is_last_T==true){
+//     //   line_angle = last_line_angle_tate;
+//     //   lost_line = makeV(last_line_angle_tate,PercentToPWM(100)*approach_to_line_out_of_line);
+//     //   while(!(abs(line_angle)<150 && abs(line_angle)>30)){moveVector(lost_line, rotatePID(0, 0));}
+//     //   is_last_T = false;
+//     // }
+    
+//   }
+  
+//   return v;
+// }
 
 
 // Vector echoV(Vector v,int16_t line_angle,int cx,int dis_back,int dis_right,int dis_left){
@@ -308,45 +331,26 @@ void loop() {//beep
    IMU();
    UART();
   if(line_angle == 400){
+    debugState = 6;
     v = lost_line;  
     remove = makeV(0,0);
    }
   else
   {
+    debugState = 1;
     v  = ballV();
     v  = addV(v, lineV());   
     remove = makeV(getRemoveAngle(line_angle,ball_angle),remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
     v  = addV(v , remove);
+    if(line_angle==500){
+      v.y = 0;
+      if(v.x<0)
+        v.x = -1.3 * v.x;
+    }
   //  v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left); 
   //  v.x = v.x * 0.8;
   }
-  // if(line_angle == 400){
-  //   if(dis_back > 500){
-  //        v.x = -1 * PercentToPWM(70);
-  //        v.y = cx * 1.2;
-  //        debugState = 4;
-  //        v = lostGoalV(v,line_angle,cx,dis_back,dis_right,dis_left);
-  //   }
-  //   else{
-  //   v = lost_line;
-  //   v.x = v.x * 1.5;      
-  //   remove = makeV(0,0);
-  //   }
-  //  }
-  // else
-  // {
-  //   debugState = 1;
-  //   v  = ballV();
-  //   v  = addV(v, lineV());   
-  //   remove = makeV(getRemoveAngle(line_angle,ball_angle),remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
-  //   v  = addV(v , remove);
-  //    v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left); 
-  // }
-  if(line_angle < 400 && !(abs(line_angle)>172 || abs(line_angle)<16)){v.x = v.x-70;}
-    if(line_angle==500){
-    v.y=0;
-    v.x = abs(v.x);
-    }
+  //if(line_angle < 400 && isOnCurve){v.x = v.x*0.6;}
   moveVector(v, rotatePID(0, 0));
 
    
@@ -369,7 +373,7 @@ void loop() {//beep
   //  Serial.print(", backD:");Serial.print(dis_back_d);
    Serial.print(" ,last:");
    Serial.print("(");
-   Serial.print(lost_line.x);Serial.print(",");Serial.print(lost_line.y);
+   Serial.print(lost_line.x);Serial.print(",");Serial.print(lost_line.y);Serial.print(",");Serial.print(lost_angle);
    Serial.print(")");
    Serial.print(" ,v:");
    Serial.print("(");
