@@ -15,7 +15,7 @@ float PercentToPWM(int percent){//百分率をPWMに変換(最大値、最小値
 
 //以下重要な係数/////////////////////////////////////
 float lost_angle = 180;
-Vector lost_line  = makeV(lost_angle,PercentToPWM(50));
+Vector lost_line  = makeV(lost_angle,140);
 uint8_t line_tolerance = 20;//線をはみ出したと判断するline_distanceのしきい値
 float approach_to_line = 0.85;//ライントレースの戻る力
 float approach_to_line_out_of_line = 90;//ラインを見失った後の戻る力(最後のline_disの何倍か)
@@ -201,10 +201,14 @@ Vector lineV(){
     if(abs(line_angle)<170 && abs(line_angle) > 20){
       isOnCurve = true;
     }
-    lineD = getD(line_D,line_dis,50);//第3引数はms
+    lineD = getD(line_D,line_dis,30);//第3引数はms
     lost_angle = line_angle;
-    lost_line = makeV(line_angle,90+abs(lineD)*0.001 * 155);
-    v = makeV(line_angle,85 + line_dis * 0.01 * 110 + abs(lineD)*0.001*60);
+    lost_line = makeV(line_angle,60+abs(lineD)*0.0008 * 90);
+    //v = makeV(line_angle,85 + line_dis * 0.01 * 100 + abs(lineD)*0.001*70);
+    float line_dis_lineCalc=1;
+    //if(abs(line_angle)>90){line_dis_lineCalc = -1;}else{line_dis_lineCalc = 1;}
+    //v = makeV(line_angle,line_dis_lineCalc*(75 + line_dis_lineCalc * 0.01 * 100 + abs(lineD)*0.0006*50));
+    v = makeV(line_angle,45 + line_dis * 0.01 * 105 + abs(lineD)*0.00008 * 55); 
   }
   return v;
 }
@@ -326,6 +330,37 @@ void printState(int val){
   }
 }
 
+void motorDebug() {
+  static int i = 0;
+  static unsigned long lastTime = 0;
+  const unsigned long interval = 300;
+
+  unsigned long now = millis();
+
+  if (now - lastTime >= interval) {
+    lastTime = now;
+
+    Vector v;
+
+    int value = i * 8.5 * ((i % 2 == 1) ? 1 : -1);
+
+    v = makeV(0, value);
+    moveVector(v, rotatePID(0, 0));
+    Serial.println(value);
+
+    i++;
+
+    // ★ 一周したら最初へ戻す
+    if (i >= 30) {
+      i = 0;
+    }
+  }
+}
+
+
+// void loop(){
+//   motorDebug();
+// }
 void loop() {//beep
  Vector remove;
    IMU();

@@ -63,7 +63,7 @@ void UART() {
 
   if (r2 == READ_OK) { // 正常処理
     line_angle = rp2.line_angle;
-    line_dis = rp2.line_dis;
+    line_dis = -1 * rp2.line_dis;
   }
   else {
     
