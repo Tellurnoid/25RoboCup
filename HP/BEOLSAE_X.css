@@ -1,0 +1,268 @@
+  @import url('https://fonts.googleapis.com/css2?family=Dosis:wght@300&family=Orbitron&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap');
+
+.X_icon{
+  height:30px;
+}
+  header{
+    width: 100%;
+    height:3%;
+    line-height: 90%;
+    display: flex;
+    align-items: center; /*上下中央*/
+    background-color: rgb(74, 95, 109);
+}
+header p{
+    color: rgb(255, 255, 255);
+    position: absolute; /*テキストを絶対位置に配置 */
+    text-align: center;
+    transform: translateX(5%);/*テキストを中央に配置するために、自身の幅の半分を左に移動 */
+     font-family: 'Orbitron', sans-serif;
+     letter-spacing: 7px;
+    }
+h1{
+  text-decoration: underline; /* アンダーラインを追加 */
+  text-decoration-color: white; /* アンダーラインの色を設定 */
+  text-decoration-thickness: 7px; /* アンダーラインの太さを2pxに設定 */
+}
+body{
+    background: linear-gradient(to top, #255cc2, #0d3785);
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;/*画面いっぱい*/
+  } 
+ .sidebar{display:none;}
+ .sidebar li{display:none; }
+ .sidebar a{display:none; }
+ .functionsbar{display:none; }
+ img.myIcon{width: 10%;}
+
+.main{
+  border-radius: 10px;
+  height:90%;
+  color:rgb(255, 255, 255);
+  background-color: rgba(0, 16, 31, 0.404); 
+  margin :6% 5% 15% 5%;
+  padding: 2% 3% 2% 10%;
+  overflow: auto;
+  text-align: left;
+  line-height:20px;
+
+}
+.main p{
+    text-align: left; /* テキストを左揃えにする */
+    /*margin-left: 10%; /* 左側からの余白を50pxに設定 */
+}
+.main li{
+    list-style:none;
+    text-align: left; /* テキストを左揃0%; /* 左側からの余白を50pxに設定 */
+}
+.main a{
+    color :white;
+    text-decoration:underline;/*下線削除*/
+    font-size: 60%;
+    /*transform: translateX(-50%);/*テキストを中央に配置するために、自身の幅の半分を左に移動 */
+ 
+    font-family: "Zen Kaku Gothic New", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    text-align: left;
+    font-family: "Montserrat", sans-serif;
+}
+.main a:hover{
+  color :rgb(255, 166, 0);
+  text-decoration: none;/*下線削除*/
+}
+
+/* スクロールバー自体のスタイリング */
+::-webkit-scrollbar {
+    width: 7px;
+  }
+  /* スクロールバーのトラック（背景部分）のスタイリング */
+  ::-webkit-scrollbar-track {
+    background-color: rgba(94, 124, 143, 0.801);;
+  }
+  
+  /* スクロールバーのスクロールボタン（上下のボタン）のスタイリング */
+  ::-webkit-scrollbar-button {
+    background-color: rgba(58, 77, 88, 0.801);
+    height:2px;
+  }
+  
+  /* スクロールバーのスクロールバーのハンドル（スクロール部分）のスタイリング */
+  ::-webkit-scrollbar-thumb {
+    background-color: #555;
+    height:10px;    
+  }
+#mediaContainer{
+    text-align: center;
+}
+
+
+
+
+
+
+
+/*PC用*/
+@media screen and (min-width: 480px) {
+	/* 480px以上に適用されるCSS（PC用） */
+  .X_icon{
+  height:60px;
+}
+header{
+    width: 100%;
+    height:5%;
+    line-height: 90%;
+    display: flex;
+    align-items: center; /*上下中央*/
+    background-color: rgb(74, 95, 109);
+}
+header p{
+    color: rgb(255, 255, 255);
+    position: absolute; /*テキストを絶対位置に配置 */
+    left: 10%; 
+    transform: translateX(-55%);/*テキストを中央に配置するために、自身の幅の半分を左に移動 */
+     font-family: 'Orbitron', sans-serif;
+     letter-spacing: 7px;
+    }
+h1{
+  text-decoration: underline; /* アンダーラインを追加 */
+  text-decoration-color: white; /* アンダーラインの色を設定 */
+  text-decoration-thickness: 7px; /* アンダーラインの太さを2pxに設定 */
+}
+body{
+    background: linear-gradient(to top, #255cc2, #0d3785);
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;/*画面いっぱい*/
+  } 
+
+ .sidebar{
+    float: left;
+    /*margin : 20px 30px 20px 20px;*/
+    margin : 0 5% 0 0; 
+    padding: 2% 1% 2% 1%;
+    width: 15%;
+    height:100%;
+    /*background-color: rgba(89, 111, 124, 0.877);/*単色*/
+    background: linear-gradient(to right, #54627c, #516688);
+    overflow: auto;/*スクロール可能にする*/
+}
+
+ .sidebar li{
+    position: relative;
+    list-style:none;
+   
+ }
+ .sidebar a{
+    color:white;  
+    text-decoration: none;/*下線削除*/
+    font-size: large;
+ }
+ .sidebar a:hover{
+    color:rgb(255, 94, 0);  
+    text-decoration: none;/*下線削除*/
+    font-size: x-large;
+ }
+
+
+ .functionsbar{
+    text-align: center;
+    float: left;
+    padding-top:40px;
+    width: 10%;
+    height:80%;
+    background-color: rgba(62, 111, 247, 0.089);
+ }
+ img.myIcon{
+  width: 10%;
+ }
+ /*
+ #fileImportButton{
+    width:40px;
+    height:30px;
+    border-radius: 2px;
+    background-color: #ff8725;
+    border-radius: 3px;
+    display: inline-block;}/*子要素に定義*/
+.main{
+  border-radius: 10px;
+  height:90%;
+  width:auto;
+  color:rgb(255, 255, 255);
+  background-color: rgba(0, 16, 31, 0.404); 
+  margin-top: 2%;
+  margin-right:5%;
+  padding-top: 3%;
+  padding-left: 3%;
+  padding-bottom: 3%;
+  
+  overflow: auto;
+    line-height: 1.3;
+}
+.main p{
+    margin-left: 10%; /* 左側からの余白を50pxに設定 */
+    font-size:20px;
+}
+.main li{
+    list-style:none;
+    text-align: left; /* テキストを左揃0%; /* 左側からの余白を50pxに設定 */
+
+}
+.main a{
+    color :white;
+    text-decoration: none;/*下線削除*/
+    font-size: 60px;
+      text-align: left; /* テキストを左揃えにする */
+
+    font-family: "Zen Kaku Gothic New", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+
+    font-family: "Montserrat", sans-serif;
+    }
+
+.main a:hover{
+  color :rgb(255, 166, 0);
+  text-decoration: none;/*下線削除*/
+}
+
+/* スクロールバー自体のスタイリング */
+::-webkit-scrollbar {
+    width: 7px;
+  }
+  /* スクロールバーのトラック（背景部分）のスタイリング */
+  ::-webkit-scrollbar-track {
+    background-color: rgba(94, 124, 143, 0.801);;
+  }
+  
+  /* スクロールバーのスクロールボタン（上下のボタン）のスタイリング */
+  ::-webkit-scrollbar-button {
+    background-color: rgba(58, 77, 88, 0.801);
+    height:2px;
+  }
+  
+  /* スクロールバーのスクロールバーのハンドル（スクロール部分）のスタイリング */
+  ::-webkit-scrollbar-thumb {
+    background-color: #555;
+    height:10px;    
+  }
+#mediaContainer{
+    text-align: center;
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
