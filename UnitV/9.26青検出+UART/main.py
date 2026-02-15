@@ -1,0 +1,53 @@
+import sensor, image, time, struct
+from fpioa_manager import fm
+from machine import UART
+
+sensor.reset()
+sensor.set_pixformat(sensor.RGB565) #16Bit color
+sensor.set_framesize(sensor.QVGA)   #320x240
+sensor.skip_frames(time = 2000)     #2秒間、カメラが安定するのを待つ。露出・ホワイトバランス調整のため
+clock = time.clock()                #fps計測などに関わる
+
+# K210のIO34=TX, IO35=RXにUART1を割り当て
+fm.register(34, fm.fpioa.UART1_TX)
+fm.register(35, fm.fpioa.UART1_RX)
+# UART1を初期化
+uart1 = UART(UART.UART1, 115200, timeout=1000, read_buf_len=4096)
+
+# LAB色空間で青色を検出
+blue_threshold = [(27, 67, 15, 79, -128, -42)]
+#(Lの最小,最大,  Aの最小,最大,  Bの最小,最大)  の順
+#L:黒か白か
+#A:緑か赤か
+#B:青か黃か
+
+#座標の端
+cameraWidth  = 320
+cameraHeight = 240
+
+while True:
+    clock.tick()
+    img = sensor.snapshot()
+
+    blobs = img.find_blobs(
+        blue_threshold,
+        pixels_threshold=100,
+        area_threshold=100,
+        merge=True
+    )
+
+    if blobs:
+        for b in blobs:
+            cx = b.cx()
+            cy = b.cy()
+            area = b.pixels()   # ← 実際の青領域の面積
+
+            img.draw_rectangle(b.rect())
+            img.draw_cross(cx, cy)
+
+            # cx,cy = 16bit / area = 32bit
+            data_bytes = struct.pack('>HHI', cx, cy, area)
+            uart1.write(data_bytes)
+    else:
+        uart1.write(struct.pack('>H', 0xFFFF))
+

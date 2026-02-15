@@ -7,15 +7,13 @@ int debugState = 0;
 bool is_last_T = false;
 int last_line_angle_tate;
 //モーターが動く最大値と最小値
-const int PWM_min = 70;
-const int PWM_max = 255;
-float PercentToPWM(int percent){//百分率をPWMに変換(最大値、最小値は調整してください)
+float PercentToPWM(float percent = 100,float PWM_min=70,float PWM_max=255){//百分率をPWMに変換(最大値、最小値は調整してください)
     return PWM_min + (PWM_max - PWM_min) * percent / 100;
 }
 
 //以下重要な係数/////////////////////////////////////
 float lost_angle = 180;
-Vector lost_line  = makeV(lost_angle,140);
+Vector lost_line  = makeV(lost_angle,PercentToPWM(30));
 uint8_t line_tolerance = 20;//線をはみ出したと判断するline_distanceのしきい値
 float approach_to_line = 0.85;//ライントレースの戻る力
 float approach_to_line_out_of_line = 90;//ラインを見失った後の戻る力(最後のline_disの何倍か)
@@ -183,66 +181,72 @@ Vector ballV() {
   return v;
 }
 
-float lineD;
-Derivative line_D;
+float lineDf_dis;
+float lineDf_angle;
+Derivative lineD_dis;
+Derivative lineD_angle;
 bool isOnCurve = false;
+float last_angle;
 Vector lineV(){
   Vector v = makeV(0,0);
-  if(line_angle==400){
-    v=lost_line;
-    if(isOnCurve==true){
-      v.x = v.x * 0;
-      v.y = v.y * 0.5;
-    }
-  }
-  //T字の処理はloopに書く
-  else{
+  // if(line_angle==400){
+  //   v=lost_line;
+  //   if(abs(last_angle) > 100 && abs(last_angle) < 170){
+  //     v.x = 0;
+  //   }
+  // }
+  //400, 500の処理はloopに書く
     isOnCurve = false;
-    if(abs(line_angle)<170 && abs(line_angle) > 20){
+    lineDf_dis = getD(lineD_dis,line_dis,30);//第3引数はms
+    lineDf_angle = 0;
+    if(line_angle != 0 && line_angle !=180){
+      lineDf_angle=getD(lineD_angle,line_angle,30);
+    }
+       
+    //白線に戻る動き
+    float Power_lostline  = abs(lineDf_dis)*0.0005 * 100;
+    if(Power_lostline>100){Power_lostline=100;}
+    lost_line = makeV(line_angle,PercentToPWM(Power_lostline,70,150));
+    last_angle = line_angle;
+    if(lineDf_angle > 300 && v.x < 0){//曲がり角後退対策
       isOnCurve = true;
     }
-    lineD = getD(line_D,line_dis,30);//第3引数はms
-    lost_angle = line_angle;
-    lost_line = makeV(line_angle,60+abs(lineD)*0.0008 * 90);
-    //v = makeV(line_angle,85 + line_dis * 0.01 * 100 + abs(lineD)*0.001*70);
-    float line_dis_lineCalc=1;
-    //if(abs(line_angle)>90){line_dis_lineCalc = -1;}else{line_dis_lineCalc = 1;}
-    //v = makeV(line_angle,line_dis_lineCalc*(75 + line_dis_lineCalc * 0.01 * 100 + abs(lineD)*0.0006*50));
-    v = makeV(line_angle,45 + line_dis * 0.01 * 105 + abs(lineD)*0.00008 * 55); 
-  }
+
+    //白線の中央にいる動き
+    float Power_linetrace = line_dis*line_dis * 0.0001 * 70 + abs(lineDf_dis) * 0.001 * 30;
+    if(Power_linetrace>100){Power_linetrace=100;}//100%以上の異常値対策
+    v = makeV(line_angle,PercentToPWM(Power_linetrace,60,140));
+  
   return v;
+
+
 }
-// Vector lineV() {
+// Vector lineV(){
 //   Vector v = makeV(0,0);
 //   if(line_angle==400){
-//     v = lost_line;
+//     v=lost_line;
+//     if(isOnCurve==true){
+//       v.x = v.x * 0;
+//       v.y = v.y * 0.5;
+//     }
 //   }
-//   else if(line_angle==500){
-//     is_last_T = true;
-//     v=makeV(0,PercentToPWM(100));
-//   }
+//   //T字の処理はloopに書く
 //   else{
-  
-//   if(line_dis>line_tolerance && abs(line_angle)<90){//白線が機体より前にある(ゴールエリア内にいる)
-//     v.x =  2.25 * (line_dis * approach_to_line *abs(lineD)*0.001 - 40);
+//     isOnCurve = false;
+//     if(abs(line_angle)<170 && abs(line_angle) > 20){
+//       isOnCurve = true;
+//     }
+//     lineD_dis = getD(line_D,line_dis,30);//第3引数はms
+//     lost_angle = line_angle;
+//     lost_line = makeV(line_angle,60+abs(lineD_dis)*0.0008 * 90);
+//     //v = makeV(line_angle,85 + line_dis * 0.01 * 100 + abs(lineD_dis)*0.001*70);
+//     float line_dis_lineCalc=1;
+//     //if(abs(line_angle)>90){line_dis_lineCalc = -1;}else{line_dis_lineCalc = 1;}
+//     //v = makeV(line_angle,line_dis_lineCalc*(75 + line_dis_lineCalc * 0.01 * 100 + abs(lineD_dis)*0.0006*50));
+//     v = makeV(line_angle,45 + line_dis * 0.01 * 105 + abs(lineD_dis)*0.00008 * 55); 
 //   }
-//   else if(line_dis>line_tolerance && abs(line_angle)>90){//白線が機体より後ろにある(前に出過ぎた)
-//     v.x =  -2.25 *( line_dis * approach_to_line *abs(lineD)*0.001  - 40);
-//   }
-//   lineD = getD(line_D,line_dis,50);//第3引数はms
-//   lost_line = makeV(line_angle,100+abs(lineD)*0.001 * 155);
-//     // if(is_last_T==true){
-//     //   line_angle = last_line_angle_tate;
-//     //   lost_line = makeV(last_line_angle_tate,PercentToPWM(100)*approach_to_line_out_of_line);
-//     //   while(!(abs(line_angle)<150 && abs(line_angle)>30)){moveVector(lost_line, rotatePID(0, 0));}
-//     //   is_last_T = false;
-//     // }
-    
-//   }
-  
 //   return v;
 // }
-
 
 // Vector echoV(Vector v,int16_t line_angle,int cx,int dis_back,int dis_right,int dis_left){
 //        if(dis_left < echo_wall_right_and_left && (cx < -130 || abs(90-abs(line_angle)) < 45)){//ゴールが視野の端かつ左壁にぶつかりそう
@@ -368,6 +372,10 @@ void loop() {//beep
   if(line_angle == 400){
     debugState = 6;
     v = lost_line;  
+    if(abs(last_angle) > 100 && abs(last_angle) < 170){
+      v.x = v.x * 0.4;
+      v.y = v.y * 2;
+    }
     remove = makeV(0,0);
    }
   else
@@ -380,7 +388,7 @@ void loop() {//beep
     if(line_angle==500){
       v.y = 0;
       if(v.x<0)
-        v.x = -1.3 * v.x;
+        v.x = -1.5 * v.x;
     }
   //  v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left); 
   //  v.x = v.x * 0.8;
@@ -390,29 +398,45 @@ void loop() {//beep
 
    
   //デバッグ
-  printState(debugState);
-   Serial.print(",lineD:");Serial.print(lineD);
+  // printState(debugState);
+  //  Serial.print(",lineD_dis:");Serial.print(lineDf_dis);
    Serial.print(", cx:");Serial.print(cx);
-   Serial.print(" ,F:");Serial.print(dis_front);Serial.print("mm");
-   Serial.print(",B:");Serial.print(dis_back);Serial.print("mm");
-   Serial.print(",R:");Serial.print(dis_right);Serial.print("mm");
-   Serial.print(",L:");Serial.print(dis_left);Serial.print("mm ");
-   Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
-   Serial.print(",");Serial.print(ball_dis);
-   Serial.print("),");
-   Serial.print(",Line_angle,dis=(:");Serial.print(line_angle);
-   Serial.print(",");Serial.print(line_dis);
-   Serial.print("remove_Angle,power:");Serial.print(getRemoveAngle(line_angle,ball_angle));Serial.print(",");Serial.print(remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
-  //宣言したDerivative型変数、微分対象、時間
-  // dis_back_d = getD(echoD_back, dis_back, 30);
-  //  Serial.print(", backD:");Serial.print(dis_back_d);
-   Serial.print(" ,last:");
-   Serial.print("(");
-   Serial.print(lost_line.x);Serial.print(",");Serial.print(lost_line.y);Serial.print(",");Serial.print(lost_angle);
-   Serial.print(")");
-   Serial.print(" ,v:");
-   Serial.print("(");
+  //  Serial.print(" ,F:");Serial.print(dis_front);Serial.print("mm");
+  //  Serial.print(",B:");Serial.print(dis_back);Serial.print("mm");
+  //  Serial.print(",R:");Serial.print(dis_right);Serial.print("mm");
+  //  Serial.print(",L:");Serial.print(dis_left);Serial.print("mm ");
+  //  Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
+  //  Serial.print(",");Serial.print(ball_dis);
+  //  Serial.print("),");
+  //  Serial.print(",Line_angle,dis=(:");Serial.print(line_angle);
+  //  Serial.print(",");Serial.print(line_dis);
+  //  Serial.print("remove_Angle,power:");Serial.print(getRemoveAngle(line_angle,ball_angle));Serial.print(",");Serial.print(remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
+  // //宣言したDerivative型変数、微分対象、時間
+  // // dis_back_d = getD(echoD_back, dis_back, 30);
+  // //  Serial.print(", backD:");Serial.print(dis_back_d);
+  //  Serial.print(" ,last:");
+  //  Serial.print("(");
+  //  Serial.print(lost_line.x);Serial.print(",");Serial.print(lost_line.y);Serial.print(",");Serial.print(lost_angle);
+  //  Serial.print(")");
+  //  Serial.print(" ,v:");
+  //  Serial.print("(");
    Serial.print(v.x);Serial.print(",");Serial.print(v.y);
-   Serial.print(")");
-   Serial.println();
+  //  Serial.print(")");
+
+
+  //ライントレースデバッグ用
+  //    Serial.print(line_dis * line_dis * 0.0001 * 70);Serial.print(" + ");
+  //  Serial.print(abs(lineDf_dis)*0.001 * 30);Serial.print(" = ");
+  //  Serial.print(line_dis * 0.01 * 50 + abs(lineDf_dis) * 0.001 * 50);
+  //  Serial.print(" , lost:");Serial.print(abs(lineDf_dis)*0.0005 * 100);
+  //  Serial.print("angleD:");Serial.print(lineDf_angle);
+  //  Serial.print("lastAngle:");Serial.print(last_angle);
+  //  Serial.print(",Line_angle,dis=(");Serial.print(line_angle);Serial.print(":");Serial.print(line_dis);
+  //  Serial.print(",lineD_dis:");Serial.print(lineDf_dis);
+  //  Serial.print(" ,v:");
+  //  Serial.print("(");
+  //  Serial.print(v.x);Serial.print(",");Serial.print(v.y);
+  //  Serial.print(")");
+    Serial.println();
+
 }
