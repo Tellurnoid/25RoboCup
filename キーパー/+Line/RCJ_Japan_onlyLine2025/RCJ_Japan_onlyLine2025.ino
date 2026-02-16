@@ -142,26 +142,76 @@ float getRemovePower(float percent,float line_angle,float ball_angle){//打ち�
 }
 //打ち消しここまで//////////////////////////////////////////////////////
 
-int camera() {
-  unsigned long c_now = millis();
-  static unsigned long c_last_time = 0;
-  unsigned long c_dt = c_now - c_last_time;
-  static int goal_angle;
-  if (c_last_time == 0) { //最初の微分が異様にデカくなるのを防ぐ
-    c_last_time = c_now;
-    return 0;
-  }
-  if (c_dt >= 300) {
-    if (c_x != 400 && abs(angleZ) < 900) {
-      goal_angle = -angleZ + c_x;
+// int camera() {
+//   unsigned long c_now = millis();
+//   static unsigned long c_last_time = 0;
+//   unsigned long c_dt = c_now - c_last_time;
+//   static int goal_angle;
+//   if (c_last_time == 0) { //最初の微分が異様にデカくなるのを防ぐ
+//     c_last_time = c_now;
+//     return 0;
+//   }
+//   if (c_dt >= 300) {
+//     if (c_x != 400 && abs(angleZ) < 900) {
+//       goal_angle = -angleZ + c_x;
+//     }
+//     else {
+//       goal_angle = 0;
+//     }
+//     c_last_time =c_now;
+//   }
+//   return goal_angle;
+// }
+
+// Vector cameraV(Vector v , uint16_t curve_start, uint16_t curve_end, uint16_t curve_out){
+//   float    cam_remove_Percent;
+//   uint16_t cam_remove_angle;
+//   if(c_x != 400){
+//     if(abs(c_x) >= curve_start){
+//           float a =
+//               (100.0f * (curve_out - 2*curve_end + curve_start)) /
+//               ((curve_end - curve_out) *
+//                (curve_start - curve_out) *
+//                (curve_start - curve_end));
+
+//           float b =
+//               (curve_out*curve_out
+//                - 2*curve_end*curve_end
+//                + curve_start*curve_start)
+//               / (2.0f * (curve_out - 2*curve_end + curve_start));
+
+//           cam_remove_Percent = a * (abs(c_x) - b) * (abs(c_x) - b);
+//           if(cam_remove_Percent<0){cam_remove_Percent = 0;}
+
+//      if(c_x < 0){cam_remove_angle = -90;}else{cam_remove_angle = 90;}
+     
+//     }
+//     else{
+//       cam_remove_Percent = 0;
+//     }
+//   }
+//   v = makeV(cam_remove_angle,PercentToPWM(cam_remove_Percent,0,255));
+//   return v;
+// }
+Vector cameraV(Vector v , uint16_t curve_start, uint16_t curve_end, uint16_t curve_out){
+  float    cam_remove_Percent;
+  uint16_t cam_remove_angle;
+  if(c_x != 400){
+    if(abs(c_x) >= curve_start){
+          cam_remove_Percent = abs(c_x) * abs(c_x) /800;
+          if(cam_remove_Percent<0){cam_remove_Percent = 0;}
+
+     if(c_x < 0){cam_remove_angle = -90;}else{cam_remove_angle = 90;}
+     
     }
-    else {
-      goal_angle = 0;
+    else{
+      cam_remove_Percent = 0;
     }
-    c_last_time =c_now;
   }
-  return goal_angle;
+  v = makeV(cam_remove_angle,PercentToPWM(cam_remove_Percent,0,255));
+  return v;
 }
+
 
 Vector notToOwnGoal(Vector v){//オウンゴール対策
   if(abs(ball_angle) > 160 && line_angle !=400){//ボールが背後にあれば7割の速度に
@@ -386,6 +436,7 @@ void loop() {//beep
     v  = addV(v, lineV());   
     remove = makeV(getRemoveAngle(line_angle,ball_angle),remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
     v  = addV(v , remove);
+    //v  = addV(v, cameraV(v,50,110,145)); 
     if(line_angle==500){
       v.y = 0;
       if(v.x<0)
@@ -404,6 +455,7 @@ void loop() {//beep
    Serial.print(", cx,cy,cs:");Serial.print(c_x);
    Serial.print(",");Serial.print(c_y);
    Serial.print(",");Serial.print(c_s);Serial.print(",");
+   Serial.print("rem:");Serial.print(cameraV(v,50,110,145).y);
   //  Serial.print(" ,F:");Serial.print(dis_front);Serial.print("mm");
   //  Serial.print(",B:");Serial.print(dis_back);Serial.print("mm");
   //  Serial.print(",R:");Serial.print(dis_right);Serial.print("mm");
@@ -423,6 +475,7 @@ void loop() {//beep
   //  Serial.print(")");
   //  Serial.print(" ,v:");
   //  Serial.print("(");
+  Serial.print(",  ");
    Serial.print(v.x);Serial.print(",");Serial.print(v.y);
   //  Serial.print(")");
 
