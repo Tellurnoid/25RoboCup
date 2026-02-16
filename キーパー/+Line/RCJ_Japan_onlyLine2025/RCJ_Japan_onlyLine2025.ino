@@ -17,8 +17,9 @@ Vector lost_line  = makeV(lost_angle,PercentToPWM(30));
 uint8_t line_tolerance = 20;//線をはみ出したと判断するline_distanceのしきい値
 float approach_to_line = 0.85;//ライントレースの戻る力
 float approach_to_line_out_of_line = 90;//ラインを見失った後の戻る力(最後のline_disの何倍か)
- float remove_power = 1.00;//打ち消し
-float approach_to_ball = PercentToPWM(100);//ボールを追う力
+float remove_power = 1.00;//打ち消し
+float approach_to_ball = 80;//ボールを追う力(%)
+
 
 int switch_to_camera = 70;//ラインに戻る動きからゴールへ向かう動きへ切り替えるカウントのしきい値(小さいほどすぐカメラに切り替わる)
 
@@ -151,8 +152,8 @@ int camera() {
     return 0;
   }
   if (c_dt >= 300) {
-    if (cx != 400 && abs(angleZ) < 900) {
-      goal_angle = -angleZ + cx;
+    if (c_x != 400 && abs(angleZ) < 900) {
+      goal_angle = -angleZ + c_x;
     }
     else {
       goal_angle = 0;
@@ -173,7 +174,7 @@ Vector notToOwnGoal(Vector v){//オウンゴール対策
 Vector ballV() {
   Vector v = makeV(0,0);
   if(ball_angle != 400){
-    v = makeV(ball_angle,approach_to_ball);
+    v = makeV(ball_angle,PercentToPWM(approach_to_ball));
   }
   else{
      v = makeV(0,0);
@@ -372,10 +373,10 @@ void loop() {//beep
   if(line_angle == 400){
     debugState = 6;
     v = lost_line;  
-    if(abs(last_angle) > 100 && abs(last_angle) < 170){
-      v.x = v.x * 0.4;
-      v.y = v.y * 2;
-    }
+    // if(abs(last_angle) > 100 && abs(last_angle) < 170){
+    //   v.x = v.x * 0.4;
+    //   v.y = v.y * 2;
+    // }
     remove = makeV(0,0);
    }
   else
@@ -391,7 +392,7 @@ void loop() {//beep
         v.x = -1.5 * v.x;
     }
   //  v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left); 
-  //  v.x = v.x * 0.8;
+    v.x = v.x * 0.8;
   }
   //if(line_angle < 400 && isOnCurve){v.x = v.x*0.6;}
   moveVector(v, rotatePID(0, 0));
@@ -400,7 +401,9 @@ void loop() {//beep
   //デバッグ
   // printState(debugState);
   //  Serial.print(",lineD_dis:");Serial.print(lineDf_dis);
-   Serial.print(", cx:");Serial.print(cx);
+   Serial.print(", cx,cy,cs:");Serial.print(c_x);
+   Serial.print(",");Serial.print(c_y);
+   Serial.print(",");Serial.print(c_s);Serial.print(",");
   //  Serial.print(" ,F:");Serial.print(dis_front);Serial.print("mm");
   //  Serial.print(",B:");Serial.print(dis_back);Serial.print("mm");
   //  Serial.print(",R:");Serial.print(dis_right);Serial.print("mm");

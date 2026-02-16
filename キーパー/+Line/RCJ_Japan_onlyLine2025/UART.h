@@ -2,10 +2,10 @@
 #define UART_H
 
 #include <Arduino.h>
-extern int dis_front;
-extern int dis_back;
-extern int dis_right;
-extern int dis_left;
+extern int16_t dis_front;
+extern int16_t dis_back;
+extern int16_t dis_right;
+extern int16_t dis_left;
 // ====== packet struct ======
 struct ReadPacketData0 {
   int ball_angle;
@@ -13,14 +13,16 @@ struct ReadPacketData0 {
 };
 
 struct ReadPacketData1 {
-  int ball_angle;
-  int ball_distance;
-  int ball_max;
+  int16_t ball_angle;
+  int16_t ball_distance;
+  int16_t ball_max;
   int16_t dis1;
   int16_t dis2;
   int16_t dis3;
   int16_t dis4;
-  int16_t cx;
+  int16_t c_x;
+  int16_t c_y;
+  int16_t c_s;
 };
 
 struct ReadPacketData2 {
@@ -33,13 +35,9 @@ struct SendPacketData0 {
   int ball_distance;
 };
 
-struct SendPacketData1 {
-  int angleZ;
-};
+struct SendPacketData1 {};//  int angleZ;
 
-struct SendPacketData2 {
-  int x;
-};
+struct SendPacketData2 {};//  int x;
 
 // ===== enum =====
 enum ReadResult : uint8_t {
@@ -115,9 +113,11 @@ void sendPacket(int num_serial, sendT &d) {
   seri->write(cs);
 }
 
-extern int ball_angle;
-extern int ball_dis;
-extern int cx;
+extern int16_t ball_angle;
+extern int16_t ball_dis;
+extern int16_t c_x;
+extern int16_t c_y;
+extern int16_t c_s;
 
 extern int16_t line_angle;
 extern int16_t line_dis;

@@ -8,6 +8,12 @@ sensor.set_framesize(sensor.QVGA)   #320x240
 sensor.skip_frames(time = 2000)     #2秒間、カメラが安定するのを待つ。露出・ホワイトバランス調整のため
 clock = time.clock()                #fps計測などに関わる
 
+#2/16追加
+#sensor.set_auto_gain(False)         #自動ゲイン・ホワイトバランス停止
+#sensor.set_auto_whitebal(False)     #自動ゲイン・ホワイトバランス停止
+#しきい値調整のポイント
+#・Lは広く、色は狭く
+
 # K210のIO34=TX, IO35=RXにUART1を割り当て
 fm.register(34, fm.fpioa.UART1_TX)
 fm.register(35, fm.fpioa.UART1_RX)
@@ -15,7 +21,7 @@ fm.register(35, fm.fpioa.UART1_RX)
 uart1 = UART(UART.UART1, 115200, timeout=1000, read_buf_len=4096)
 
 # LAB色空間で青色を検出
-blue_threshold = [(27, 67, 15, 79, -128, -42)]
+blue_threshold = [(23, 100, 11, 39, -69, 8)]
 #(Lの最小,最大,  Aの最小,最大,  Bの最小,最大)  の順
 #L:黒か白か
 #A:緑か赤か
@@ -47,7 +53,10 @@ while True:
 
             # cx,cy = 16bit / area = 32bit
             data_bytes = struct.pack('>HHI', cx, cy, area)
+            #print(cy)
             uart1.write(data_bytes)
     else:
         uart1.write(struct.pack('>H', 0xFFFF))
+        #print("0")
+
 
