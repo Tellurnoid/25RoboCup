@@ -3240,7 +3240,7 @@
 	)
 	(text "10kΩ"
 		(exclude_from_sim no)
-		(at 95.25 306.324 90)
+		(at 88.138 306.578 90)
 		(effects
 			(font
 				(size 1.27 1.27)

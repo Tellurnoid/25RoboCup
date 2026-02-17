@@ -193,25 +193,44 @@ float getRemovePower(float percent,float line_angle,float ball_angle){//打ち�
 //   v = makeV(cam_remove_angle,PercentToPWM(cam_remove_Percent,0,255));
 //   return v;
 // }
+
+// Vector cameraV(Vector v , uint16_t curve_start, uint16_t curve_end, uint16_t curve_out){
+//   float    cam_remove_Percent;
+//   uint16_t cam_remove_angle;
+//   if(c_x != 400){
+//     if(abs(c_x) >= curve_start){
+//           cam_remove_Percent = abs(c_x) * abs(c_x) /800;
+//           if(cam_remove_Percent<0){cam_remove_Percent = 0;}
+
+//      if(c_x < 0){cam_remove_angle = -90;}else{cam_remove_angle = 90;}
+     
+//     }
+//     else{
+//       cam_remove_Percent = 0;
+//     }
+//   }
+//   v = makeV(cam_remove_angle,PercentToPWM(cam_remove_Percent,0,255));
+//   return v;
+// }
+
 Vector cameraV(Vector v , uint16_t curve_start, uint16_t curve_end, uint16_t curve_out){
   float    cam_remove_Percent;
   uint16_t cam_remove_angle;
   if(c_x != 400){
-    if(abs(c_x) >= curve_start){
-          cam_remove_Percent = abs(c_x) * abs(c_x) /800;
-          if(cam_remove_Percent<0){cam_remove_Percent = 0;}
-
-     if(c_x < 0){cam_remove_angle = -90;}else{cam_remove_angle = 90;}
-     
+    if(c_x >= curve_start){
+       cam_remove_Percent = v.y * 0.392 * (c_x - curve_start) * 2.5; 
+    }
+    else if(c_x <= -1 * curve_start){
+       cam_remove_Percent = v.y * 0.392 * (c_x + curve_start) * 2.5; 
     }
     else{
       cam_remove_Percent = 0;
     }
+    if(cam_remove_Percent<0){cam_remove_Percent = 0;}
   }
   v = makeV(cam_remove_angle,PercentToPWM(cam_remove_Percent,0,255));
   return v;
 }
-
 
 Vector notToOwnGoal(Vector v){//オウンゴール対策
   if(abs(ball_angle) > 160 && line_angle !=400){//ボールが背後にあれば7割の速度に
@@ -257,7 +276,7 @@ Vector lineV(){
     //白線に戻る動き
     float Power_lostline  = abs(lineDf_dis)*0.0005 * 100;
     if(Power_lostline>100){Power_lostline=100;}
-    lost_line = makeV(line_angle,PercentToPWM(Power_lostline,70,150));
+    lost_line = makeV(line_angle,PercentToPWM(Power_lostline,140,180));
     last_angle = line_angle;
     if(lineDf_angle > 300 && v.x < 0){//曲がり角後退対策
       isOnCurve = true;
@@ -436,14 +455,18 @@ void loop() {//beep
     v  = addV(v, lineV());   
     remove = makeV(getRemoveAngle(line_angle,ball_angle),remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));
     v  = addV(v , remove);
-    //v  = addV(v, cameraV(v,50,110,145)); 
+  //  v  = cameraV(v,50,110,145); 
     if(line_angle==500){
       v.y = 0;
       if(v.x<0)
         v.x = -1.5 * v.x;
     }
   //  v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left); 
-    v.x = v.x * 0.8;
+  if(abs(line_angle) < 120 && v.x <0 ){
+    v.x = 0;
+  }
+
+    //v.x = v.x * 0.8;
   }
   //if(line_angle < 400 && isOnCurve){v.x = v.x*0.6;}
   moveVector(v, rotatePID(0, 0));
@@ -452,17 +475,17 @@ void loop() {//beep
   //デバッグ
   // printState(debugState);
   //  Serial.print(",lineD_dis:");Serial.print(lineDf_dis);
-   Serial.print(", cx,cy,cs:");Serial.print(c_x);
-   Serial.print(",");Serial.print(c_y);
-   Serial.print(",");Serial.print(c_s);Serial.print(",");
-   Serial.print("rem:");Serial.print(cameraV(v,50,110,145).y);
+  //  Serial.print(", cx,cy,cs:");Serial.print(c_x);
+  //  Serial.print(",");Serial.print(c_y);
+  //  Serial.print(",");Serial.print(c_s);Serial.print(",");
+  //  Serial.print("rem:");Serial.print(cameraV(v,50,110,145).y);
   //  Serial.print(" ,F:");Serial.print(dis_front);Serial.print("mm");
   //  Serial.print(",B:");Serial.print(dis_back);Serial.print("mm");
   //  Serial.print(",R:");Serial.print(dis_right);Serial.print("mm");
   //  Serial.print(",L:");Serial.print(dis_left);Serial.print("mm ");
-  //  Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
-  //  Serial.print(",");Serial.print(ball_dis);
-  //  Serial.print("),");
+   Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
+   Serial.print(",");Serial.print(ball_dis);
+   Serial.print("),");
   //  Serial.print(",Line_angle,dis=(:");Serial.print(line_angle);
   //  Serial.print(",");Serial.print(line_dis);
   //  Serial.print("remove_Angle,power:");Serial.print(getRemoveAngle(line_angle,ball_angle));Serial.print(",");Serial.print(remove_power*getRemovePower(approach_to_ball,line_angle,ball_angle));

@@ -19,10 +19,10 @@ Vector add(Vector a, Vector b) {
   return result;
 }
 
-const int NUM_SENSORS = 12;
+const int NUM_SENSORS = 12; 
 const int sensorPins[NUM_SENSORS] = {34, 35, 32, 33, 25, 26, 27, 14, 13, 4, 2, 15};//const int sensorPins[NUM_SENSORS] = {35, 32, 33, 25, 26, 27, 14, 2, 15};
-const int sensorDeg[NUM_SENSORS] = {30, 60, 90, 120, 150, 180, 210, 300, 330};//const int sensorDeg[NUM_SENSORS] = {0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330};
-const int DEG_DIFF = 270;
+const int sensorDeg[NUM_SENSORS] = {0,30, 60, 90, 120, 150, 180, 210,240,270, 300, 330};//const int sensorDeg[NUM_SENSORS] = {0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330};
+const int DEG_DIFF = 90;
 const int MAX_VALUE = 4095;
 const int NUM_AVE = 40;
 const int NUM_SERCH_SENSORS = 4;
