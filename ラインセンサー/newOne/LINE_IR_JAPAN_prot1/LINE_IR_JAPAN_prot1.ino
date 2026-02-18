@@ -4,12 +4,12 @@
 #define S3 23
 #define LINE_COM1 35
 #define LINE_COM2 34
-#define IR_COM 32
-#define LED 27
-#define side_front 36
-#define side_back 39
-#define side_right 25
-#define side_left 33
+#define IR_COM    32
+#define LED       27
+#define side_front  36
+#define side_back   39
+#define side_right  25
+#define side_left   33
 #define ball_sensor 15
 
 const uint8_t ch_IR[16] = {
@@ -25,25 +25,23 @@ const uint8_t ch_LINE[32] = {
 //ch対応なし、並べ替え前の仮格納用
 uint16_t rawData_IR[16];
 uint16_t rawData_LINE[32];
-// 読み取り結果格納用
+// 読み取り結果格納用(半時計回り)
 uint16_t sensorValue_IR[16];
 uint16_t sensorValue_LINE[32];
 
 void setup(){
   initMUX();
-    //initUART();
 }
 
 void loop(){
     readMUX();
-  //printAllMUX();
 }
 
 void initMUX(){
-    pinMode(S0, OUTPUT);
-    pinMode(S1, OUTPUT);
-    pinMode(S2, OUTPUT);
-    pinMode(S3, OUTPUT);
+  pinMode(S0, OUTPUT);
+  pinMode(S1, OUTPUT);
+  pinMode(S2, OUTPUT);
+  pinMode(S3, OUTPUT);
 }
 
 void selectChannel_16(int ch) {
@@ -60,8 +58,8 @@ void readMUX(){
     selectChannel_16(ch);
     delayMicroseconds(5);
     //まず一つの配列、rawDataに流し込む
-    rawData_IR[ch] = analogRead(IR_COM);
-    rawData_LINE[ch] = analogRead(LINE_COM1);
+    rawData_IR[ch]      = analogRead(IR_COM);
+    rawData_LINE[ch]    = analogRead(LINE_COM1);
     rawData_LINE[16+ch] = analogRead(LINE_COM2);
   }
   //整列させて代入
@@ -74,12 +72,12 @@ void readMUX(){
 
   void printAllMUX(){
       Serial.print("IR: ");
-      for (int ch = 0; ch < 16; ch++) {
+      for (uint8_t ch = 0; ch < 16; ch++) {
         Serial.print(",");
         Serial.print(sensorValue_IR[ch]);
       }
       Serial.print(",  LINE: ");
-      for (int ch = 0; ch < 32; ch++) {
+      for (uint8_t ch = 0; ch < 32; ch++) {
         Serial.print(",");
         Serial.print(sensorValue_LINE[ch]);
       }
