@@ -1,17 +1,9 @@
 
 #define S0 13
 #define S1 12
-#define S2 22
-#define S3 23
-#define MUX_COM1 35
-#define MUX_COM2 34
-#define IR_COM 32
-#define LED 27
-#define side_front 36
-#define side_back 39
-#define side_right 25
-#define side_left 33
-#define ball_sensor 15
+#define S2 11
+#define S3 10
+#define COM1 A0
 
 int sensorValue[2][16];// 読み取り結果を格納
 
@@ -33,13 +25,11 @@ void initMUX_16(){
     pinMode(S3, OUTPUT);
 }
 
-
 void selectChannel_16(int ch) {
-  ch &= 0x0F;  // 0〜15に制限
-  digitalWrite(S0,  ch        & 0x01);
-  digitalWrite(S1, (ch >> 1)  & 0x01);
-  digitalWrite(S2, (ch >> 2)  & 0x01);
-  digitalWrite(S3, (ch >> 3)  & 0x01);
+  digitalWrite(S0, ch & 0x01);
+  digitalWrite(S1, (ch >> 1) & 0x01);
+  digitalWrite(S2, (ch >> 2) & 0x01);
+  digitalWrite(S3, (ch >> 3) & 0x01);
 }
 
 void readMUX_16(){
@@ -47,7 +37,7 @@ void readMUX_16(){
     for (int ch = 0; ch < 16; ch++) {//読み込む
       selectChannel_16(ch);
       delayMicroseconds(5); // チャンネル安定待ち
-      sensorValue[0][ch] = analogRead(MUX_COM1);
+      sensorValue[0][ch] = analogRead(COM1);
     }  
   }
 
