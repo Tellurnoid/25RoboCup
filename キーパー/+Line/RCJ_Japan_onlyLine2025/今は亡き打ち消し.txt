@@ -1,0 +1,106 @@
+
+//打ち消し//////////////////////////////////////////////////////////////
+float lineNormalization(float angle){//角度計算後の正規化
+  float theta;
+  if(angle > 180){
+    angle = -1  * (360 - angle);
+  }
+  else if(angle < -180){
+    angle = 360 - abs(angle);
+  }
+  return angle;
+}
+
+float getRemoveAngle(float line_angle,float ball_angle){//打ち消し用。引数なし
+  float theta;
+  float line_left = lineNormalization(line_angle - 90);//白線に並行な線の角度(左)
+  float line_right = lineNormalization(line_angle + 90);//白線に並行な線の角度(右)
+  if(line_right < line_left){
+      if(line_angle > 0){//+-180度をまたいだかどうか
+        line_right = abs(180 + line_right) + 180; 
+      }
+      else{
+        line_right = 360 + line_right;  
+      }
+    }
+  if(ball_angle >= line_left && ball_angle <= line_right){//白線から離れようとするベクトルの角度を出す(ロボットから見て白線の反対側にボールがあるとき)
+      theta = lineNormalization(line_angle + 180);
+    }
+    else{//白線に近づこうとするベクトルの角度を出す(ボールが白線の向こう側にあるとき)
+      theta = line_angle;
+    }   
+  return theta;  
+  }
+
+float theta;  
+float getRemovePower(Vector v,Vector ballV,float remove_angle, float percent ,float line_angle,float ball_angle){
+  float remove_power = 0;
+  float theta;
+  float line_left = lineNormalization(line_angle - 90);//白線に並行な線の角度(左)
+  float line_right = lineNormalization(line_angle + 90);//白線に並行な線の角度(右)
+  if(line_right < line_left){
+      if(line_angle > 0){//+-180度をまたいだかどうか
+        line_right = abs(180 + line_right) + 180; 
+      }
+      else{
+        line_right = 360 + line_right;  
+      }
+    }
+    
+    if(ball_angle >= line_left && ball_angle <= line_right){//白線から離れようとするベクトルの角度を出す(ロボットから見て白線の反対側にボールがあるとき)
+       if(ball_angle >= 0){
+        theta = lineNormalization(lineNormalization(line_angle + 180) + ball_angle);
+       }
+       else{
+        theta = lineNormalization(lineNormalization(line_angle + 180) - ball_angle);
+       }
+    }
+    else{//白線に近づこうとするベクトルの角度を出す(ボールが白線の向こう側にあるとき)
+      if(ball_angle >= 0){
+        theta = lineNormalization(line_angle + ball_angle);
+      }
+      else{
+        theta = lineNormalization(line_angle - ball_angle);
+      }
+    }   
+     // theta =lineNormalization(-1 *lineNormalization(line_angle + 180) + ball_angle);
+      remove_power = sqrt(ballV.x*ballV.x + ballV.y*ballV.y) * cos(theta) ;
+
+       
+   return remove_power * percent * 0.01;
+  //return lineNormalization(line_angle - ball_angle);
+}
+// float getRemovePower(float percent,float line_angle,float ball_angle){//打ち消し用。percentにはボールへ向かう力を代入
+//   float line_left = lineNormalization(line_angle - 70);//白線に並行な線の角度(左)
+//   float line_right = lineNormalization(line_angle + 65);//白線に並行な線の角度(右)
+//   if(ball_angle == 400){
+//     return 0;  
+//   }
+//   else{
+//     if(line_right > line_left){
+//       if(ball_angle >= line_left && ball_angle <= line_right){//白線から離れようとするベクトルの角度を出す(ロボットから見て白線の反対側にボールがあるとき)
+//         theta = 90 - abs(line_angle - ball_angle);
+//       }
+//       else{//白線に近づこうとするベクトルの角度を出す(ボールが白線の向こう側にあるとき)
+//         theta = 90 - abs(ball_angle - lineNormalization(line_angle + 160));
+//       }    
+//     }
+//     else
+//     {
+//       if(line_angle > 0){//+-180度をまたいだかどうか
+//         line_right = abs(180 + line_right) + 160; 
+//       }
+//       else
+//       {
+//         line_right = 360 - abs(line_right);  
+//       }
+//       if(ball_angle >= line_left && ball_angle <= line_right){//白線から離れようとするベクトルの角度を出す(ロボットから見て白線の反対側にボールがあるとき)
+//         theta = 90 - abs(ball_angle - lineNormalization(line_angle + 160));
+//       }
+//       else{//白線に近づこうとするベクトルの角度を出す(ボールが白線の向こう側にあるとき)
+//           theta = 90 - abs(line_angle - ball_angle);
+//       }        
+//     }
+//     return abs(percent * sin(getRad(theta)));//÷100
+//   }
+// }

@@ -70,10 +70,38 @@ void sound_beep(){
   delay(50);
   digitalWrite(beep, LOW);
 }
-
-
-//打ち消し//////////////////////////////////////////////////////////////
-float lineNormalization(float angle){//角度計算後の正規化
+//打ち消しここから//////////////////////////////////////////////////////
+float angleTo360(float theta){
+  if(theta < 0){
+    theta = 360 + theta;
+  }
+  else{
+    theta;
+  }
+  return theta;
+}
+float angleTo180(float theta){
+  if(theta > 180){
+    theta = theta - 360;
+  }
+  else{
+    theta;
+  }
+  return theta;
+}
+float lineNormalization360(float theta){
+  if(theta > 360){
+    theta = theta - 360;
+  }
+  else if(theta < 0){
+    theta = theta + 360;
+  }
+  else {
+    theta;
+  }
+  return theta;
+}
+float lineNormalization180(float angle){//角度計算後の正規化
   float theta;
   if(angle > 180){
     angle = -1  * (360 - angle);
@@ -83,100 +111,47 @@ float lineNormalization(float angle){//角度計算後の正規化
   }
   return angle;
 }
+float ball_angle_from_line360;
+Vector removeV(float &remove_angle, float &remove_power,float line_angle, float ball_angle, Vector ballV){
+  float line_angle360 = angleTo360(line_angle);
+  float ball_angle360 = angleTo360(ball_angle);
 
-float getRemoveAngle(float line_angle,float ball_angle){//打ち消し用。引数なし
-  float theta;
-  float line_left = lineNormalization(line_angle - 90);//白線に並行な線の角度(左)
-  float line_right = lineNormalization(line_angle + 90);//白線に並行な線の角度(右)
-  if(line_right < line_left){
-      if(line_angle > 0){//+-180度をまたいだかどうか
-        line_right = abs(180 + line_right) + 180; 
-      }
-      else{
-        line_right = 360 + line_right;  
-      }
-    }
-  if(ball_angle >= line_left && ball_angle <= line_right){//白線から離れようとするベクトルの角度を出す(ロボットから見て白線の反対側にボールがあるとき)
-      theta = lineNormalization(line_angle + 180);
-    }
-    else{//白線に近づこうとするベクトルの角度を出す(ボールが白線の向こう側にあるとき)
-      theta = line_angle;
-    }   
-  return theta;  
+  if(line_angle == 400 || ball_angle == 400){
+    remove_power = 0;
   }
-
-float theta;  
-float getRemovePower(Vector v,Vector ballV,float remove_angle, float percent ,float line_angle,float ball_angle){
-  float remove_power = 0;
-  float theta;
-  float line_left = lineNormalization(line_angle - 90);//白線に並行な線の角度(左)
-  float line_right = lineNormalization(line_angle + 90);//白線に並行な線の角度(右)
-  if(line_right < line_left){
-      if(line_angle > 0){//+-180度をまたいだかどうか
-        line_right = abs(180 + line_right) + 180; 
+  else{
+    float line_left = lineNormalization360(line_angle360 - 90);
+    float line_right = lineNormalization360(line_angle360 + 90);
+    if(line_right < line_left){//正面の0度をまたいだとき
+      if(ball_angle360 >= line_left || ball_angle360 <= line_right){//ボールと自分の間にラインあり
+          remove_angle = lineNormalization360(line_angle360 + 180);
+          ball_angle_from_line360 = ball_angle360 - line_angle360; 
       }
       else{
-        line_right = 360 + line_right;  
+        remove_angle = line_angle360;
+        ball_angle_from_line360 = ball_angle360 - lineNormalization360(line_angle360 + 180);
+      }
+      if(abs(ball_angle_from_line360) > 180){
+        ball_angle_from_line360 = (360 - ball_angle_from_line360) * ball_angle_from_line360/abs(ball_angle_from_line360);
       }
     }
-    
-    if(ball_angle >= line_left && ball_angle <= line_right){//白線から離れようとするベクトルの角度を出す(ロボットから見て白線の反対側にボールがあるとき)
-       if(ball_angle >= 0){
-        theta = lineNormalization(lineNormalization(line_angle + 180) + ball_angle);
-       }
-       else{
-        theta = lineNormalization(lineNormalization(line_angle + 180) - ball_angle);
-       }
+    else{//またいでいないとき
+      if(ball_angle360 > line_left && ball_angle360 < line_right){//ボールと自分の間にラインあり
+          remove_angle = lineNormalization360(line_angle360 + 180);
+          ball_angle_from_line360 = ball_angle360 - line_angle360; 
+      }
+      else{//ボールが前、線が後ろ
+        remove_angle = line_angle360;
+        ball_angle_from_line360 = lineNormalization360(ball_angle360 - lineNormalization360(line_angle360 + 180));
+      }
+      if(abs(ball_angle_from_line360) > 180){
+        ball_angle_from_line360 = (360 - ball_angle_from_line360) * -1;
+      }
     }
-    else{//白線に近づこうとするベクトルの角度を出す(ボールが白線の向こう側にあるとき)
-      if(ball_angle >= 0){
-        theta = lineNormalization(line_angle + ball_angle);
-      }
-      else{
-        theta = lineNormalization(line_angle - ball_angle);
-      }
-    }   
-     // theta =lineNormalization(-1 *lineNormalization(line_angle + 180) + ball_angle);
-      remove_power = sqrt(ballV.x*ballV.x + ballV.y*ballV.y) * cos(theta) ;
-
-       
-   return remove_power * percent * 0.01;
-  //return lineNormalization(line_angle - ball_angle);
+    remove_power = sqrt(ballV.x * ballV.x + ballV.y * ballV.y) *1.00 * cos(ball_angle_from_line360 * PI/180);
+  }
+  return makeV(remove_angle,abs(remove_power));
 }
-// float getRemovePower(float percent,float line_angle,float ball_angle){//打ち消し用。percentにはボールへ向かう力を代入
-//   float line_left = lineNormalization(line_angle - 70);//白線に並行な線の角度(左)
-//   float line_right = lineNormalization(line_angle + 65);//白線に並行な線の角度(右)
-//   if(ball_angle == 400){
-//     return 0;  
-//   }
-//   else{
-//     if(line_right > line_left){
-//       if(ball_angle >= line_left && ball_angle <= line_right){//白線から離れようとするベクトルの角度を出す(ロボットから見て白線の反対側にボールがあるとき)
-//         theta = 90 - abs(line_angle - ball_angle);
-//       }
-//       else{//白線に近づこうとするベクトルの角度を出す(ボールが白線の向こう側にあるとき)
-//         theta = 90 - abs(ball_angle - lineNormalization(line_angle + 160));
-//       }    
-//     }
-//     else
-//     {
-//       if(line_angle > 0){//+-180度をまたいだかどうか
-//         line_right = abs(180 + line_right) + 160; 
-//       }
-//       else
-//       {
-//         line_right = 360 - abs(line_right);  
-//       }
-//       if(ball_angle >= line_left && ball_angle <= line_right){//白線から離れようとするベクトルの角度を出す(ロボットから見て白線の反対側にボールがあるとき)
-//         theta = 90 - abs(ball_angle - lineNormalization(line_angle + 160));
-//       }
-//       else{//白線に近づこうとするベクトルの角度を出す(ボールが白線の向こう側にあるとき)
-//           theta = 90 - abs(line_angle - ball_angle);
-//       }        
-//     }
-//     return abs(percent * sin(getRad(theta)));//÷100
-//   }
-// }
 //打ち消しここまで//////////////////////////////////////////////////////
 
 // int camera() {
@@ -252,39 +227,26 @@ float getRemovePower(Vector v,Vector ballV,float remove_angle, float percent ,fl
 
 float camera_linetracing_brake(int c_x,Vector v , uint16_t curve_start, uint16_t curve_end, uint16_t curve_out){
   float power = 0;//百分率
-  if(abs(c_x)>curve_start && abs(c_x)<curve_out){
-    power =  (abs(c_x) - curve_start) / (float)(curve_out - curve_start);
-    if(c_x < curve_start){
-      power = power * -1;
-    }
+  if(c_x == 400){
+    power == 0.8;
   }
-  else if(abs(c_x)>=curve_out){
-    power = 1;
-    if(c_x < curve_start){
-      power = -1;
-    }
+  else{
+    if(abs(c_x)>curve_start && abs(c_x)<curve_end){
+        power =  (abs(c_x) - curve_start) / (float)(curve_end - curve_start);
+        if(c_x < curve_start){
+          power = power * -1;
+        }
+      }
+      else if(abs(c_x)>=curve_end){
+        power = 1;
+        if(c_x < curve_start){
+          power = -1;
+       }
+  }
   }
   return power * PercentToPWM(80);
 }
 
-// Vector cameraV(Vector v , uint16_t curve_start, uint16_t curve_end, uint16_t curve_out){
-//   float    cam_remove_Percent;
-//   uint16_t cam_remove_angle;
-//   if(c_x != 400){
-//     if(c_x >= curve_start){
-//        cam_remove_Percent = v.y * 0.392 * (c_x - curve_start) * 2.5; 
-//     }
-//     else if(c_x <= -1 * curve_start){
-//        cam_remove_Percent = v.y * 0.392 * (c_x + curve_start) * 2.5; 
-//     }
-//     else{
-//       cam_remove_Percent = 0;
-//     }
-//     if(cam_remove_Percent<0){cam_remove_Percent = 0;}
-//   }
-//   v = makeV(cam_remove_angle,PercentToPWM(cam_remove_Percent,0,255));
-//   return v;
-// }
 
 Vector notToOwnGoal(Vector v){//オウンゴール対策
   if(abs(ball_angle) > 160 && line_angle !=400){//ボールが背後にあれば7割の速度に
@@ -305,6 +267,7 @@ Vector ballV() {
   return v;
 }
 
+
 float lineDf_dis;
 float lineDf_angle;
 Derivative lineD_dis;
@@ -313,12 +276,7 @@ bool isOnCurve = false;
 float last_angle;
 Vector lineV(){
   Vector v = makeV(0,0);
-  // if(line_angle==400){
-  //   v=lost_line;
-  //   if(abs(last_angle) > 100 && abs(last_angle) < 170){
-  //     v.x = 0;
-  //   }
-  // }
+
   //400, 500の処理はloopに書く
     isOnCurve = false;
     lineDf_dis = getD(lineD_dis,line_dis,30);//第3引数はms
@@ -337,85 +295,48 @@ Vector lineV(){
     }
 
     //白線の中央にいる動き
-    float Power_linetrace = line_dis*line_dis * 0.0001 * 70 + abs(lineDf_dis) * 0.001 * 30;
+    float Power_linetrace;
+    if(line_dis > 60){
+      Power_linetrace = line_dis*line_dis * 0.0001 * 70 + abs(lineDf_dis) * 0.001 * 30;
+    }
+    else{
+       Power_linetrace = abs(lineDf_dis) * 0.001 * 100;
+    }
     if(Power_linetrace>100){Power_linetrace=100;}//100%以上の異常値対策
     v = makeV(line_angle,PercentToPWM(Power_linetrace,60,140));
   
   return v;
-
-
 }
-// Vector lineV(){
-//   Vector v = makeV(0,0);
-//   if(line_angle==400){
-//     v=lost_line;
-//     if(isOnCurve==true){
-//       v.x = v.x * 0;
-//       v.y = v.y * 0.5;
-//     }
-//   }
-//   //T字の処理はloopに書く
-//   else{
-//     isOnCurve = false;
-//     if(abs(line_angle)<170 && abs(line_angle) > 20){
-//       isOnCurve = true;
-//     }
-//     lineD_dis = getD(line_D,line_dis,30);//第3引数はms
-//     lost_angle = line_angle;
-//     lost_line = makeV(line_angle,60+abs(lineD_dis)*0.0008 * 90);
-//     //v = makeV(line_angle,85 + line_dis * 0.01 * 100 + abs(lineD_dis)*0.001*70);
-//     float line_dis_lineCalc=1;
-//     //if(abs(line_angle)>90){line_dis_lineCalc = -1;}else{line_dis_lineCalc = 1;}
-//     //v = makeV(line_angle,line_dis_lineCalc*(75 + line_dis_lineCalc * 0.01 * 100 + abs(lineD_dis)*0.0006*50));
-//     v = makeV(line_angle,45 + line_dis * 0.01 * 105 + abs(lineD_dis)*0.00008 * 55); 
-//   }
-//   return v;
-// }
 
-// Vector echoV(Vector v,int16_t line_angle,int cx,int dis_back,int dis_right,int dis_left){
-//        if(dis_left < echo_wall_right_and_left && (cx < -130 || abs(90-abs(line_angle)) < 45)){//ゴールが視野の端かつ左壁にぶつかりそう
-//          v.y = PercentToPWM(100);
-//        }
-//        else if(dis_right < echo_wall_right_and_left && (cx > 130 || abs(90-abs(line_angle)) < 45)){//ゴールが視野の端かつ右壁にぶつかりそう
-//          v.y = -1 * PercentToPWM(100);
-//        }
-//        if(dis_back < 120){//後ろの壁にぶつかりそう
-//          v.x = PercentToPWM(100);
-//        }
-//      return v;
-// }
-Vector echoV(Vector v,int16_t line_angle,int cx,int dis_back,int dis_right,int dis_left){
-       if(dis_left < echo_wall_right_and_left && abs(90-abs(line_angle)) < 45){//ゴールが視野の端かつ左壁にぶつかりそう
-        v.y = PercentToPWM(100);
-       }
-       else if(dis_right < echo_wall_right_and_left && abs(90-abs(line_angle)) < 45){//ゴールが視野の端かつ右壁にぶつかりそう
-         v.y = -1 * PercentToPWM(100);
-       }
-       if(dis_back < 170){//後ろの壁にぶつかりそう
-         v.x = PercentToPWM(100);
-       }
-     return v;
+Vector EchoV(uint16_t dis_front, uint16_t dis_right, uint16_t dis_back, uint16_t dis_left){//ライントレース用(使わないかも)
+  Vector v;
+  return v;
 }
-Vector lostGoalV(Vector v,int16_t line_angle,int cx,int dis_back,int dis_right,int dis_left){
-   v = makeV(0,0);
-       if(dis_left < echo_wall_right_and_left){//ゴールが視野の端かつ左壁にぶつかりそう
-        v.y = PercentToPWM(100);
-       }
-       else if(dis_right < echo_wall_right_and_left){//ゴールが視野の端かつ右壁にぶつかりそう
-         v.y = -1 * PercentToPWM(100);
-       }
-       if(dis_back < 160){//後ろの壁にぶつかりそう
-         v.x = PercentToPWM(100);
-       }
-      
-      else if(dis_left < dis_right){
-        v = makeV(90,PercentToPWM(30));
-      }
-      else if(dis_left > dis_right){
-      v = makeV(-90,PercentToPWM(30));
+Vector lostEchoV(uint16_t dis_front, uint16_t dis_right, uint16_t dis_back, uint16_t dis_left){//line_angle = 400のときのみ
+  Vector v;
+  return v;
+}
+
+Vector lostGoalV(int c_x){
+  Vector v;
+  float move_angle;
+  float move_power;
+  if(abs(c_x) < 30){
+    move_angle = 0;
   }
-      return v;
-    }
+  else{
+    move_angle = c_x * 1.5;
+  }
+  
+  if(c_x == 400){
+    move_power = 0;
+  }
+  else{
+    move_power = PercentToPWM(30);
+  }
+  v = makeV(move_angle,move_power);
+  return v;
+}
   
 
 
@@ -487,33 +408,35 @@ void motorDebug() {
 
 
 // void loop(){
-//   motorDebug();
-// }
+//   // motorDebug();
+//   moveVector(lostCameraV(c_x), rotatePID(0, 0));
+//  }
 float remove_angle;
 float remove_power;//打ち消し
+uint16_t lost_count = 0;
 void loop() {//beep
  Vector remove;
    IMU();
    UART();
-  if(line_angle == 400){
+  if(line_angle == 400){//ライン未検出時
     debugState = 6;
-    v = lost_line;  
-    // if(abs(last_angle) > 100 && abs(last_angle) < 170){
-    //   v.x = v.x * 0.4;
-    //   v.y = v.y * 2;
-    // }
+    if(abs(lost_angle) < 100 && abs(lost_angle) > 30 || lost_count >= 1000){//lost_countしきい値要調整 //角から出たときor復帰時
+      v = lostGoalV(c_x);
+    }
+    else{
+      lost_count++;
+      v = lost_line;  
+    }
     remove = makeV(0,0);
    }
   else
-  {
+  {                    //ライン検出時
+    lost_count = 0;
     debugState = 1;
     v  = ballV();
     v  = addV(v, lineV());   
-    remove_angle = getRemoveAngle(line_angle,ball_angle);
-    remove_power = getRemovePower(v,ballV(),remove_angle,100,line_angle,ball_angle);
-    remove = makeV(remove_angle,remove_power);
-    v  = addV(v , remove);
-    //v.y = v.y + camera_linetracing_brake(c_x,v,90,130,130);
+    v  = addV(v , removeV(remove_angle,remove_power,line_angle,ball_angle,ballV()));
+    v.y = v.y + camera_linetracing_brake(c_x,v,90,130,130);
   //  v  = cameraV(v,50,110,145); 
     if(line_angle==500){
       v.y = 0;
@@ -535,7 +458,8 @@ void loop() {//beep
   // printState(debugState);
   //  Serial.print(",lineD_dis:");Serial.print(lineDf_dis);
    Serial.print(", cx:");Serial.print(c_x);
-   Serial.print(", camBrake:");Serial.print(camera_linetracing_brake(c_x,v,90,130,100));
+   Serial.print(", camBrake:");Serial.print(camera_linetracing_brake(c_x,v,50,100,150));
+   Serial.print("cameraV:(");Serial.print(lostCameraV().x);Serial.print(",");Serial.print(lostCameraV().y);
   //  Serial.print(",");Serial.print(c_y);
   //  Serial.print(",");Serial.print(c_s);Serial.print(",");
   //  Serial.print("rem:");Serial.print(cameraV(v,50,110,145).y);
@@ -543,12 +467,16 @@ void loop() {//beep
   //  Serial.print(",B:");Serial.print(dis_back);Serial.print("mm");
   //  Serial.print(",R:");Serial.print(dis_right);Serial.print("mm");
   //  Serial.print(",L:");Serial.print(dis_left);Serial.print("mm ");
-   Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
-   Serial.print(",");Serial.print(ball_dis);
-  //  Serial.print("),");
-    Serial.print(",Line_angle,dis=(:");Serial.print(line_angle);
-    Serial.print(",");Serial.print(line_dis);
-    Serial.print("remove_Angle,power:");Serial.print(remove_angle);Serial.print(",");Serial.print(remove_power);
+  //  Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
+  //  Serial.print(",");Serial.print(ball_dis);
+  // //  Serial.print("),");
+  //   Serial.print(", Line_angle,dis=(:");Serial.print(line_angle);
+  //   Serial.print(",");Serial.print(line_dis);
+  //   Serial.print(",  Lball:");
+  //   Serial.print(ball_angle_from_line360);
+  //   Serial.print(" ,Lsin:");Serial.print(sqrt(ballV().x * ballV().x + ballV().y * ballV().y) *1.00 * cos(abs(ball_angle_from_line360)*PI/180));
+  //   Serial.print(" ,angle:");Serial.print(remove_angle);Serial.print(" ,dis:");
+  //   Serial.print(remove_power);
   // //宣言したDerivative型変数、微分対象、時間
   // // dis_back_d = getD(echoD_back, dis_back, 30);
   // //  Serial.print(", backD:");Serial.print(dis_back_d);

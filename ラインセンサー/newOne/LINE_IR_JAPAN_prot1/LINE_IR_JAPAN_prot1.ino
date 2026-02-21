@@ -17,8 +17,8 @@ const uint8_t ch_IR[16] = {
 };
 const uint8_t ch_LINE[32] = {
   11,12,13,14,15,10, 9, 8,
-  32,31,30,29,25,26,27,28,
-  17,18,19,20,21,22,23,24,
+  31,30,29,28,24,25,26,27,
+  16,17,18,19,20,21,22,23,
    3, 2, 1, 0, 4, 5, 6, 7
 };
 
@@ -30,11 +30,14 @@ uint16_t sensorValue_IR[16];
 uint16_t sensorValue_LINE[32];
 
 void setup(){
+  Serial.begin(230400);
   initMUX();
 }
 
 void loop(){
-    readMUX();
+  readMUX();
+  printAllMUX();
+  // readMUX_onlyLINE_debug();
 }
 
 void initMUX(){
@@ -56,17 +59,60 @@ void readMUX(){
   //読む
   for(uint8_t ch=0; ch<16; ch++){
     selectChannel_16(ch);
-    delayMicroseconds(5);
+    // delayMicroseconds(10);
     //まず一つの配列、rawDataに流し込む
-    rawData_IR[ch]      = analogRead(IR_COM);
-    rawData_LINE[ch]    = analogRead(LINE_COM1);
-    rawData_LINE[16+ch] = analogRead(LINE_COM2);
+
+  analogRead(LINE_COM1);//捨て読み
+  rawData_LINE[ch] = analogRead(LINE_COM1);
+  delayMicroseconds(10);
+
+  analogRead(LINE_COM2);//捨て読み
+  rawData_LINE[16+ch] = analogRead(LINE_COM2);
+  delayMicroseconds(10);
+
+  analogRead(IR_COM);//捨て読み
+  rawData_IR[ch] = analogRead(IR_COM);
+  delayMicroseconds(10);
   }
   //整列させて代入
   for(uint8_t i=0; i<16; i++){
     sensorValue_IR[i]      = rawData_IR[ch_IR[i]];
-    sensorValue_LINE[i]    = rawData_LINE[ch_LINE[i]];
-    sensorValue_LINE[16+i] = rawData_LINE[16+ch_LINE[16+i]];
+    }
+   for(uint8_t i = 0; i < 32; i++){
+     sensorValue_LINE[i] = rawData_LINE[ch_LINE[i]];
+   }
+  }
+
+void readMUX_onlyIR_debug(){
+  //読む
+  for(uint8_t ch=0; ch<16; ch++){
+    selectChannel_16(ch);
+    delayMicroseconds(10);
+    //まず一つの配列、rawDataに流し込む
+    sensorValue_IR[ch]      = analogRead(IR_COM);
+  }
+  //整列させて代入
+      Serial.print("IR: ");
+      for (uint8_t ch = 0; ch < 16; ch++) {
+        Serial.print(",");
+        Serial.print(sensorValue_IR[ch]/10);
+      }
+      Serial.println();
+}
+void readMUX_onlyLINE_debug(){
+  //読む
+  for(uint8_t ch=0; ch<32; ch++){
+    selectChannel_16(ch);
+    delayMicroseconds(10);
+    //まず一つの配列、rawDataに流し込む
+    sensorValue_LINE[ch]    = analogRead(LINE_COM1);
+
+           Serial.print(",  LINE: ");
+      for (uint8_t ch = 0; ch < 32; ch++) {
+        Serial.print(",");
+        Serial.print(sensorValue_LINE[ch]);
+      }
+      Serial.println();
   }
 }
 
@@ -74,8 +120,25 @@ void readMUX(){
       Serial.print("IR: ");
       for (uint8_t ch = 0; ch < 16; ch++) {
         Serial.print(",");
+        Serial.print(sensorValue_IR[ch]/10);
+      }
+      Serial.print(",  LINE: ");
+      for (uint8_t ch = 0; ch < 32; ch++) {
+        Serial.print(",");
+        Serial.print(sensorValue_LINE[ch]/10);
+      }
+      Serial.println();
+  }
+  void printIR(){
+      Serial.print("IR: ");
+      for (uint8_t ch = 0; ch < 16; ch++) {
+        Serial.print(",");
         Serial.print(sensorValue_IR[ch]);
       }
+      Serial.println();
+  }
+
+  void printLINE(){
       Serial.print(",  LINE: ");
       for (uint8_t ch = 0; ch < 32; ch++) {
         Serial.print(",");
