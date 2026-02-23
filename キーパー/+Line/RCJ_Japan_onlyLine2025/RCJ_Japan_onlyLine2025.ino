@@ -431,7 +431,7 @@ Vector lostGoalV(int c_x){
   return v;
 }
 
-int half_coat = 80;
+int half_coat = 80;//170/2
 uint16_t lost_count = 0;
 Vector keeperDashV(Vector ballV,float line_angle,float dis_back){
   Vector v;
@@ -588,7 +588,7 @@ void loop() {//beep
       if(v.x<0)
         v.x = -1.5 * v.x;
   }
-  else if(keeperDash_count > 200){
+  else if(keeperDash_count > 100){
    debugState = 7;//キーパーダッシュ 
   }
   else
@@ -599,12 +599,12 @@ void loop() {//beep
     v  = addV(v, lineV());   
     v  = addV(v , removeV(remove_angle,remove_power,line_angle,ball_angle,ballV()));
     if(abs(line_angle) < 30 || abs(line_angle) > 140){//横移動中のみカメラブレーキ
-      v.y = v.y + camera_linetracing_brake(c_x,v,20,90,90);
+      v.y = v.y + camera_linetracing_brake(c_x,v,40,80,80);
     }
     v = notToOwnGoal(v);
-    v = addV(v, echoV(dis_front,dis_right,dis_back,dis_left));
+    //v = addV(v, echoV(dis_front,dis_right,dis_back,dis_left));
   //  v  = cameraV(v,50,110,145); 
-    if(abs(v.y) < 100 && ball_dis >= 3){keeperDash_count++;}else{keeperDash_count=0;}////////////////////////////////////////////////////6以上にする
+    if(abs(v.y) < 110 && ball_dis >= 3){keeperDash_count++;}else{keeperDash_count=0;}////////////////////////////////////////////////////6以上にする
   }
 
   moveVector(v, rotatePID(0, 0));
