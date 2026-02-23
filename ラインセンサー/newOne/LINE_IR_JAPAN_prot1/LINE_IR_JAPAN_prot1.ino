@@ -35,9 +35,9 @@ void setup(){
 }
 
 void loop(){
-  readMUX();
-  printAllMUX();
-  // readMUX_onlyLINE_debug();
+  //  readMUX();
+  //  printAllMUX();
+  readMUX_onlyLINE_debug();
 }
 
 void initMUX(){
@@ -146,3 +146,35 @@ void readMUX_onlyLINE_debug(){
       }
       Serial.println();
   }
+
+
+  // void readMUX_onlyLINE(){
+  // //読む
+  // for(uint8_t ch=0; ch<16; ch++){
+  //  selectChannel_16(ch);
+  //   analogRead(LINE_COM1);//捨て読み
+  //   rawData_LINE[ch] = analogRead(LINE_COM1);
+  //   delayMicroseconds(5);
+  //   analogRead(LINE_COM2);//捨て読み
+  //   rawData_LINE[16+ch] = analogRead(LINE_COM2);
+  //   delayMicroseconds(5);
+  // }  
+  //    for(uint8_t i = 0; i < 32; i++){
+  //    sensorValue_LINE[i] = rawData_LINE[ch_LINE[i]];
+  //  }
+  // }
+
+  // void lineSensor_calibration(){
+  //   uint16_t cal_times = 1000;
+  //   long sensorValue_LINE_forCal[32];
+  //   for(uint16_t i=0; i<cal_times; i++){
+  //     for(int ch=0; ch<16; ch++){
+  //       selectChannel_16(ch);
+  //       sensorValue_LINE_forCal[i] = 
+  //     }
+  //     for(int ch=16; ch<32; ch++){
+  //       selectChannel_16(ch-16);
+  //       sensorValue_LINE_forCal[i] = 
+  //     }
+  //   }
+  // }

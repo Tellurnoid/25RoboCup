@@ -51,7 +51,7 @@ def send_packet(data):
 # ===============================
 # LAB色空間で青色検出
 # ===============================
-blue_threshold = [(0, 81, 17, 43, -65, -20)]
+blue_threshold = [(14, 55, 4, 54, -87, -35)]
 
 cameraWidth  = 320 #QVGA
 cameraHeight = 240

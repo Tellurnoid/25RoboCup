@@ -244,7 +244,7 @@ float camera_linetracing_brake(int c_x,Vector v , uint16_t curve_start, uint16_t
        }
   }
   }
-  return power * PercentToPWM(80);
+  return power * PercentToPWM(100);
 }
 
 
@@ -308,36 +308,167 @@ Vector lineV(){
   return v;
 }
 
-Vector EchoV(uint16_t dis_front, uint16_t dis_right, uint16_t dis_back, uint16_t dis_left){//ライントレース用(使わないかも)
-  Vector v;
-  return v;
-}
-Vector lostEchoV(uint16_t dis_front, uint16_t dis_right, uint16_t dis_back, uint16_t dis_left){//line_angle = 400のときのみ
-  Vector v;
+
+uint8_t coat_w_forPower = 70;//比例定数、切片用
+uint8_t coat_h =  67;
+uint8_t coat_h_forPower =  38;
+uint8_t coat_b = 20;
+Vector lostGoalV_Echo(uint16_t dis_backIN,uint16_t dis_rightIN, uint16_t dis_leftIN){//ライントレース用(使わないかも)
+ uint8_t coat_w = 30;//判断基準
+  Vector v = makeV(0,0);
+  float power;
+  float dis_back = float(dis_backIN)/10;
+  float dis_right = float(dis_rightIN)/10;
+  float dis_left = float(dis_leftIN)/10;
+  //後ろ
+  if(dis_back < 2.0){
+    v.x = PercentToPWM(90,0,255);
+  }
+  else if(dis_back > coat_h_forPower){
+    power = (dis_back - coat_h_forPower) * 100 /(coat_h_forPower);
+    v.x = -1 * PercentToPWM(power,70,150);
+  }
+
+  //左右
+  if(dis_right + dis_left > coat_w*2){//敵機の干渉対策
+    if(dis_left < 15){
+      v.y = PercentToPWM(90,0,255);
+    }
+    else if(dis_right < 15){
+      v.y = -1 * PercentToPWM(90,0,255);
+    }
+    else if(dis_left < dis_right){//左壁が近い
+       power = (coat_w_forPower - dis_left) * 100 /(coat_w_forPower);
+       v.y = PercentToPWM(power,60,160);
+    }
+    else{
+      power =(coat_w_forPower - dis_right) * 100 /(coat_w_forPower);
+      v.y = -1 * PercentToPWM(power,60,160);
+    }
+  }
+  else{
+    v.y = 0;
+  }
   return v;
 }
 
-Vector lostGoalV(int c_x){
+
+Vector echoV(uint16_t dis_frontIN, uint16_t dis_rightIN, uint16_t dis_backIN, uint16_t dis_leftIN){//line_angle = 400のときのみ
+  uint8_t coat_w = 30;//判断基準
   Vector v;
-  float move_angle;
-  float move_power;
-  if(abs(c_x) < 30){
-    move_angle = 0;
+  float dis_back = float(dis_backIN)/10;
+  float dis_right = float(dis_rightIN)/10;
+  float dis_left = float(dis_leftIN)/10;
+  if(dis_back < 20){
+    v.x = PercentToPWM(90,0,255);
   }
   else{
-    move_angle = c_x * 1.5;
+    v.x = 0;
   }
+  if(dis_right + dis_left > coat_w*2){//敵機の干渉対策
+      if(dis_left < 15){
+        v.y = PercentToPWM(90,0,255);
+      }
+      else if(dis_right < 15){
+        v.y = -1 * PercentToPWM(90,0,255);
+      }
+      else{
+      v.y = 0;
+      }
+    }
+    else{
+      v.y = 0;
+    }
+  return v;
+}
+
+  float move_angle_cam;
+  float move_power_cam;
+// Vector lostGoalV(int c_x){
+//   Vector v;
+
+//   if(abs(c_x) < 30){
+//     move_angle_cam = 180;
+//   }
+//   else if(abs(c_x * 1.5) > 170){//大きすぎる角度対策
+//      move_angle_cam =  lineNormalization180(10 * c_x/abs(c_x)); 
+//   }
+//   else{
+//     move_angle_cam = lineNormalization180(180 + c_x  * 1.5);
+//   }
   
+
+//   if(c_x == 400){
+//     move_power_cam = 0;
+//   }
+//   else{
+//     move_power_cam = PercentToPWM(100,0,150);
+//   }
+//   v = makeV(move_angle_cam,move_power_cam);
+//   return v;
+// }
+Vector lostGoalV(int c_x){
+  int c_x_max = 158;
+  Vector v = makeV(0,0);
   if(c_x == 400){
-    move_power = 0;
+    v.x = 0;
+    v.y = 0;
+  }
+  else if(abs(c_x) < 30){
+    v.x = -150;
+    v.y = 0;
+  }
+  else if(c_x > 0){
+    move_power_cam = c_x * 100/c_x_max;
+    if(c_x_max < c_x){move_power_cam = 100;}
+    v.y = PercentToPWM(move_power_cam,60,180);
   }
   else{
-    move_power = PercentToPWM(30);
+    move_power_cam = -1 * c_x * 100/c_x_max;
+    if(c_x_max < -1 * c_x){move_power_cam = 100;}
+    v.y = -1 * PercentToPWM(move_power_cam,60,180);    
   }
-  v = makeV(move_angle,move_power);
+  return v;
+}
+
+int half_coat = 80;
+uint16_t lost_count = 0;
+Vector keeperDashV(Vector ballV,float line_angle,float dis_back){
+  Vector v;
+  if(dis_back > half_coat){
+    debugState = 3;//lostGoal NoCam
+    lost_count = 1000;
+    sound_calSuccess();
+    v = makeV(0,0);
+  }
+  else if(dis_back == round(half_coat * 0.7)){
+    sound_beep();//本当はここでゴールを向きたい
+  }
+  else if(line_angle > 10 && line_angle < 100){//右に白線
+    v.y = -1 * PercentToPWM(100,0,255);
+  }
+  else if(line_angle < -10 && line_angle > -100){//左に白線
+    v.y = PercentToPWM(100,0,255);
+  }
+  else{
+    v = ballV;
+  }
   return v;
 }
   
+  // while(line_angle == 0 || line_angle ==180){
+  //      if(c_x != 400){
+  //        debugState = 4;//withCam
+  //        v = lostGoalV(c_x);
+  //        v = addV(v, echoV(dis_front,dis_right,dis_back,dis_left));
+  //       }else{
+  //        debugState = 3;//NoCam
+  //        v = lostGoalV_Echo(dis_back,dis_right,dis_left);
+  //      }
+  //       moveVector(v, rotatePID(0, 0));
+  // }
+
+ 
 
 
 void setup() {
@@ -372,6 +503,9 @@ void printState(int val){
      break;
     case 6:
      Serial.print("lost line           ");
+     break;
+    case 7:
+     Serial.print("keeper Dash         ");
      break;
     default:
       Serial.print("unknown state       ");
@@ -413,22 +547,50 @@ void motorDebug() {
 //  }
 float remove_angle;
 float remove_power;//打ち消し
-uint16_t lost_count = 0;
+uint16_t keeperDash_count = 0;
 void loop() {//beep
  Vector remove;
    IMU();
    UART();
-  if(line_angle == 400){//ライン未検出時
-    debugState = 6;
-    if(abs(lost_angle) < 100 && abs(lost_angle) > 30 || lost_count >= 1000){//lost_countしきい値要調整 //角から出たときor復帰時
-      v = lostGoalV(c_x);
+  if(debugState == 7){//キーパーダッシュ
+    v = keeperDashV(ballV(),line_angle,line_dis);
+  }
+  else if(line_angle == 400){//ライン未検出時
+    keeperDash_count = 0;
+    if(abs(angleZ) > 90){//復帰した瞬間の回転待ち
+      lost_count++;
+      v = makeV(0,0);
+    }
+    else if((abs(c_x) > 90 && v.x < 0) || lost_count >=400){
+//lost_countしきい値要調整 //角から出たときor復帰時
+       if(c_x != 400){
+         debugState = 4;//withCam
+         v = lostGoalV(c_x);
+         v = addV(v, echoV(dis_front,dis_right,dis_back,dis_left));
+        }else{
+         debugState = 3;//NoCam
+         v = lostGoalV_Echo(dis_back,dis_right,dis_left);
+       }
     }
     else{
+      debugState = 6;//lostLine
       lost_count++;
+      if(lost_count == 399){sound_beep();}
       v = lost_line;  
+      //v = addV(v, echoV(dis_front,dis_right,dis_back,dis_left));
     }
     remove = makeV(0,0);
    }
+   else if(line_angle==500){//T字
+    keeperDash_count = 0;
+    debugState = 1;
+      v.y = 0;
+      if(v.x<0)
+        v.x = -1.5 * v.x;
+  }
+  else if(keeperDash_count > 200){
+   debugState = 7;//キーパーダッシュ 
+  }
   else
   {                    //ライン検出時
     lost_count = 0;
@@ -436,42 +598,39 @@ void loop() {//beep
     v  = ballV();
     v  = addV(v, lineV());   
     v  = addV(v , removeV(remove_angle,remove_power,line_angle,ball_angle,ballV()));
-    v.y = v.y + camera_linetracing_brake(c_x,v,90,130,130);
-  //  v  = cameraV(v,50,110,145); 
-    if(line_angle==500){
-      v.y = 0;
-      if(v.x<0)
-        v.x = -1.5 * v.x;
+    if(abs(line_angle) < 30 || abs(line_angle) > 140){//横移動中のみカメラブレーキ
+      v.y = v.y + camera_linetracing_brake(c_x,v,20,90,90);
     }
-  //  v = echoV(v,line_angle,cx,dis_back,dis_right,dis_left); 
-  if(abs(line_angle) < 120 && v.x <0 ){
-    v.x = 0;
+    v = notToOwnGoal(v);
+    v = addV(v, echoV(dis_front,dis_right,dis_back,dis_left));
+  //  v  = cameraV(v,50,110,145); 
+    if(abs(v.y) < 100 && ball_dis >= 3){keeperDash_count++;}else{keeperDash_count=0;}////////////////////////////////////////////////////6以上にする
   }
 
-    //v.x = v.x * 0.8;
-  }
-  //if(line_angle < 400 && isOnCurve){v.x = v.x*0.6;}
   moveVector(v, rotatePID(0, 0));
 
    
   //デバッグ
-  // printState(debugState);
+   printState(debugState);
   //  Serial.print(",lineD_dis:");Serial.print(lineDf_dis);
    Serial.print(", cx:");Serial.print(c_x);
-   Serial.print(", camBrake:");Serial.print(camera_linetracing_brake(c_x,v,50,100,150));
-   Serial.print("cameraV:(");Serial.print(lostCameraV().x);Serial.print(",");Serial.print(lostCameraV().y);
+   Serial.print("angle,power:(");
+   Serial.print(move_angle_cam);
+   Serial.print(",");
+   Serial.print(move_power_cam);
+  //  Serial.print(", camBrake:");Serial.print(camera_linetracing_brake(c_x,v,50,100,150));
+  //  Serial.print("cameraV:(");Serial.print(lostGoalV(c_x).x);Serial.print(",");Serial.print(lostGoalV(c_x).y);
   //  Serial.print(",");Serial.print(c_y);
   //  Serial.print(",");Serial.print(c_s);Serial.print(",");
   //  Serial.print("rem:");Serial.print(cameraV(v,50,110,145).y);
-  //  Serial.print(" ,F:");Serial.print(dis_front);Serial.print("mm");
-  //  Serial.print(",B:");Serial.print(dis_back);Serial.print("mm");
-  //  Serial.print(",R:");Serial.print(dis_right);Serial.print("mm");
-  //  Serial.print(",L:");Serial.print(dis_left);Serial.print("mm ");
-  //  Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
-  //  Serial.print(",");Serial.print(ball_dis);
-  // //  Serial.print("),");
-  //   Serial.print(", Line_angle,dis=(:");Serial.print(line_angle);
-  //   Serial.print(",");Serial.print(line_dis);
+   Serial.print(",B:");Serial.print(float(dis_back)/10);Serial.print("mm");
+   Serial.print(",R:");Serial.print(float(dis_right)/10);Serial.print("mm");
+   Serial.print(",L:");Serial.print(float(dis_left)/10);Serial.print("mm ");
+   Serial.print(",Ball_angle,dis=(:");Serial.print(ball_angle);
+   Serial.print(",");Serial.print(ball_dis);
+  //  Serial.print("),");
+    Serial.print(", Line_angle,dis=(:");Serial.print(line_angle);
+    Serial.print(",");Serial.print(line_dis);
   //   Serial.print(",  Lball:");
   //   Serial.print(ball_angle_from_line360);
   //   Serial.print(" ,Lsin:");Serial.print(sqrt(ballV().x * ballV().x + ballV().y * ballV().y) *1.00 * cos(abs(ball_angle_from_line360)*PI/180));
@@ -485,10 +644,10 @@ void loop() {//beep
   //  Serial.print(lost_line.x);Serial.print(",");Serial.print(lost_line.y);Serial.print(",");Serial.print(lost_angle);
   //  Serial.print(")");
   //  Serial.print(" ,v:");
-  //  Serial.print("(");
+  // //  Serial.print("(");
   Serial.print(",  ");
    Serial.print(v.x);Serial.print(",");Serial.print(v.y);
-  //  Serial.print(")");
+   Serial.print(")");
 
 
   //ライントレースデバッグ用
