@@ -44,7 +44,7 @@ float dpsX, dpsY, dpsZ;
 
 // Core0で動くタスク：MPU6050読み取り＆角度計算
 void mpuTask(void* parameter) {
-
+  const int beep_pin = 21;//////////////////////////////////////////////////////////
   // キャリブレーション用オフセット変数
   double offsetX = 0.0, offsetY = 0.0, offsetZ = 0.0;
   double gyro_angle_x = 0.0, gyro_angle_y = 0.0, gyro_angle_z = 0.0;
@@ -82,16 +82,16 @@ void mpuTask(void* parameter) {
     vTaskDelay(1 / portTICK_PERIOD_MS); // 1ms待つ
 
     if ((i / 100) % 2 == 0) { ////////////////////////////////////////////////////////////////////////
-      digitalWrite(beep, HIGH);
+      digitalWrite(beep_pin, HIGH);
     } 
     else {
-      digitalWrite(beep, LOW);
+      digitalWrite(beep_pin, LOW);
     }
 
   }
-  digitalWrite(beep, HIGH);///////////////////////////////////////////////////////////////////////////////////
+  digitalWrite(beep_pin, HIGH);///////////////////////////////////////////////////////////////////////////////////
   delay(500);
-  digitalWrite(beep, LOW);  //////////////////////////////////////////////////////////////////////////////////
+  digitalWrite(beep_pin, LOW);  //////////////////////////////////////////////////////////////////////////////////
   offsetX /= 3000.0;
   offsetY /= 3000.0;
   offsetZ /= 3000.0;
