@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "MPU6050")(type "KiCad")(uri "${KIPRJMOD}/MPU6050.kicad_sym")(options "")(descr ""))
+  (lib (name "PL9823-F5(RGBLED)")(type "KiCad")(uri "${KIPRJMOD}/PL9823-F5(RGBLED).kicad_sym")(options "")(descr ""))
+)

@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "MPU")(type "KiCad")(uri "${KIPRJMOD}/MPU.pretty")(options "")(descr ""))
+  (lib (name "PL9823-F5(RGBLED)")(type "KiCad")(uri "${KIPRJMOD}/PL9823-F5(RGBLED).pretty")(options "")(descr ""))
+)
