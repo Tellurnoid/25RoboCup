@@ -2,4 +2,5 @@
   (version 7)
   (lib (name "MPU")(type "KiCad")(uri "${KIPRJMOD}/MPU.pretty")(options "")(descr ""))
   (lib (name "PL9823-F5(RGBLED)")(type "KiCad")(uri "${KIPRJMOD}/PL9823-F5(RGBLED).pretty")(options "")(descr ""))
+  (lib (name "LOGO")(type "KiCad")(uri "${KIPRJMOD}/LOGO.pretty")(options "")(descr ""))
 )
