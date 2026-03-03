@@ -113,6 +113,17 @@ Vector keeperLineV(){
       //白線の中央にいる動き
   return v;
 }
+Vector straightDebugV(){
+  Vector v;
+  if(data_sub.line_angle == 400){
+    v = makeV(reverseAngle(0), 700);
+    return v;
+  }
+  else{
+    v = makeV(reverseAngle(0), 0);
+    return v;
+  }
+}
 
 void loop() {
   IMU();
@@ -121,5 +132,6 @@ void loop() {
   Vector ball_v = ball.ballV(data_sub.ball_angle);
   Vector line_v = line.lineV(data_sub.line_angle, ball_v);
   //main_v = addV(ball_v, line_v);
-  main_v = keeperLineV();
+  //main_v = keeperLineV();
+  main_v = straightDebugV();
 }
