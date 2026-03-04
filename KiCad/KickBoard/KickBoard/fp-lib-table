@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "URAWA_BEOLSAE")(type "KiCad")(uri "${KIPRJMOD}/URAWA_BEOLSAE.pretty")(options "")(descr ""))
+  (lib (name "Logo_Beolsae")(type "KiCad")(uri "${KIPRJMOD}/Logo_Beolsae.pretty")(options "")(descr ""))
+)
