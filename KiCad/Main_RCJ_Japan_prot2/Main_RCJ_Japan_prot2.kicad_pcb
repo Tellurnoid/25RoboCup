@@ -9695,6 +9695,7 @@
 		(property "Value" "Conn_01x02_Socket"
 			(at 1.25 10.4 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "4efcd55e-0c24-402e-8878-cc92da0794f6")
 			(effects
 				(font
