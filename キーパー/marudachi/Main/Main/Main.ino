@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "functions.h"
 #include "IMU.h"
 #include "UART.h"

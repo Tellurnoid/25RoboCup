@@ -1,5 +1,5 @@
 {
-    "port": "/dev/ttyUSB0",
+    "port": "/dev/ttyS9",
     "board": "esp32:esp32:esp32",
     "sketch": "RCJ_Japan_onlyLine2025.ino"
 }
