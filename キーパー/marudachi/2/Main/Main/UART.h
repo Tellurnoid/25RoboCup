@@ -1,6 +1,6 @@
 #ifndef UART_H
 #define UART_H
-#include <Arduino.h>
+
 //-----------------------------------------------------------------------------------------------
 struct __attribute__((packed)) FromSub {  // attributeでパディング(データの途中になんか入る)のを禁止、sizeOf Tが壊れないようにするため
   int16_t ball_angle;

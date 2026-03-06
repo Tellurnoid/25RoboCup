@@ -1,7 +1,6 @@
 #ifndef IMU_H
 #define IMU_H
 
-#include <Arduino.h>
 #include <Wire.h>
 #include <math.h>
 // Core0で更新されるZ軸角度を他のファイルから参照可能に

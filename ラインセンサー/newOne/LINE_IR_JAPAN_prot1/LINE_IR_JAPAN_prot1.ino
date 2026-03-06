@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #define S0 13
 #define S1 12
 #define S2 22
@@ -30,14 +31,14 @@ uint16_t sensorValue_IR[16];
 uint16_t sensorValue_LINE[32];
 
 void setup(){
-  Serial.begin(230400);
+  Serial.begin(115200);
   initMUX();
 }
 
 void loop(){
   //  readMUX();
   //  printAllMUX();
-  readMUX_onlyLINE_debug();
+  readMUX_onlyIR_debug();
 }
 
 void initMUX(){

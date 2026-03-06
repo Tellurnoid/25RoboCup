@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "UART.h"
 
 ToHub to_hub;

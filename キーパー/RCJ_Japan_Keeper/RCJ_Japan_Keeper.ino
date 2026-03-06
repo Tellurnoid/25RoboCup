@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "functions.h"
 #include "UART.h"
 #include "IMU.h"
 #include "functions.h"
@@ -100,10 +101,15 @@ class Keeper{
       uint16_t lost_count = 0;
 
       //キーパー全体で使う
+      float ball_angle = convertAngle(data_sub.ball_angle);
+      float ball_dis   = data_sub.ball_distance;
+      float line_angle = data_sub.line_angle;
+      float line_dis   = data_sub.line_distance; 
       uint16_t keeperDash_count = 0;
       Vector last_line;
 
       //カメラ(line_angle==400時)
+      uint16_t 
       uint16_t c_x_max = 158;//コートの横端から見たゴール
       uint8_t move_power_cam = 0;
       uint8_t move_angle_cam = 0;
@@ -128,11 +134,11 @@ class Keeper{
         }
 
         Vector cameraBrakeV(){
-          Vector v;
+          Vector v = makeV(0,0);
           float power;
           v.x = 0;
           if(c_x == 400){
-            return;
+            return v;
           }
           //カーブに入ったら、startとendの距離に対する割合で打ち消し
           bool is_sliding = (abs(c_x)>curve_start && abs(c_x)<curve_end);
@@ -155,15 +161,16 @@ class Keeper{
         }
 
         Vector removeV(){ 
+            Vector v = makeV(0,0);
             float line_angle360 = angle.to360(line_angle);
             float ball_angle360 = angle.to360(ball_angle);
             float line_left = angle.normalization360(line_angle360 - 90);
             float line_right = angle.normalization360(line_angle360 + 90);
             if(line_angle == 400){
-              return;
+              return v;
             }
             if(ball_angle == 400){
-              return;
+              return v;
             }
             //正面の0度をまたいだとき
             if(line_right < line_left){
@@ -196,11 +203,12 @@ class Keeper{
               }
             float absolute_ballV = sqrt(ballV().x * ballV().x + ballV().y * ballV().y);
             remove_power = 1.00 * absolute_ballV * cos(ball_angleL * PI/180);
-            return makeV(remove_angle,abs(remove_power));
+            v = makeV(remove_angle,abs(remove_power));
+            return v;
         }
 
         Vector notToOwnGoal(Vector v){
-
+          return v;
         }
 
   public:
@@ -211,11 +219,13 @@ class Keeper{
       uint8_t coat_b = 20;
 
         Vector ballV(){
-
+          Vector v = makeV(0,0);
+          return v;
         }
 
         Vector lineV(){
-
+          Vector v = makeV(0,0);
+          return v;
         }
 
         Vector TlineV(){
@@ -232,7 +242,7 @@ class Keeper{
           //ライン見えなくなったらすぐreturn
           if(line_angle == 400){
               state = lost_line;
-              return;
+              return v;
           }
           //T字 
           else if(line_angle == 500){
@@ -262,7 +272,7 @@ class Keeper{
 
           if(keeperDash_count > 100){
             state =  keeper_dash;
-            return;
+            return v;
           }
         }
     
@@ -272,7 +282,7 @@ class Keeper{
           //ゴールを検出できなければ超音波に切り替え
           if(c_x == 400){
               state = back_to_goal_withECHO;
-              return;
+              return v;
           }
           //正面とみなして、後ろにまっすぐ戻る
           else if(abs(c_x) < 30){
@@ -295,7 +305,7 @@ class Keeper{
 
         //ライン未検出時、lastlineに戻る動き
         Vector lostLineV(){
-          Vector v;
+          Vector v = makeV(0,0);
           keeperDash_count = 0;
           //復帰した瞬間の回転待ち
           if(abs(angleZ) > 90){
@@ -305,13 +315,13 @@ class Keeper{
           if(lost_count >= 400){
               sound.beep();
               state = back_to_goal_withCAM;
-              return;
+              return v;
           }
           //横移動でラインアウトしてしまった場合もカメラで戻る(旧機体は必須)
           bool is_over_run = (abs(c_x) > 90 && v.x < 0);//c_xのしきい値要調整
           if(is_over_run){
               state = back_to_goal_withCAM;
-              return;
+              return v;
           }
           lost_count++;
           v = last_line;//lineV()内で更新
@@ -319,7 +329,10 @@ class Keeper{
         }
 
 
-        Vector DashV(){}
+        Vector DashV(){
+          Vector makeV(0,0);
+          return v;
+        }
 
         void main(){
           Vector v;
@@ -345,7 +358,7 @@ class Keeper{
                 v = echo.lostGoalEchoV();
                 break;
           }
-          moveVector(v, rotatePID(0, 0));
+          main_v = reverseAngle(v);
         }
 
         void debugSerial(){

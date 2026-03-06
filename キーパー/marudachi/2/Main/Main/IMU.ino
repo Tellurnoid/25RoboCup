@@ -1,8 +1,5 @@
-#include <Arduino.h>
 #include <Wire.h>
 #include <math.h>
-
-#define beep 21
 
 // MPU6050 レジスタ定義
 #define MPU6050_ADDR         0x68
