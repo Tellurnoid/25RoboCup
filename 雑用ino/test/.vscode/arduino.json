@@ -1,0 +1,5 @@
+{
+    "port": "/dev/ttyADM0",
+    "board": "rp2040:rp2040:rpipico2w",
+    "sketch": "RCJ_Japan_Keeper.ino"
+}

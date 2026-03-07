@@ -38,7 +38,8 @@ void setup(){
 void loop(){
   //  readMUX();
   //  printAllMUX();
-  readMUX_onlyIR_debug();
+  analogWrite(27, 80);
+  readMUX_onlyLINE_debug();
 }
 
 void initMUX(){
@@ -100,21 +101,50 @@ void readMUX_onlyIR_debug(){
       }
       Serial.println();
 }
-void readMUX_onlyLINE_debug(){
-  //読む
-  for(uint8_t ch=0; ch<32; ch++){
-    selectChannel_16(ch);
-    delayMicroseconds(10);
-    //まず一つの配列、rawDataに流し込む
-    sensorValue_LINE[ch]    = analogRead(LINE_COM1);
+// void readMUX_onlyLINE_debug(){
+//   //読む
+//   for(uint8_t ch=0; ch<32; ch++){
+//     selectChannel_16(ch);
+//     delayMicroseconds(50);
+//     //まず一つの配列、rawDataに流し込む
+//     analogRead(LINE_COM1);
+//     analogRead(LINE_COM1);
+//     analogRead(LINE_COM1);
+//     sensorValue_LINE[ch]    = analogRead(LINE_COM1);
 
-           Serial.print(",  LINE: ");
-      for (uint8_t ch = 0; ch < 32; ch++) {
-        Serial.print(",");
-        Serial.print(sensorValue_LINE[ch]);
-      }
-      Serial.println();
+//            Serial.print(",  LINE: ");
+//       for (uint8_t ch = 0; ch < 32; ch++) {
+//         Serial.print(",");
+//         Serial.print(sensorValue_LINE[ch]);
+//       }
+//       Serial.println();
+//   }
+// }
+void readMUX_onlyLINE_debug(){
+
+  for(uint8_t ch=0; ch<32; ch++){
+
+    selectChannel_16(ch);
+    delayMicroseconds(50);
+
+    analogRead(LINE_COM1);
+    analogRead(LINE_COM1);
+    analogRead(LINE_COM1);
+
+    sensorValue_LINE[ch] = analogRead(LINE_COM1);
   }
+
+  Serial.print("LINE:");
+
+  for (uint8_t i = 0; i < 32; i++) {
+      Serial.print(",");
+        if(sensorValue_LINE[i] < 10){Serial.print("   ");}
+        else if(sensorValue_LINE[i] < 100){Serial.print("  ");}
+        else if(sensorValue_LINE[i] < 1000){Serial.print(" ");}
+      Serial.print(sensorValue_LINE[i]);
+  }
+
+  Serial.println();
 }
 
   void printAllMUX(){

@@ -1,0 +1,4 @@
+{
+    "port": "/dev/tty.usbmodem1301",
+    "board": "esp32:esp32:esp32"
+}

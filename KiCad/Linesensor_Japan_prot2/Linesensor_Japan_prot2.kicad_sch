@@ -3278,7 +3278,7 @@
 		)
 		(uuid "da53fa82-ae10-4d66-b490-7523561b4d60")
 	)
-	(text "100Ω"
+	(text "22Ω(なくてもOK)"
 		(exclude_from_sim no)
 		(at 94.234 297.18 0)
 		(effects

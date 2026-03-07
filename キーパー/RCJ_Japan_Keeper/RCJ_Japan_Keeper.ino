@@ -3,7 +3,7 @@
 #include "UART.h"
 #include "IMU.h"
 #include "functions.h"
-
+float c_x;
 class Sound{//IMU.inoの出力は独立しているため注意
   public:
     const int beep_pin = 21;
@@ -69,6 +69,15 @@ class AngleOperation{
 
 struct Echo{
   public:
+    //前から時計回り(前=N 右=E 後=W 左=N)
+    int16_t echo_N   = from_hub.echo0;
+    int16_t echo_NE  = from_hub.echo1;
+    int16_t echo_E   = from_hub.echo2;
+    int16_t echo_SE  = from_hub.echo;
+    int16_t echo_S   = from_hub.echo;
+    int16_t echo_SW  = from_hub.echo;
+    int16_t echo_W   = from_hub.echo;
+    int16_t echo_NW  = from_hub.echo;
     Vector lostGoalEchoV(){
         Vector v;
         v = makeV(0,0);
@@ -79,11 +88,15 @@ struct Echo{
 
 class Keeper{
   private:
-        //EchoとSoundに依存
+        //class系
       Echo echo;
       AngleOperation angle;
       Sound sound;
+
+
+
       //ライントレース
+      int line_kp = 6;
       float lineDf_dis;
       float lineDf_angle;
       Derivative lineD_dis;
@@ -94,7 +107,7 @@ class Keeper{
       //打ち消し
       float ball_angleL;//白線の法線から見たボールの角度、360度の方式
       float remove_angle;
-      float remove_power;//打ち消し
+      float remove_power;//打ち消しreturn v;
 
       //キーパーダッシュ
       int half_coat = 80;//170/2
@@ -109,7 +122,6 @@ class Keeper{
       Vector last_line;
 
       //カメラ(line_angle==400時)
-      uint16_t 
       uint16_t c_x_max = 158;//コートの横端から見たゴール
       uint8_t move_power_cam = 0;
       uint8_t move_angle_cam = 0;
@@ -185,7 +197,7 @@ class Keeper{
                 }
                 if(abs(ball_angleL) > 180){
                   ball_angleL = (360 - ball_angleL) * ball_angleL/abs(ball_angleL);
-                }
+                } uint16_t 
               }
               //正面の0度をまたいでいないとき
               else{
@@ -220,16 +232,22 @@ class Keeper{
 
         Vector ballV(){
           Vector v = makeV(0,0);
+          if(ball_angle != 400){
+            v = makeV(ball_angle, PercentToPWM(80,0,780));//最大 780 の 80%
+            return v;
+          }
           return v;
         }
 
         Vector lineV(){
           Vector v = makeV(0,0);
+          float power = line_dis * kp;//現在比例のみ
+          float angle = line_angle;
+          v = makeV(angle, power);
           return v;
         }
 
-        Vector TlineV(){
-          Vector v;
+        Vector TlineV(Vector v){
           keeperDash_count = 0;
           v.y = 0;
           if(v.x<0)
@@ -238,15 +256,10 @@ class Keeper{
         }
 
         Vector lineTraceV(){//ライン検出時、キーパーの動き
-          Vector v;
+          Vector v = makeV(0,0);
           //ライン見えなくなったらすぐreturn
           if(line_angle == 400){
               state = lost_line;
-              return v;
-          }
-          //T字 
-          else if(line_angle == 500){
-              v = TlineV();
               return v;
           }
           //ライントレース
@@ -259,6 +272,11 @@ class Keeper{
                 v = addV(v, cameraBrakeV());
             }
             v = notToOwnGoal(v);
+            //T字
+            if(line_angle == 500){
+              v = TlineV(v);
+              return v;
+            }
             return v;
           }
           //キーパーダッシュを検討する条件
@@ -330,10 +348,31 @@ class Keeper{
 
 
         Vector DashV(){
-          Vector makeV(0,0);
+          Vector v = makeV(0,0);
+
+          //前に白線がある場合は除外、後ろの超音波見てボール追う
+          bool is_line_front = (abs(line_angle) < 45)       ? true : false;
+          bool keep_dashing = (is_line_front || line_angle) ? true : false;
+          if(keep_dashing && echo.echo_W < 400){
+            v = ballV();
+          }
+          
+          //タッチライン踏んだときの処理
+          bool is_line_side = (abs(line_angle) > 30 && abs(line_angle) < 140) ? true : false;
+          if(is_line_side){
+            //右
+            if(line_angle > 0){
+              v.x = v.x * -1 - 500;
+            }
+            //左
+            else{
+              v.x = v.x * -1 + 500;
+            }
+          }
           return v;
         }
 
+        Vector main_v;
         void main(){
           Vector v;
           switch(state){
