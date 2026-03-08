@@ -24,22 +24,26 @@ const uint8_t ch_LINE[32] = {
 };
 
 //ch対応なし、並べ替え前の仮格納用
-uint16_t rawData_IR[16];
-uint16_t rawData_LINE[32];
+int16_t rawData_IR[16];
+int16_t rawData_LINE[32];
 // 読み取り結果格納用(半時計回り)
-uint16_t sensorValue_IR[16];
-uint16_t sensorValue_LINE[32];
+int16_t sensorValue_IR[16];
+int16_t sensorValue_LINE[32];
+long calcValue_LINE[32];
 
 void setup(){
   Serial.begin(115200);
   initMUX();
+  while(!Serial);
+  calibration_line();
 }
 
 void loop(){
   //  readMUX();
   //  printAllMUX();
-  analogWrite(27, 80);
-  readMUX_onlyLINE_debug();
+  analogWrite(27, 200);
+  readMUX_onlyLINE_debug_relative();
+  // readMUX_onlyLINE_debug();
 }
 
 void initMUX(){
@@ -123,14 +127,9 @@ void readMUX_onlyIR_debug(){
 void readMUX_onlyLINE_debug(){
 
   for(uint8_t ch=0; ch<32; ch++){
-
     selectChannel_16(ch);
     delayMicroseconds(50);
-
     analogRead(LINE_COM1);
-    analogRead(LINE_COM1);
-    analogRead(LINE_COM1);
-
     sensorValue_LINE[ch] = analogRead(LINE_COM1);
   }
 
@@ -146,6 +145,95 @@ void readMUX_onlyLINE_debug(){
 
   Serial.println();
 }
+
+void calibration_line(){
+  int how_much_count = 500;
+ for(int count=0; count<how_much_count; count++){
+    //読む
+  for(uint8_t ch=0; ch<16; ch++){
+    analogWrite(27, 200);
+    selectChannel_16(ch);
+     uint32_t start = micros();
+     delay(1);
+    analogRead(LINE_COM1);//捨て読み
+    rawData_LINE[ch] = analogRead(LINE_COM1);
+    //delayMicroseconds(10);
+    analogRead(LINE_COM2);//捨て読み
+    rawData_LINE[16+ch] = analogRead(LINE_COM2);
+  }
+  for(uint8_t i = 0; i < 32; i++){
+     calcValue_LINE[i] += rawData_LINE[ch_LINE[i]];
+  }
+  Serial.println(count);
+ }
+  Serial.println("--------------------calc--------------------");
+  for(uint8_t i = 0; i < 32; i++){
+     calcValue_LINE[i] = calcValue_LINE[i]/how_much_count;
+     Serial.print(calcValue_LINE[i]);
+     Serial.print(",");
+  }
+  Serial.println();
+  Serial.println("--------------------------------------------");
+  Serial.println();
+}
+
+void readMUX_onlyLINE_debug_relative(){
+    //読む
+  for(uint8_t ch=0; ch<16; ch++){
+    selectChannel_16(ch);
+    //delay(1);
+     //delayMicroseconds(2000);
+     uint32_t start = micros();
+     while (micros() - start < 30) {}
+    analogRead(LINE_COM1);//捨て読み
+    rawData_LINE[ch] = analogRead(LINE_COM1);
+    analogRead(LINE_COM2);//捨て読み
+    rawData_LINE[16+ch] = analogRead(LINE_COM2);
+    // delayMicroseconds(300);
+   // delay(20);
+//  start = micros();
+// while (micros() - start < 500) {}  // 0.5ms
+
+  }
+  for(uint8_t i = 0; i < 32; i++){
+     sensorValue_LINE[i] = calcValue_LINE[i] - rawData_LINE[ch_LINE[i]];
+     if(sensorValue_LINE[i] > 0){Serial.print("+");}
+     if(abs(sensorValue_LINE[i]) < 10){Serial.print("   ");}
+     else if(abs(sensorValue_LINE[i]) < 100){Serial.print("  ");}
+     else if(abs(sensorValue_LINE[i]) < 1000){Serial.print(" ");}
+     Serial.print(sensorValue_LINE[i]);Serial.print(",");
+  }  
+  Serial.println();
+}
+
+
+void readMUX_onlyLINE_debug_relative2(){
+    //読む
+  for(uint8_t ch=0; ch<16; ch++){
+    selectChannel_16(ch);
+    //delay(1);
+     //delayMicroseconds(2000);
+     uint32_t start = micros();
+     while (micros() - start < 30) {}
+     analogRead(LINE_COM1);//捨て読み
+    rawData_LINE[ch] = analogRead(LINE_COM1);
+    analogRead(LINE_COM2);//捨て読み
+    rawData_LINE[16+ch] = analogRead(LINE_COM2);
+    // delayMicroseconds(300);
+   // delay(20);
+  }
+  for(uint8_t i = 0; i < 32; i++){
+     sensorValue_LINE[i] = calcValue_LINE[i] - rawData_LINE[ch_LINE[i]];
+     if(sensorValue_LINE[i] > 200){
+      Serial.print("***");
+      }else{
+      Serial.print("   ");
+     }
+     Serial.print("");
+  }  
+  Serial.println();
+}
+
 
   void printAllMUX(){
       Serial.print("IR: ");
