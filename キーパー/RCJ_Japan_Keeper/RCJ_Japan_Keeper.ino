@@ -2,27 +2,27 @@
 #include "functions.h"
 #include "UART.h"
 #include "IMU.h"
-#include "functions.h"
+
 float c_x;
+const int beep = 23;
 class Sound{//IMU.inoの出力は独立しているため注意
   public:
-    const int beep_pin = 21;
     void init(){
-        pinMode(beep_pin, OUTPUT);
+        pinMode(beep, OUTPUT);
     }
-    void success(){
-      digitalWrite(beep_pin, HIGH);
+    void successSound(){
+      digitalWrite(beep, HIGH);
       delay(50);
-      digitalWrite(beep_pin, LOW);
+      digitalWrite(beep, LOW);
       delay(50);
-      digitalWrite(beep_pin, HIGH);
+      digitalWrite(beep, HIGH);
       delay(30);
-      digitalWrite(beep_pin, LOW);      
+      digitalWrite(beep, LOW);      
     }
-    void beep(){
-       digitalWrite(beep_pin, HIGH);
+    void beepSound(){
+       digitalWrite(beep, HIGH);
        delay(50);
-       digitalWrite(beep_pin, LOW);
+       digitalWrite(beep, LOW);
     }
   private:
 
@@ -68,22 +68,23 @@ class AngleOperation{
 };
 
 struct Echo{
+  private:
+
   public:
     //前から時計回り(前=N 右=E 後=W 左=N)
-    int16_t echo_N   = from_hub.echo0;
-    int16_t echo_NE  = from_hub.echo1;
-    int16_t echo_E   = from_hub.echo2;
-    int16_t echo_SE  = from_hub.echo;
-    int16_t echo_S   = from_hub.echo;
-    int16_t echo_SW  = from_hub.echo;
-    int16_t echo_W   = from_hub.echo;
-    int16_t echo_NW  = from_hub.echo;
+    int16_t echo_N   = data_hub.echo_0;
+    int16_t echo_NE  = data_hub.echo_1;
+    int16_t echo_E   = data_hub.echo_2;
+    int16_t echo_SE  = data_hub.echo_3;
+    int16_t echo_S   = data_hub.echo_4;
+    int16_t echo_SW  = data_hub.echo_5;
+    int16_t echo_W   = data_hub.echo_6;
+    int16_t echo_NW  = data_hub.echo_7;
     Vector lostGoalEchoV(){
         Vector v;
-        v = makeV(0,0);
+        v = makeV(reverseAngle(0),0);
         return v;
     }
-  private:
 };
 
 class Keeper{
@@ -92,13 +93,17 @@ class Keeper{
       Echo echo;
       AngleOperation angle;
       Sound sound;
-
-
+      Gyro gyro;
 
       //ライントレース
       int line_kp = 6;
       float lineDf_dis;
       float lineDf_angle;
+      struct Derivative {
+        unsigned long last_time = 0;
+        float last_value = 0;
+        float value_d = 0;
+      };
       Derivative lineD_dis;
       Derivative lineD_angle;
       bool isOnCurve = false;
@@ -118,8 +123,10 @@ class Keeper{
       float ball_dis   = data_sub.ball_distance;
       float line_angle = data_sub.line_angle;
       float line_dis   = data_sub.line_distance; 
+      float angleZ     = gyro.getAngle();
       uint16_t keeperDash_count = 0;
       Vector last_line;
+      Vector main_v;
 
       //カメラ(line_angle==400時)
       uint16_t c_x_max = 158;//コートの横端から見たゴール
@@ -129,6 +136,16 @@ class Keeper{
       const uint16_t curve_start = 50;//要調整//////////////////////////////////////////////////
       const uint16_t curve_end = 90;
 
+      //超音波(line_angle==400時)
+      uint8_t coat_w_forPower = 70;//比例定数、切片用
+      uint8_t coat_h =  67;
+      uint8_t coat_h_forPower =  38;
+      uint8_t coat_b = 20;
+
+
+
+
+  public:
       enum State{
         out_of_running,
         calibrating,
@@ -146,7 +163,7 @@ class Keeper{
         }
 
         Vector cameraBrakeV(){
-          Vector v = makeV(0,0);
+          Vector v = makeV(reverseAngle(0),0);
           float power;
           v.x = 0;
           if(c_x == 400){
@@ -168,12 +185,12 @@ class Keeper{
               }
             }
           }
-         v = makeV(90,PercentToPWM(power,90,255));//角度90度で正しい？要動確///////////////////////
+         v = makeV(reverseAngle(90),PercentToPWM(power,90,255));//角度90度で正しい？要動確///////////////////////
          return v;
         }
 
         Vector removeV(){ 
-            Vector v = makeV(0,0);
+            Vector v = makeV(reverseAngle(0),0);
             float line_angle360 = angle.to360(line_angle);
             float ball_angle360 = angle.to360(ball_angle);
             float line_left = angle.normalization360(line_angle360 - 90);
@@ -197,7 +214,7 @@ class Keeper{
                 }
                 if(abs(ball_angleL) > 180){
                   ball_angleL = (360 - ball_angleL) * ball_angleL/abs(ball_angleL);
-                } uint16_t 
+                }  
               }
               //正面の0度をまたいでいないとき
               else{
@@ -215,7 +232,7 @@ class Keeper{
               }
             float absolute_ballV = sqrt(ballV().x * ballV().x + ballV().y * ballV().y);
             remove_power = 1.00 * absolute_ballV * cos(ball_angleL * PI/180);
-            v = makeV(remove_angle,abs(remove_power));
+            v = makeV(reverseAngle(remove_angle),abs(remove_power));
             return v;
         }
 
@@ -223,27 +240,24 @@ class Keeper{
           return v;
         }
 
-  public:
-      //超音波(line_angle==400時)
-      uint8_t coat_w_forPower = 70;//比例定数、切片用
-      uint8_t coat_h =  67;
-      uint8_t coat_h_forPower =  38;
-      uint8_t coat_b = 20;
+        void initMain() {
+          gyro.initGyro();
+        }
 
         Vector ballV(){
-          Vector v = makeV(0,0);
+          Vector v = makeV(reverseAngle(0),0);
           if(ball_angle != 400){
-            v = makeV(ball_angle, PercentToPWM(80,0,780));//最大 780 の 80%
+            v = makeV(reverseAngle(ball_angle), PercentToPWM(80,0,780));//最大 780 の 80%
             return v;
           }
           return v;
         }
 
         Vector lineV(){
-          Vector v = makeV(0,0);
-          float power = line_dis * kp;//現在比例のみ
+          Vector v = makeV(reverseAngle(0),0);
+          float power = line_dis * line_kp;//現在比例のみ
           float angle = line_angle;
-          v = makeV(angle, power);
+          v = makeV(reverseAngle(angle), power);
           return v;
         }
 
@@ -256,7 +270,7 @@ class Keeper{
         }
 
         Vector lineTraceV(){//ライン検出時、キーパーの動き
-          Vector v = makeV(0,0);
+          Vector v = makeV(reverseAngle(0),0);
           //ライン見えなくなったらすぐreturn
           if(line_angle == 400){
               state = lost_line;
@@ -296,7 +310,7 @@ class Keeper{
     
         //カメラを使って戻る動き
         Vector lostGoalCameraV(){
-          Vector v = makeV(0,0);
+          Vector v = makeV(reverseAngle(0),0);
           //ゴールを検出できなければ超音波に切り替え
           if(c_x == 400){
               state = back_to_goal_withECHO;
@@ -304,7 +318,7 @@ class Keeper{
           }
           //正面とみなして、後ろにまっすぐ戻る
           else if(abs(c_x) < 30){
-              v = makeV(180,150);
+              v = makeV(reverseAngle(180),150);
               return v;
           }
           else if(c_x > 0){
@@ -323,15 +337,15 @@ class Keeper{
 
         //ライン未検出時、lastlineに戻る動き
         Vector lostLineV(){
-          Vector v = makeV(0,0);
+          Vector v = makeV(reverseAngle(0),0);
           keeperDash_count = 0;
           //復帰した瞬間の回転待ち
           if(abs(angleZ) > 90){
-            v = makeV(0,0);
+            v = makeV(reverseAngle(0),0);
           }
           //ラインを見失って一定時間経過後、カメラで戻る
           if(lost_count >= 400){
-              sound.beep();
+              sound.beepSound();
               state = back_to_goal_withCAM;
               return v;
           }
@@ -348,7 +362,7 @@ class Keeper{
 
 
         Vector DashV(){
-          Vector v = makeV(0,0);
+          Vector v = makeV(reverseAngle(0),0);
 
           //前に白線がある場合は除外、後ろの超音波見てボール追う
           bool is_line_front = (abs(line_angle) < 45)       ? true : false;
@@ -372,15 +386,14 @@ class Keeper{
           return v;
         }
 
-        Vector main_v;
         void main(){
           Vector v;
           switch(state){
               case out_of_running:
-                v = makeV(0,0);
+                v = makeV(reverseAngle(0),0);
                 break;
               case calibrating:
-                v = makeV(0,0);
+                v = makeV(reverseAngle(0),0);
                 break;
               case line_tracing:
                 v = lineTraceV();
@@ -397,7 +410,7 @@ class Keeper{
                 v = echo.lostGoalEchoV();
                 break;
           }
-          main_v = reverseAngle(v);
+          main_v = v;
         }
 
         void debugSerial(){
@@ -409,15 +422,15 @@ class Keeper{
 Sound sound;
 Echo echo;
 Keeper keeper;
+Gyro gyro;
 void setup(){
-    sound.init();
     initUART();
-    initIMU();
-    initMotor();
+    sound.init();
+    keeper.initMain();
 }
 
 void loop(){
-    IMU();
-    UART();
+    updateUART();
+    gyro.updateGyro();
     keeper.main();
 }

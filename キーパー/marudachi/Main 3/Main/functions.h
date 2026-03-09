@@ -1,5 +1,7 @@
-#include <Arduino.h>
-
+struct Vector {
+  float x;
+  float y;
+};
 
 Vector makeV(float deg, float speed) {  //角度と速さからベクトルを作る
   Vector v;

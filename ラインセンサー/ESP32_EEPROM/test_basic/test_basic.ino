@@ -44,8 +44,7 @@ void setup() {
     Serial.println("EEPROM init failed");
    }
 
-
-  EEPROM_write_read_test();
+  //EEPROM_write_read_test();
 
 
 //   // 読み込み (位置,struct)
@@ -65,4 +64,6 @@ void setup() {
 }
 
 void loop() {
+  EEPROM_write_read_test();
+  delay(2000);
 }

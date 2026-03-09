@@ -1,20 +1,23 @@
+#include <Arduino.h>
 #include "UART.h"
+#include "echo.h"
 #include <SerialPIO.h>
 
-SerialPIO PIOSerial1(1, 0); // TX, RX
 
+// ToHub to_hub;
 
-FromMain from_main;
-FromMain data_main;
+// FromHub from_hub;
+// FromHub data_hub;
 
-ToMain to_main;
+// FromSub from_sub;
+// FromSub data_sub;
 
-void initUART() {
+void UART::init() {
   Serial.begin(115200);
   PIOSerial1.begin(115200);
 }
 
-void UART() {
+void UART::update() {
   if (readPacket(PIOSerial1, from_main) == READ_OK) {
     data_main = from_main;
     Serial.println(from_main.content);
@@ -35,3 +38,17 @@ void UART() {
 
   sendPacket(PIOSerial1, to_main);
 }
+
+// void UART::flushUntilHeader(HardwareSerial *s) {  // ヘッダーがくるまでデータを破棄し続ける
+//   while (s->available()) {
+//     if (s->read() == 0xAA) break;
+//   }
+// }
+
+// void Data::updateData() {
+// //  dp.robot_angle = gyro.getAngle();
+// }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+

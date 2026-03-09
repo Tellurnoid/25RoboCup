@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #pragma once
 
 //-----------------------------------------------------------------------------------------------
@@ -20,8 +19,8 @@ struct __attribute__((packed)) FromSub {  // attributeでパディング(デー�
   int16_t line_angle;
   int16_t line_distance;
 };
-extern FromSub from_sub;
-extern FromSub data_sub;
+// extern FromSub from_sub;
+// extern FromSub data_sub;
 
 struct __attribute__((packed)) ToSub {
   int16_t ball_angle;
@@ -49,8 +48,8 @@ struct __attribute__((packed)) FromHub {  // attributeでパディング(デー�
   uint8_t content_id;
   int16_t content;
 };
-extern FromHub from_hub;
-extern FromHub data_hub;
+// extern FromHub from_hub;
+// extern FromHub data_hub;
 
 struct __attribute__((packed)) ToHub {
   float vx;
@@ -58,7 +57,7 @@ struct __attribute__((packed)) ToHub {
   int16_t omega;
   int16_t content;
 };
-extern ToHub to_hub;
+// extern ToHub to_hub;
 //-----------------------------------------------------------------------------------------------
 // ==== utility ====
 
@@ -251,5 +250,53 @@ ReadResult readPacket(HardwareSerial &seri, readT &d) {
 
 // =============================================================
 
-void initUART();
-void UART();
+// void initUART();
+// void UART();
+class UART {
+  private:
+    ToHub to_hub;
+
+    FromHub from_hub;
+    FromHub data_hub;
+
+    FromSub from_sub;
+    FromSub data_sub;
+  public:
+    void initUART();
+    void updateUART();
+};
+
+class Data{
+  public:
+    struct DataPacket {
+      int16_t ball_angle;
+      int16_t ball_distance;
+      int16_t line_angle;
+      int16_t line_distance;
+
+      int16_t vx;
+      int16_t vy;
+      int16_t move_x;
+      int16_t move_y;
+      
+      int16_t echo_0;
+      int16_t echo_1;
+      int16_t echo_2;
+      int16_t echo_3;
+      int16_t echo_4;
+      int16_t echo_5;
+      int16_t echo_6;
+      int16_t echo_7;
+
+      uint8_t id;
+      uint8_t ack;
+      uint8_t content_id;
+      int16_t content;
+
+      int16_t robot_angle;
+    };
+
+    DataPacket dp;
+
+    void updateData();
+};
