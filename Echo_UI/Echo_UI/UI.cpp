@@ -7,21 +7,27 @@
 #include <Fonts/FreeSans9pt7b.h>              //値調整UI用
 #include "UI.h"
 #include "button.h"
-#include "commands.h"
+#include "sound.h"
+//#include "commands.h"
 
     void UI::init() {
       Wire.setSDA(4);
       Wire.setSCL(5);
       Wire.begin();
       Wire.setClock(400000);   // 400kHz
-
       if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
         while (true);
       }
 
+    }
+
+    void UI::startUp(){
       display.clearDisplay();
-      display.setTextSize(1);
+      display.setTextSize(3);
       display.setTextColor(SSD1306_WHITE);
+      display.setCursor(0,2);
+      display.print("BEOLSAE");
+      display.display();
     }
 
     //デバッグ用
@@ -32,27 +38,44 @@
     }
 
     void UI::main(){
-      switch(app){
-        case home:
+ 
+
+      back  = button.read(button.BACK);
+      enter = button.read(button.ENTER);
+      left  = button.read(button.LEFT);
+      right = button.read(button.RIGHT);
+      switch(app[app_state].num){
+        case 0:
          app_home();
          break;
-        case game:
-         app_game();
-         break;
-        case led:
-         app_led();
-         break;
-        case kicker:
-         app_kicker();
-         break;
-        case view_vals:
-         app_view_vals();
-         break;
-        case logo:
+        case 1:
          app_logo();
          break;
-      }
+        case 2:
+         app_game();
+         break;
+        case 3:
+         app_led();
+         break;
+        case 4:
+         app_kicker();
+         break;
+        case 5:
+         app_view_vals();
+         break;
 
+      }
+      if(left==1 || right==1)
+        sound.cursor();
+      if(enter==1)
+        sound.cursor();
+      if(back==1)
+        sound.back();
+        
+      // display.setTextSize(1);
+      // display.setTextColor(SSD1306_WHITE);
+      // display.setCursor(0,0);
+      // display.print(app[app_state].name);
       //絵画
       if ((millis() - last_time) >= draw_time) {
         last_time = millis();
@@ -62,57 +85,332 @@
 
     void UI::app_home(){
       display.clearDisplay();
-      display.setCursor(0,0);
+      display.setCursor(15,20);
+      display.setTextSize(2);
       display.setTextColor(1);
-      for (int i=0; i<4; i++){
-        display.println(button.buttonStates[i]);
+      display.print(app[cursor_home].name);
+      //ボタンの状態表示
+      if(left != 0){
+        display.fillRect(0,0,2,64,1);        
+      }    
+      if(right != 0){
+        display.fillRect(126,0,128,64,1);
       }
+
+      //決定
+      if(enter==1){
+        if(cursor_home == 0){
+          //表示専用カーソルのためエラー音
+        }
+        else{
+          app_state = (cursor_home + NUM_APP) % NUM_APP;
+          sound.cursor();
+          // app_state = cursor_home - 1;
+          // if(app_state<0){
+          //   app_state = NUM_APP;
+          // }
+        }
+      }
+      //カーソル移動
+      //左
+      if(left==1)
+        cursor_home = ((cursor_home + NUM_APP - 1) % NUM_APP);
+
+      //右
+      if(right==1)
+        cursor_home = ((cursor_home + 1) % NUM_APP);
+      
+      //戻るキーは無効なのでエラー音など
+      if(back!=0){}
+
+      
     }
    
-    void UI::app_game(){}
-    void UI::app_led(){}
-    void UI::app_kicker(){}
-    void UI::app_logo(){}
+    void UI::app_game(){
+      display.clearDisplay();
+      display.setCursor(15,20);
+      display.setTextSize(2);
+      display.setTextColor(1);
+      if(cursor_val_int == 0){
+        display.print("ATACK");
+      }
+      else if(cursor_val_int == 1){
+        display.print("DIFENCE");
+      }
+      if(enter!=2 && is_on_game ==true){
+        display.fillRect(0,0,128,64,1);
+      }
+
+      //カーソル移動
+      //左
+      if(left==1){
+        cursor_val_int = ((cursor_val_int + NUM_MODE - 1) % NUM_MODE);
+        is_on_game = false;
+        }
+      //右
+      if(right==1){
+        cursor_val_int = ((cursor_val_int + 1) % NUM_MODE);
+        is_on_game = false;
+        }
+      if(back!=0){
+        app_state = 0;
+        is_on_game = false;
+        display.fillRect(0,62,128,64,1);
+      }
+      if(enter==1){
+        is_on_game = !is_on_game;
+        //ここに試合開始コマンド
+      }
+
+    }
+    void UI::app_led(){
+      int LEDPWM = 0;
+      changeIntVal("LED",LEDPWM,0,255,100);
+    }
+    void UI::app_kicker(){
+      display.clearDisplay();
+      display.setCursor(15,20);
+      display.setTextSize(3);
+      display.setTextColor(1);
+      display.print("KICKER");
+      if(back!=0){
+        app_state = 0;
+        display.fillRect(0,62,128,64,1);
+      }
+    }
+    void UI::app_logo(){
+      display.clearDisplay();
+      display.setCursor(15,20);
+      display.setTextSize(3);
+      display.setTextColor(1);
+      display.print("LOGO");
+      if(back!=0){
+        app_state = 0;
+        display.fillRect(0,62,128,64,1);
+      }
+    }
 
     void UI::app_view_vals(){
-      switch(app_in_view){
-        case in_view_select:
+      switch(App_in_view[in_view_state].num){
+        case 0:
          app_in_view_select();
          break;
-        case in_view_line:
+        case 1:
          app_in_view_line();
          break;
-        case in_view_ball:
+        case 2:
          app_in_view_ball();
          break;
-        case in_view_echo:
+        case 3:
          app_in_view_echo();
          break;
-        case in_view_cam:
+        case 4:
          app_in_view_cam();
          break;
-        case in_view_user_vals:
+        case 5:
          app_in_view_user_vals();
          break;
+      }
+      if(back!=0){
+        app_state = 0;
+        display.fillRect(0,62,128,64,1);
       }
     }
         //view_vals()関数の選択画面
         void UI::app_in_view_select(){
-  
+          display.clearDisplay();
+          display.setCursor(15,20);
+          display.setTextSize(1);
+          display.setTextColor(1);
+          display.print(App_in_view[cursor_home].name);
+          //ボタンの状態表示
+          if(left != 0){
+            display.fillRect(0,0,2,64,1);        
+          }    
+          if(right != 0){
+            display.fillRect(126,0,128,64,1);
+          }
+
+          //決定
+          if(enter==1){
+            if(cursor_home == 0){
+              //表示専用カーソルのためエラー音
+            }
+            else{
+              in_view_state = (cursor_home + NUM_IN_VIEW) % NUM_IN_VIEW;
+              // app_state = cursor_home - 1;
+              // if(app_state<0){
+              //   app_state = NUM_APP;
+              // }
+            }
+          }
+          //カーソル移動
+          //左
+          if(left==1)
+            cursor_home = ((cursor_home + NUM_APP - 1) % NUM_APP);
+          //右
+          if(right==1)
+            cursor_home = ((cursor_home + 1) % NUM_APP);
         }
         void UI::app_in_view_line(){
-
+          display.clearDisplay();
+          display.setCursor(15,20);
+          display.setTextSize(3);
+          display.setTextColor(1);
+          display.print(App_in_view[in_view_state].name);
+          if(back!=0){
+            in_view_state = 0;
+            display.fillRect(0,62,128,64,1);
+          }
         }
         void UI::app_in_view_ball(){
-
+          display.clearDisplay();
+          display.setCursor(15,20);
+          display.setTextSize(3);
+          display.setTextColor(1);
+          display.print(App_in_view[in_view_state].name);
+          if(back!=0){
+            in_view_state = 0;
+            display.fillRect(0,62,128,64,1);
+          }
         }
         void UI::app_in_view_echo(){
-
+          display.clearDisplay();
+          display.setCursor(15,20);
+          display.setTextSize(3);
+          display.setTextColor(1);
+          display.print(App_in_view[in_view_state].name);
+          if(back!=0){
+            in_view_state = 0;
+            display.fillRect(0,62,128,64,1);
+          }
         }
         void UI::app_in_view_cam(){
-
+          display.clearDisplay();
+          display.setCursor(15,20);
+          display.setTextSize(3);
+          display.setTextColor(1);
+          display.print(App_in_view[in_view_state].name);
+          if(back!=0){
+            in_view_state = 0;
+            display.fillRect(0,62,128,64,1);
+          }
         }
         void UI::app_in_view_user_vals(){
-
+          display.clearDisplay();
+          display.setCursor(15,20);
+          display.setTextSize(3);
+          display.setTextColor(1);
+          display.print(App_in_view[in_view_state].name);
+          if(back!=0){
+            in_view_state = 0;
+            display.fillRect(0,62,128,64,1);
+          }
+       }
+        //任意のint変数を変更するUI(参照渡し)
+        void UI::changeIntVal(const char* name,int &val ,int min,int max,int default_val){
+            bool is_changed = false;
+            display.clearDisplay();
+            display.setCursor(0,0);
+            display.setTextSize(1);
+            display.setTextColor(1);
+            display.print("change value:[ ");
+            display.print(name);
+            display.println(" ]");
+            //display.print(count);
+            display.setCursor(38,20);
+            display.setTextSize(3);
+            display.setTextColor(1);
+            display.print(cursor_val_int);
+            if(left==0 && right==0){
+              count = 0;
+            }
+            //ボタンの状態表示
+            if(left != 0){
+              display.fillTriangle(20,32,25,27,25,37,1);      
+              is_changed = false; 
+              count++;
+            }    
+            if(right != 0){
+              display.fillTriangle(108,32,98,27,98,37,1);
+              is_changed = false;
+              count++;
+            }
+            //決定
+            if(enter==1){
+              val = cursor_val_int;  
+            }
+            if(enter!=0 && is_changed == false){
+              display.setCursor(68,52);
+              display.setTextSize(1);
+              display.print("changed!");    
+              is_changed = true;
+            }
+            //カーソル移動
+            //左
+            if(left==1)
+              cursor_val_int = ((cursor_val_int + max - 1) % max);
+            //右
+            if(right==1)
+              cursor_val_int = ((cursor_val_int + 1) % max);
+            //左(加速)
+            if(left==2){
+              if(count > 30){
+                cursor_val_int = ((cursor_val_int + max - 2) % max);
+              }
+              else{
+                count++;
+              }
+            }
+            //右(加速)
+            if(right==2){
+                if(count > 30){
+                  cursor_val_int = ((cursor_val_int + 2) % max);
+                }
+                else{
+                  count++;
+                }
+                
+            }
+              
+            //ホームに戻る
+            if(back!=0){app_state = 0;}
         }
+
+        void UI::changeBoolVal(const char* name,bool &val,bool default_val){
+            display.clearDisplay();
+            display.setCursor(0,0);
+            display.setTextSize(1);
+            display.setTextColor(1);
+            display.print("change bool:[ ");
+            display.print(name);
+            display.print(" ]");
+            display.setCursor(58,20);
+            display.setTextSize(3);
+            if(val == true){
+              display.print("true"); 
+            }
+            else{
+              display.print("false");
+            }
+            //ボタンの状態表示 
+            if(right != 0 || left != 0){
+              display.fillCircle(120,32,5,1);
+            }
+            //決定
+            if(enter==1){
+              val = cursor_val_int;  
+            }
+            if(enter!=0){
+              display.setCursor(50,120);
+              display.setTextSize(1);
+              display.print("changed!");    
+            }
+            //カーソル移動
+            if(left==1 || right == 1)
+              cursor_val_bool = cursor_val_bool;
+            //ホームに戻る
+            if(back!=0){app_state = 0;}
+        }
+        
 

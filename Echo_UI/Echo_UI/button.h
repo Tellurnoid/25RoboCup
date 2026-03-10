@@ -7,12 +7,12 @@ class Button {
     static constexpr uint8_t pins[NUM_PINS] = {2, 3, 6, 7};
 
   public:
-    static constexpr uint8_t KEY_ENTER  = 0;
-    static constexpr uint8_t KEY_BACK   = 1;
-    static constexpr uint8_t KEY_RIGHT  = 2;
-    static constexpr uint8_t KEY_LEFT   = 3;
-    int8_t buttonStates[NUM_PINS] = {0};
+    static constexpr int8_t ENTER  = 2;
+    static constexpr int8_t BACK   = 7;
+    static constexpr int8_t RIGHT  = 3;
+    static constexpr int8_t LEFT   = 6;
+    int8_t states[NUM_PINS] = {0};
     void init();
-    void read();
+    int8_t read(int8_t pin);
 };
 

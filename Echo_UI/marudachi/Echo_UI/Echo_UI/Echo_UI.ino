@@ -160,11 +160,12 @@ Monitor monitor;
 Echo echo;
 Button button;
 UICommand ui_command;
-
+Sound sound;
 void setup() {
   initUART();
   monitor.initMonitor();
   button.initButton();
+  sound.init();
 }
 
 void loop() {
