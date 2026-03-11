@@ -2,9 +2,10 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <Fonts/FreeSansBoldOblique9pt7b.h>   //起動画面(候補２。決まったら一方消してよし)
-#include <Fonts/FreeMono9pt7b.h>              //見出しなど
-#include <Fonts/FreeSans9pt7b.h>              //値調整UI用
+#include <Fonts/FreeSerif9pt7b.h>
+#include <Fonts/FreeSans12pt7b.h>
+#include <Fonts/FreeSans12pt7b.h>
+#include <Fonts/FreeSansBold12pt7b.h>
 #include "UI.h"
 #include "button.h"
 #include "sound.h"
@@ -23,7 +24,7 @@
 
     void UI::startUp(){
       display.clearDisplay();
-      display.setTextSize(3);
+      display.setFont(&FreeSans12pt7b);
       display.setTextColor(SSD1306_WHITE);
       display.setCursor(0,2);
       display.print("BEOLSAE");
@@ -72,7 +73,8 @@
       if(back==1)
         sound.back();
         
-      // display.setTextSize(1);
+      display.setFont();// 
+      display.setTextSize(1);
       // display.setTextColor(SSD1306_WHITE);
       // display.setCursor(0,0);
       // display.print(app[app_state].name);
@@ -85,8 +87,8 @@
 
     void UI::app_home(){
       display.clearDisplay();
-      display.setCursor(15,20);
-      display.setTextSize(2);
+      display.setCursor(15,25);
+      display.setFont(&FreeSans12pt7b);
       display.setTextColor(1);
       display.print(app[cursor_home].name);
       //ボタンの状態表示
@@ -101,10 +103,11 @@
       if(enter==1){
         if(cursor_home == 0){
           //表示専用カーソルのためエラー音
+          sound.error();
         }
         else{
           app_state = (cursor_home + NUM_APP) % NUM_APP;
-          sound.cursor();
+          sound.enter();
           // app_state = cursor_home - 1;
           // if(app_state<0){
           //   app_state = NUM_APP;
@@ -128,8 +131,8 @@
    
     void UI::app_game(){
       display.clearDisplay();
-      display.setCursor(15,20);
-      display.setTextSize(2);
+      display.setCursor(18,28);
+      display.setFont(&FreeSans9pt7b);
       display.setTextColor(1);
       if(cursor_val_int == 0){
         display.print("ATACK");
@@ -160,6 +163,7 @@
       if(enter==1){
         is_on_game = !is_on_game;
         //ここに試合開始コマンド
+        sound.start();
       }
 
     }
@@ -168,20 +172,18 @@
       changeIntVal("LED",LEDPWM,0,255,100);
     }
     void UI::app_kicker(){
-      display.clearDisplay();
-      display.setCursor(15,20);
-      display.setTextSize(3);
-      display.setTextColor(1);
-      display.print("KICKER");
-      if(back!=0){
-        app_state = 0;
-        display.fillRect(0,62,128,64,1);
-      }
+      //(トリガー(コマンドなら1,)
+      simpleSwitch(2,&sound ,"kicker",&Sound::cursor,"charge",&Sound::enter,"charge",&Sound::error);
+            //ホームに戻る
+            if(back!=0){
+                app_state = 0;
+                sound.back();
+            }
     }
     void UI::app_logo(){
       display.clearDisplay();
       display.setCursor(15,20);
-      display.setTextSize(3);
+      display.setFont(&FreeSans12pt7b);
       display.setTextColor(1);
       display.print("LOGO");
       if(back!=0){
@@ -220,7 +222,7 @@
         void UI::app_in_view_select(){
           display.clearDisplay();
           display.setCursor(15,20);
-          display.setTextSize(1);
+          display.setFont(&FreeSans12pt7b);
           display.setTextColor(1);
           display.print(App_in_view[cursor_home].name);
           //ボタンの状態表示
@@ -255,7 +257,7 @@
         void UI::app_in_view_line(){
           display.clearDisplay();
           display.setCursor(15,20);
-          display.setTextSize(3);
+          display.setFont(&FreeSans12pt7b);
           display.setTextColor(1);
           display.print(App_in_view[in_view_state].name);
           if(back!=0){
@@ -266,7 +268,7 @@
         void UI::app_in_view_ball(){
           display.clearDisplay();
           display.setCursor(15,20);
-          display.setTextSize(3);
+          display.setFont(&FreeSans12pt7b);
           display.setTextColor(1);
           display.print(App_in_view[in_view_state].name);
           if(back!=0){
@@ -277,7 +279,7 @@
         void UI::app_in_view_echo(){
           display.clearDisplay();
           display.setCursor(15,20);
-          display.setTextSize(3);
+          display.setFont(&FreeSans12pt7b);
           display.setTextColor(1);
           display.print(App_in_view[in_view_state].name);
           if(back!=0){
@@ -288,7 +290,7 @@
         void UI::app_in_view_cam(){
           display.clearDisplay();
           display.setCursor(15,20);
-          display.setTextSize(3);
+          display.setFont(&FreeSans12pt7b);
           display.setTextColor(1);
           display.print(App_in_view[in_view_state].name);
           if(back!=0){
@@ -299,7 +301,7 @@
         void UI::app_in_view_user_vals(){
           display.clearDisplay();
           display.setCursor(15,20);
-          display.setTextSize(3);
+          display.setFont(&FreeSans12pt7b);
           display.setTextColor(1);
           display.print(App_in_view[in_view_state].name);
           if(back!=0){
@@ -307,19 +309,21 @@
             display.fillRect(0,62,128,64,1);
           }
        }
+
         //任意のint変数を変更するUI(参照渡し)
         void UI::changeIntVal(const char* name,int &val ,int min,int max,int default_val){
             bool is_changed = false;
             display.clearDisplay();
             display.setCursor(0,0);
+            display.setFont();
             display.setTextSize(1);
             display.setTextColor(1);
             display.print("change value:[ ");
             display.print(name);
             display.println(" ]");
             //display.print(count);
-            display.setCursor(38,20);
-            display.setTextSize(3);
+            display.setCursor(38,30);
+            display.setFont(&FreeSansBold12pt7b);
             display.setTextColor(1);
             display.print(cursor_val_int);
             if(left==0 && right==0){
@@ -342,6 +346,7 @@
             }
             if(enter!=0 && is_changed == false){
               display.setCursor(68,52);
+              display.setFont();
               display.setTextSize(1);
               display.print("changed!");    
               is_changed = true;
@@ -355,8 +360,9 @@
               cursor_val_int = ((cursor_val_int + 1) % max);
             //左(加速)
             if(left==2){
-              if(count > 30){
+              if(count > 20){
                 cursor_val_int = ((cursor_val_int + max - 2) % max);
+                sound.cursor();
               }
               else{
                 count++;
@@ -364,8 +370,9 @@
             }
             //右(加速)
             if(right==2){
-                if(count > 30){
+                if(count > 20){
                   cursor_val_int = ((cursor_val_int + 2) % max);
+                  sound.cursor();
                 }
                 else{
                   count++;
@@ -380,13 +387,14 @@
         void UI::changeBoolVal(const char* name,bool &val,bool default_val){
             display.clearDisplay();
             display.setCursor(0,0);
+            display.setFont();
             display.setTextSize(1);
             display.setTextColor(1);
             display.print("change bool:[ ");
             display.print(name);
             display.print(" ]");
             display.setCursor(58,20);
-            display.setTextSize(3);
+            display.setFont(&FreeSans12pt7b);
             if(val == true){
               display.print("true"); 
             }
@@ -403,6 +411,7 @@
             }
             if(enter!=0){
               display.setCursor(50,120);
+              display.setFont();
               display.setTextSize(1);
               display.print("changed!");    
             }

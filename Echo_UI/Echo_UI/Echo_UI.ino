@@ -10,16 +10,20 @@
 #include "button.h"
 //#include "commands.h"
 #include "UI.h"
+#include "sound.h"
 
 UI ui;
 Echo echo;
 Button button;    
+Sound sound;
 //Command command;
 void setup() {
 //  uart.init();
 button.init();
   ui.init();
   ui.startUp();
+  sound.init();
+  sound.success();
   Serial.begin(115200);
 }
 

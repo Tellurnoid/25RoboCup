@@ -3,14 +3,40 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <Fonts/FreeSansBoldOblique9pt7b.h>   //起動画面(候補２。決まったら一方消してよし)
-#include <Fonts/FreeMono9pt7b.h>              //見出しなど
-#include <Fonts/FreeSans9pt7b.h>              //値調整UI用
+#include <Fonts/FreeSerif9pt7b.h>
+#include <Fonts/FreeSans9pt7b.h>
+#include <Fonts/FreeSansBold24pt7b.h>
 #include "button.h"
 #include "sound.h"
 #include "echo.h"
 //#include "commands.h"
 
+/*
+FreeMono12pt7b.h		FreeSansBoldOblique12pt7b.h
+FreeMono18pt7b.h		FreeSansBoldOblique18pt7b.h
+FreeMono24pt7b.h		FreeSansBoldOblique24pt7b.h
+FreeMono9pt7b.h			FreeSansBoldOblique9pt7b.h
+FreeMonoBold12pt7b.h		FreeSansOblique12pt7b.h
+FreeMonoBold18pt7b.h		FreeSansOblique18pt7b.h
+FreeMonoBold24pt7b.h		FreeSansOblique24pt7b.h
+FreeMonoBold9pt7b.h		FreeSansOblique9pt7b.h
+FreeMonoBoldOblique12pt7b.h	FreeSerif12pt7b.h
+FreeMonoBoldOblique18pt7b.h	FreeSerif18pt7b.h
+FreeMonoBoldOblique24pt7b.h	FreeSerif24pt7b.h
+FreeMonoBoldOblique9pt7b.h	FreeSerif9pt7b.h
+FreeMonoOblique12pt7b.h		FreeSerifBold12pt7b.h
+FreeMonoOblique18pt7b.h		FreeSerifBold18pt7b.h
+FreeMonoOblique24pt7b.h		FreeSerifBold24pt7b.h
+FreeMonoOblique9pt7b.h		FreeSerifBold9pt7b.h
+FreeSans12pt7b.h		FreeSerifBoldItalic12pt7b.h
+FreeSans18pt7b.h		FreeSerifBoldItalic18pt7b.h
+FreeSans24pt7b.h		FreeSerifBoldItalic24pt7b.h
+FreeSans9pt7b.h			FreeSerifBoldItalic9pt7b.h
+FreeSansBold12pt7b.h		FreeSerifItalic12pt7b.h
+FreeSansBold18pt7b.h		FreeSerifItalic18pt7b.h
+FreeSansBold24pt7b.h		FreeSerifItalic24pt7b.h
+FreeSansBold9pt7b.h		FreeSerifItalic9pt7b.h
+*/
 
 
 class UI{
@@ -61,27 +87,30 @@ class UI{
             uint8_t num;
             const char* name;
         };
+
         States app[NUM_APP] = {
-            {0,"home"},
-            {1,"logo"},
-            {2,"game"},
-            {3,"led"},
-            {4,"kicker"},
-            {5,"view_vals"}
+            {0,"Home"},
+            {1,"Logo"},
+            {2,"Game"},
+            {3,"LED"},
+            {4,"Kicker"},
+            {5,"Vals"}
         };
         uint8_t app_state = 0;
 
         //view(センサーの値を見るアプリ)の中身
         static constexpr uint8_t NUM_IN_VIEW = 6;//ここの変更忘れずに
-        States App_in_view[NUM_IN_VIEW]{
-            {0,"in_view_select"},
-            {1,"in_view_line"},
-            {2,"in_view_ball"},
-            {3,"in_view_echo"},
-            {4,"in_view_cam"},
-            {5,"in_view_user_vals"}
+        States App_in_view[NUM_IN_VIEW] = {
+            {0,"Select"},
+            {1,"Line"},
+            {2,"Ball"},
+            {3,"Echo"},
+            {4,"Cam"},
+            {5,"User's"}
         };
         uint8_t in_view_state = 0;
+
+
 
     public:
 
@@ -110,8 +139,83 @@ class UI{
         void app_in_view_ball();
         void app_in_view_echo();
         void app_in_view_cam();
-        void app_in_view_user_vals();
+        void app_in_view_user_vals();//シリアルモニター
         void app_logo();
         void changeIntVal(const char* name,int &val,int min,int max,int default_val);
         void changeBoolVal(const char* name,bool &val,bool default_val);
+
+        template <class T>
+        void simpleSwitch(
+                            uint8_t triger_push,
+                            T* obj,
+                            const char* nameA, void (T::*funcA)(),
+                            const char* nameB, void (T::*funcB)(),
+                            const char* nameC, void (T::*funcC)()
+                        )
+            {
+            back  = button.read(button.BACK);
+            enter = button.read(button.ENTER);
+            left  = button.read(button.LEFT);
+            right = button.read(button.RIGHT);
+            const uint8_t height_enter = 5;
+            const uint8_t radius_enter = 15;
+            const uint8_t height_mini = 2;
+            const uint8_t radius_mini = 7;
+            display.clearDisplay();
+            //ボタンのアニメーション
+            //押されていないときの絵画
+            if(enter==0){
+                //大きいやつ
+                for(int i=height_enter; i>=0; i--){
+                    display.fillCircle(80,22+i,radius_enter,1);
+                }
+                display.fillCircle(80,22,radius_enter-1,0);
+                display.drawCircle(80,22,radius_enter,1);
+            }
+            if(left==0){
+                //小さいやつ(上)
+                for(int i=height_mini; i>=0; i--){
+                    display.fillCircle(5+radius_mini,16+i-radius_mini,radius_mini,1);
+                }
+                display.fillCircle(5+radius_mini,16-radius_mini,radius_mini-1,0);
+                display.drawCircle(5+radius_mini,16-radius_mini,radius_mini,1);
+            }
+            if(right==0){
+                //小さいやつ(下)
+                for(int i=height_mini; i>=0; i--){
+                    display.fillCircle(5+radius_mini,38+i-radius_mini,radius_mini,1);
+                }
+                display.fillCircle(5+radius_mini,38-radius_mini,radius_mini-1,0);
+                display.drawCircle(5+radius_mini,38-radius_mini,radius_mini,1);
+            }
+            display.setTextSize(1);
+            display.setTextColor(1);
+            display.setCursor(85,0);
+            display.print(nameA);
+            display.setCursor(radius_mini*4,29);
+            display.print(nameB);
+            display.setCursor(radius_mini*4,13);
+            display.print(nameC);
+            display.setCursor(0,53);
+            display.print("enter to execute");
+
+            if(enter==triger_push){
+              (obj->*funcA)();//引数の関数を実行
+            }
+            if(left==triger_push){
+              (obj->*funcB)();//引数の関数を実行
+            }
+            if(right==triger_push){
+              (obj->*funcC)();//引数の関数を実行
+            }
+            if(enter!=0){
+              display.drawCircle(80,22+height_enter,radius_enter,1);
+            }
+            if(left!=0){
+                display.drawCircle(5+radius_mini,16+height_mini-radius_mini,radius_mini,1);
+            }
+            if(right!=0){
+                display.drawCircle(5+radius_mini,38+height_mini-radius_mini,radius_mini,1);
+            }
+        }
 };
