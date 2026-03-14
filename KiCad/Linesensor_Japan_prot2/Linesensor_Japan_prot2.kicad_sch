@@ -3128,6 +3128,26 @@
 		)
 		(uuid "00e4d0da-6c07-40cc-8451-fdcebc9d3d8c")
 	)
+	(text "S"
+		(exclude_from_sim no)
+		(at 53.086 296.926 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "2a80f100-f4fa-4c63-9718-4c3d999a088d")
+	)
+	(text "10kΩ"
+		(exclude_from_sim no)
+		(at 38.1 305.054 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "2cfbc508-51e5-477f-b376-985179bef2a2")
+	)
 	(text "K,-(Cathode)"
 		(exclude_from_sim no)
 		(at 128.524 277.368 0)
@@ -3208,6 +3228,36 @@
 		)
 		(uuid "72593823-bcf9-4c2d-9021-a30a41e9e3c0")
 	)
+	(text "22Ω"
+		(exclude_from_sim no)
+		(at 33.02 296.418 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "7546b8e5-8fa7-41cb-87ae-d2b95c52b07b")
+	)
+	(text "G\n"
+		(exclude_from_sim no)
+		(at 47.244 292.354 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "77fb0362-b5e2-4072-8e27-536c243c1605")
+	)
+	(text "MOSFET中央の穴\nDrain\n=LED K"
+		(exclude_from_sim no)
+		(at 51.562 263.398 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "7aa8d4b2-f107-4601-9028-f02ea5cb45fd")
+	)
 	(text "SeeedのD0/A0のみDAC、他1~10はPWM"
 		(exclude_from_sim no)
 		(at 85.344 91.694 0)
@@ -3258,6 +3308,16 @@
 		)
 		(uuid "b79a43ab-0431-4478-8a85-3b3531ad5bfa")
 	)
+	(text "22Ω"
+		(exclude_from_sim no)
+		(at 54.61 280.924 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "cae3c56c-8c63-47e8-96b5-fbfab79e64a1")
+	)
 	(text "0.1uF"
 		(exclude_from_sim no)
 		(at 274.32 42.418 0)
@@ -3287,6 +3347,26 @@
 			)
 		)
 		(uuid "e55aa79a-eebe-4fbe-9ca4-fad41c3efece")
+	)
+	(text "22Ω"
+		(exclude_from_sim no)
+		(at 49.276 280.924 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "ea18d6ce-c8ae-41f9-ad70-70fd28344b3a")
+	)
+	(text "D\n"
+		(exclude_from_sim no)
+		(at 53.086 290.068 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "f14fae9b-d166-4b2d-bfe3-936b534a9469")
 	)
 	(text "100pF"
 		(exclude_from_sim no)
@@ -3369,10 +3449,22 @@
 		(uuid "0c84741f-aadb-40be-904d-e8565e117990")
 	)
 	(junction
+		(at 52.07 276.86)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0f5704c7-c140-4cb7-a068-b662af33115d")
+	)
+	(junction
 		(at 236.22 259.08)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "12b72b6b-e8e2-4ee0-82d3-989849fedf4b")
+	)
+	(junction
+		(at 52.07 284.48)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "1696fa94-2b50-4c25-8e23-e646af608b2d")
 	)
 	(junction
 		(at 240.03 127)
@@ -4179,6 +4271,12 @@
 		(uuid "df290405-743c-49b6-8fae-090e343f8a00")
 	)
 	(junction
+		(at 40.64 293.37)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "dfe87df0-a902-49c8-9acd-01b6de53ea76")
+	)
+	(junction
 		(at 383.54 182.88)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4630,6 +4728,16 @@
 	)
 	(wire
 		(pts
+			(xy 52.07 267.97) (xy 52.07 276.86)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1dd29e6a-7046-4eb6-ba07-ce480ff9bcce")
+	)
+	(wire
+		(pts
 			(xy 259.08 137.16) (xy 270.51 137.16)
 		)
 		(stroke
@@ -4850,6 +4958,16 @@
 	)
 	(wire
 		(pts
+			(xy 52.07 276.86) (xy 54.61 276.86)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "322f27a7-50d3-4614-b808-972e9531b7bc")
+	)
+	(wire
+		(pts
 			(xy 546.1 26.67) (xy 529.59 26.67)
 		)
 		(stroke
@@ -4917,6 +5035,16 @@
 			(type default)
 		)
 		(uuid "38da28a3-97e1-46dc-ba4e-4550864c092f")
+	)
+	(wire
+		(pts
+			(xy 36.83 293.37) (xy 40.64 293.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3a74c6aa-1b59-4c94-9297-14b07951f5c7")
 	)
 	(wire
 		(pts
@@ -5150,6 +5278,26 @@
 	)
 	(wire
 		(pts
+			(xy 52.07 284.48) (xy 52.07 288.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4bced386-7b6c-4ba3-a531-b5fbcc327a18")
+	)
+	(wire
+		(pts
+			(xy 40.64 300.99) (xy 40.64 293.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4c62e990-7422-4823-a7d2-5634623327a7")
+	)
+	(wire
+		(pts
 			(xy 295.91 160.02) (xy 364.49 160.02)
 		)
 		(stroke
@@ -5270,6 +5418,16 @@
 	)
 	(wire
 		(pts
+			(xy 40.64 293.37) (xy 44.45 293.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5727de84-60f6-4e1a-a9ff-7e8fbccf5883")
+	)
+	(wire
+		(pts
 			(xy 134.62 223.52) (xy 147.32 223.52)
 		)
 		(stroke
@@ -5317,6 +5475,16 @@
 			(type default)
 		)
 		(uuid "5d374115-03ac-4d12-a6d5-e8874a966aec")
+	)
+	(wire
+		(pts
+			(xy 49.53 284.48) (xy 52.07 284.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5f011a7d-ba25-4f7d-9523-c79539cb9d10")
 	)
 	(wire
 		(pts
@@ -5720,6 +5888,16 @@
 	)
 	(wire
 		(pts
+			(xy 24.13 293.37) (xy 29.21 293.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8691cd2a-f30f-442b-bad6-14107dc5a34e")
+	)
+	(wire
+		(pts
 			(xy 261.62 208.28) (xy 274.32 208.28)
 		)
 		(stroke
@@ -5917,6 +6095,16 @@
 			(type default)
 		)
 		(uuid "9c08d101-8bd8-476d-a2dc-36291cc9ee77")
+	)
+	(wire
+		(pts
+			(xy 52.07 284.48) (xy 54.61 284.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9d1101dd-63ea-4ee8-bc05-f61d2b5c094d")
 	)
 	(wire
 		(pts
@@ -6357,6 +6545,16 @@
 			(type default)
 		)
 		(uuid "c6951d53-8960-4a3b-83e6-194ce21ed493")
+	)
+	(wire
+		(pts
+			(xy 49.53 276.86) (xy 52.07 276.86)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c77c2b54-3490-4fa9-baf2-f77810c53a78")
 	)
 	(wire
 		(pts
@@ -7893,6 +8091,38 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "LED_IO"
+		(shape bidirectional)
+		(at 24.13 293.37 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "cc853bfd-de51-4e18-9d7c-52a92fefc630")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 13.6835 293.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+		(property "LED_IO" ""
+			(at 24.13 295.5608 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 				(hide yes)
 			)
 		)
@@ -10128,6 +10358,145 @@
 			(project ""
 				(path "/95e5dcf1-74db-4868-be8c-b5f50bcdf3f5"
 					(reference "H1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 40.64 308.61 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "299b5e55-a3d6-4fdd-babc-18d1d24d32e3")
+		(property "Reference" "#PWR013"
+			(at 40.64 314.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 40.64 313.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 40.64 308.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 40.64 308.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 40.64 308.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b30fe299-5132-4f02-b79a-fbcc8d9cae3e")
+		)
+		(instances
+			(project "Linesensor_Japan_prot2"
+				(path "/95e5dcf1-74db-4868-be8c-b5f50bcdf3f5"
+					(reference "#PWR013")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:Q_NMOS")
+		(at 49.53 293.37 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "2a4d1f94-a60a-46e7-a078-941cc3f7c3d1")
+		(property "Reference" "Q34"
+			(at 55.88 292.0999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Q_NMOS"
+			(at 55.88 294.6399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "seeeduino:TO-251-3-1EP_Horizontal_TabDown_EDITED"
+			(at 54.61 290.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 49.53 293.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "N-MOSFET transistor"
+			(at 49.53 293.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "512bd882-e960-4c94-a56b-73b6956a6dc0")
+		)
+		(pin "1"
+			(uuid "937190dc-85bb-4fac-a7c8-222d7f9154d8")
+		)
+		(pin "3"
+			(uuid "30241e88-a41c-4e19-befb-9a210187ee86")
+		)
+		(instances
+			(project "Linesensor_Japan_prot2"
+				(path "/95e5dcf1-74db-4868-be8c-b5f50bcdf3f5"
+					(reference "Q34")
 					(unit 1)
 				)
 			)
@@ -12472,6 +12841,76 @@
 	)
 	(symbol
 		(lib_id "Device:R")
+		(at 49.53 280.67 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "512a6277-eecb-4d5d-a4ed-6ece73f76bed")
+		(property "Reference" "R68"
+			(at 43.688 279.146 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "R"
+			(at 52.07 281.9399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P12.70mm_Horizontal"
+			(at 51.308 280.67 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 49.53 280.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 49.53 280.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8c6803fa-305d-4cbf-bc9e-da446e3d355d")
+		)
+		(pin "2"
+			(uuid "45f46d74-1094-488e-885a-d9363334a3e1")
+		)
+		(instances
+			(project "Linesensor_Japan_prot2"
+				(path "/95e5dcf1-74db-4868-be8c-b5f50bcdf3f5"
+					(reference "R68")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
 		(at 172.72 219.71 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -14088,6 +14527,76 @@
 			(project "Linesensor_Japan_prot1"
 				(path "/95e5dcf1-74db-4868-be8c-b5f50bcdf3f5"
 					(reference "D13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 40.64 304.8 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "75c49969-350b-470e-b4f4-72aeb1ade94d")
+		(property "Reference" "R66"
+			(at 43.18 303.5299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "R"
+			(at 43.18 306.0699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P12.70mm_Horizontal"
+			(at 38.862 304.8 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 40.64 304.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 40.64 304.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "bb4ef6b3-a0a1-45b9-9470-b2a70e448405")
+		)
+		(pin "2"
+			(uuid "5f408e01-0c14-4e8c-8064-b53e5f7d65a6")
+		)
+		(instances
+			(project "Linesensor_Japan_prot2"
+				(path "/95e5dcf1-74db-4868-be8c-b5f50bcdf3f5"
+					(reference "R66")
 					(unit 1)
 				)
 			)
@@ -16672,6 +17181,77 @@
 	)
 	(symbol
 		(lib_id "Device:R")
+		(at 54.61 280.67 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "b58d12a0-b88d-4d6e-83c2-bc86b006ad42")
+		(property "Reference" "R67"
+			(at 57.15 279.3999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "R"
+			(at 57.15 281.9399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P12.70mm_Horizontal"
+			(at 56.388 280.67 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 54.61 280.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 54.61 280.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8b6f818e-c736-443f-93b4-b2d0fd8d462f")
+		)
+		(pin "2"
+			(uuid "20d5412c-77e5-44b5-859a-559b4da99847")
+		)
+		(instances
+			(project "Linesensor_Japan_prot2"
+				(path "/95e5dcf1-74db-4868-be8c-b5f50bcdf3f5"
+					(reference "R67")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
 		(at 172.72 270.51 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -18266,6 +18846,74 @@
 	)
 	(symbol
 		(lib_id "Device:R")
+		(at 33.02 293.37 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d1fa30b5-11c8-499a-985e-b9db91846451")
+		(property "Reference" "R65"
+			(at 33.02 287.02 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "R"
+			(at 33.02 289.56 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P12.70mm_Horizontal"
+			(at 33.02 295.148 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 33.02 293.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 33.02 293.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "adc34c7b-8c19-4d5d-9249-b7ee85fefa45")
+		)
+		(pin "2"
+			(uuid "bb72508f-63e8-4668-a19c-95e86ace0c47")
+		)
+		(instances
+			(project "Linesensor_Japan_prot2"
+				(path "/95e5dcf1-74db-4868-be8c-b5f50bcdf3f5"
+					(reference "R65")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
 		(at 510.54 186.69 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -19107,6 +19755,72 @@
 			(project "Linesensor_Japan_prot1"
 				(path "/95e5dcf1-74db-4868-be8c-b5f50bcdf3f5"
 					(reference "Q3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 52.07 298.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e164709b-a0be-480b-8deb-9d520c20d227")
+		(property "Reference" "#PWR014"
+			(at 52.07 304.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 52.07 303.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 52.07 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 52.07 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 52.07 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "36f000ea-3141-437d-bbbc-ed36043f1a8f")
+		)
+		(instances
+			(project "Linesensor_Japan_prot2"
+				(path "/95e5dcf1-74db-4868-be8c-b5f50bcdf3f5"
+					(reference "#PWR014")
 					(unit 1)
 				)
 			)

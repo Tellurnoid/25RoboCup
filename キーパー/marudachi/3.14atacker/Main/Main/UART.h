@@ -190,7 +190,6 @@ class Data{
       int16_t echo_5;
       int16_t echo_6;
       int16_t echo_7;
-      
 
       uint8_t id;
       uint8_t ack;

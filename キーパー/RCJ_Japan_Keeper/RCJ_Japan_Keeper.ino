@@ -2,84 +2,63 @@
 #include "functions.h"
 #include "UART.h"
 #include "IMU.h"
+#include "sound.h"
+#include "RCJ_Japan_Keeper.h"
 
 float c_x;
-const int beep = 23;
-class Sound{//IMU.inoの出力は独立しているため注意
-  public:
-    void init(){
-        pinMode(beep, OUTPUT);
-    }
-    void successSound(){
-      digitalWrite(beep, HIGH);
-      delay(50);
-      digitalWrite(beep, LOW);
-      delay(50);
-      digitalWrite(beep, HIGH);
-      delay(30);
-      digitalWrite(beep, LOW);      
-    }
-    void beepSound(){
-       digitalWrite(beep, HIGH);
-       delay(50);
-       digitalWrite(beep, LOW);
-    }
-  private:
 
-};
-
-class AngleOperation{
-  public:
-    float to360(float theta){
-      if(theta < 0){
-        theta = 360 + theta;
-      }
-      return theta;
-    }
+// class AngleOperation{
+//   public:
+//     float to360(float theta){
+//       if(theta < 0){
+//         theta = 360 + theta;
+//       }
+//       return theta;
+//     }
   
-    float to180(float theta){
-       if(theta > 180){
-         theta = theta - 360;
-       }
-       return theta;
-     }
+//     float to180(float theta){
+//        if(theta > 180){
+//          theta = theta - 360;
+//        }
+//        return theta;
+//      }
 
-    float normalization360(float theta){
-      if(theta > 360){
-        theta = theta - 360;
-      }
-      else if(theta < 0){
-        theta = theta + 360;
-      }
-      return theta;
-    }
+//     float normalization360(float theta){
+//       if(theta > 360){
+//         theta = theta - 360;
+//       }
+//       else if(theta < 0){
+//         theta = theta + 360;
+//       }
+//       return theta;
+//     }
 
-    float normalization180(float theta){//角度計算後の正規化
-      if(theta > 180){
-        theta = -1  * (360 - theta);
-      }
-      else if(theta < -180){
-        theta = 360 - abs(theta);
-      }
-      return theta;
-    }
-  private:
+//     float normalization180(float theta){//角度計算後の正規化
+//       if(theta > 180){
+//         theta = -1  * (360 - theta);
+//       }
+//       else if(theta < -180){
+//         theta = 360 - abs(theta);
+//       }
+//       return theta;
+//     }
+//   private:
 
-};
+// };
 
-struct Echo{
+class Echo{
   private:
 
   public:
     //前から時計回り(前=N 右=E 後=W 左=N)
-    int16_t echo_N   = data_hub.echo_0;
-    int16_t echo_NE  = data_hub.echo_1;
-    int16_t echo_E   = data_hub.echo_2;
-    int16_t echo_SE  = data_hub.echo_3;
-    int16_t echo_S   = data_hub.echo_4;
-    int16_t echo_SW  = data_hub.echo_5;
-    int16_t echo_W   = data_hub.echo_6;
-    int16_t echo_NW  = data_hub.echo_7;
+    int16_t N   = data_hub.echo_0;
+    int16_t NE  = data_hub.echo_1;
+    int16_t E   = data_hub.echo_2;
+    int16_t SE  = data_hub.echo_3;
+    int16_t S   = data_hub.echo_4;
+    int16_t SW  = data_hub.echo_5;
+    int16_t W   = data_hub.echo_6;
+    int16_t NW  = data_hub.echo_7;
     Vector lostGoalEchoV(){
         Vector v;
         v = makeV(reverseAngle(0),0);
@@ -87,109 +66,35 @@ struct Echo{
     }
 };
 
-class Keeper{
-  private:
-        //class系
-      Echo echo;
-      AngleOperation angle;
-      Sound sound;
-      Gyro gyro;
 
-      //ライントレース
-      int line_kp = 6;
-      float lineDf_dis;
-      float lineDf_angle;
-      struct Derivative {
-        unsigned long last_time = 0;
-        float last_value = 0;
-        float value_d = 0;
-      };
-      Derivative lineD_dis;
-      Derivative lineD_angle;
-      bool isOnCurve = false;
-      float last_angle;
+        // Vector cameraBrakeV(){
+        //   Vector v = makeV(reverseAngle(0),0);
+        //   float power;
+        //   v.x = 0;
+        //   if(c_x == 400){
+        //     return v;
+        //   }
+        //   //カーブに入ったら、startとendの距離に対する割合で打ち消し
+        //   bool is_sliding = (abs(c_x)>curve_start && abs(c_x)<curve_end);
+        //   if(is_sliding){
+        //     power =  (abs(c_x) - curve_start) / (float)(curve_end - curve_start);
+        //     //左右の区別
+        //     if(c_x < curve_start){
+        //       power = power * -1;
+        //     }
+        //     //curve_end超えたら100%
+        //     if(abs(c_x)>=curve_end){
+        //       power = 1;
+        //       if(c_x < curve_start){
+        //         power = -1;
+        //       }
+        //     }
+        //   }
+        //  v = makeV(reverseAngle(90),PercentToPWM(power,90,255));//角度90度で正しい？要動確///////////////////////
+        //  return v;
+        // }
 
-      //打ち消し
-      float ball_angleL;//白線の法線から見たボールの角度、360度の方式
-      float remove_angle;
-      float remove_power;//打ち消しreturn v;
-
-      //キーパーダッシュ
-      int half_coat = 80;//170/2
-      uint16_t lost_count = 0;
-
-      //キーパー全体で使う
-      float ball_angle = convertAngle(data_sub.ball_angle);
-      float ball_dis   = data_sub.ball_distance;
-      float line_angle = data_sub.line_angle;
-      float line_dis   = data_sub.line_distance; 
-      float angleZ     = gyro.getAngle();
-      uint16_t keeperDash_count = 0;
-      Vector last_line;
-      Vector main_v;
-
-      //カメラ(line_angle==400時)
-      uint16_t c_x_max = 158;//コートの横端から見たゴール
-      uint8_t move_power_cam = 0;
-      uint8_t move_angle_cam = 0;
-      //キーパーブレーキ用
-      const uint16_t curve_start = 50;//要調整//////////////////////////////////////////////////
-      const uint16_t curve_end = 90;
-
-      //超音波(line_angle==400時)
-      uint8_t coat_w_forPower = 70;//比例定数、切片用
-      uint8_t coat_h =  67;
-      uint8_t coat_h_forPower =  38;
-      uint8_t coat_b = 20;
-
-
-
-
-  public:
-      enum State{
-        out_of_running,
-        calibrating,
-        line_tracing,
-        lost_line,
-        keeper_dash,
-        back_to_goal_withCAM,
-        back_to_goal_withECHO,
-      };
-      State state = out_of_running;
-
-        //モーターが動く最大値と最小値
-        float PercentToPWM(float percent = 100,float PWM_min=70,float PWM_max=255){//百分率をPWMに変換(最大値、最小値は調整してください)
-            return PWM_min + (PWM_max - PWM_min) * percent / 100;
-        }
-
-        Vector cameraBrakeV(){
-          Vector v = makeV(reverseAngle(0),0);
-          float power;
-          v.x = 0;
-          if(c_x == 400){
-            return v;
-          }
-          //カーブに入ったら、startとendの距離に対する割合で打ち消し
-          bool is_sliding = (abs(c_x)>curve_start && abs(c_x)<curve_end);
-          if(is_sliding){
-            power =  (abs(c_x) - curve_start) / (float)(curve_end - curve_start);
-            //左右の区別
-            if(c_x < curve_start){
-              power = power * -1;
-            }
-            //curve_end超えたら100%
-            if(abs(c_x)>=curve_end){
-              power = 1;
-              if(c_x < curve_start){
-                power = -1;
-              }
-            }
-          }
-         v = makeV(reverseAngle(90),PercentToPWM(power,90,255));//角度90度で正しい？要動確///////////////////////
-         return v;
-        }
-
-        Vector removeV(){ 
+        Vector Keeper::removeV(){ 
             Vector v = makeV(reverseAngle(0),0);
             float line_angle360 = angle.to360(line_angle);
             float ball_angle360 = angle.to360(ball_angle);
@@ -236,15 +141,15 @@ class Keeper{
             return v;
         }
 
-        Vector notToOwnGoal(Vector v){
+        Vector Keeper::notToOwnGoal(Vector v){
           return v;
         }
 
-        void initMain() {
+        void Keeper::init() {
           gyro.initGyro();
         }
 
-        Vector ballV(){
+        Vector keeper::ballV(){
           Vector v = makeV(reverseAngle(0),0);
           if(ball_angle != 400){
             v = makeV(reverseAngle(ball_angle), PercentToPWM(80,0,780));//最大 780 の 80%
@@ -253,7 +158,7 @@ class Keeper{
           return v;
         }
 
-        Vector lineV(){
+        Vector Keeper::lineV(){
           Vector v = makeV(reverseAngle(0),0);
           float power = line_dis * line_kp;//現在比例のみ
           float angle = line_angle;
@@ -361,7 +266,7 @@ class Keeper{
         }
 
 
-        Vector DashV(){
+        Vector dashV(){
           Vector v = makeV(reverseAngle(0),0);
 
           //前に白線がある場合は除外、後ろの超音波見てボール追う
@@ -416,7 +321,7 @@ class Keeper{
         void debugSerial(){
           
         }
-};
+
 
 
 Sound sound;

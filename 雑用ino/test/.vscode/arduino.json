@@ -1,5 +1,5 @@
 {
-    "port": "/dev/ttyADM0",
-    "board": "rp2040:rp2040:rpipico2w",
+    "port": "/dev/ttyUSB0",
+    "board": "esp32:esp32:esp32",
     "sketch": "RCJ_Japan_Keeper.ino"
 }

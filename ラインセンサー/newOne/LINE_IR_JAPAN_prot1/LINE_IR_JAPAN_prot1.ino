@@ -42,7 +42,7 @@ void loop(){
   //  readMUX();
   //  printAllMUX();
   analogWrite(27, 200);
-  readMUX_onlyLINE_debug_relative();
+  readMUX_onlyLINE_debug();
   // readMUX_onlyLINE_debug();
 }
 
@@ -140,7 +140,7 @@ void readMUX_onlyLINE_debug(){
         if(sensorValue_LINE[i] < 10){Serial.print("   ");}
         else if(sensorValue_LINE[i] < 100){Serial.print("  ");}
         else if(sensorValue_LINE[i] < 1000){Serial.print(" ");}
-      Serial.print(sensorValue_LINE[i]);
+      Serial.print(sensorValue_LINE[i]/100);
   }
 
   Serial.println();
