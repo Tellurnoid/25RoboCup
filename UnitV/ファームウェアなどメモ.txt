@@ -1,0 +1,11 @@
+自動調整系の無効化
+
+MicroPython v0.4.0
+2019-10-21
+
+
+
+①アクセスto https://dl.sipeed.com/shareURL/MAIX/MaixPy/release/master/maixpy_v0.6.2_87_g37c84a3e7
+②maixpy_v0.6.2_87_g37c84a3e7.bin　をDL
+③sudo pip3 install --upgrade kflash
+④kflash -p /dev/ttyUSB0 -b 1500000 -B goE maixpy_v0.6.2_87_g37c84a3e7.bin

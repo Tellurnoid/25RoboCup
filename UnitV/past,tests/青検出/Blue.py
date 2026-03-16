@@ -1,0 +1,73 @@
+import sensor, image, time
+
+sensor.reset()
+sensor.set_pixformat(sensor.RGB565) #16Bit color
+sensor.set_framesize(sensor.QVGA)   #320x240
+sensor.skip_frames(time = 2000)     #2秒間、カメラが安定するのを待つ。露出・ホワイトバランス調整のため
+clock = time.clock()                #fps計測などに関わる
+
+# LAB色空間で青色を検出
+blue_threshold = [(15, 60, -40, 80, -100, -40)]
+#(Lの最小,最大,  Aの最小,最大,  Bの最小,最大)  の順
+#L:黒か白か
+#A:緑か赤か
+#B:青か黃か
+
+#座標の端
+cameraWidth  = 320
+cameraHeight = 240
+
+#色の面積は100から26000くらい
+area_max = 26000
+area_min = 100
+
+
+
+#テスト用関数(削除可)------------------------------
+def whichIGo(inX,inY):
+    #difCentX/Y:中心からの差
+    upOrDown    = ""
+    rightOrLeft = ""
+    difCentX = cameraWidth/2  - inX
+    difCentY = cameraHeight/2 - inY
+    Power = int((area_max - b.pixels()) *255 / (area_max - area_min))
+    print()
+
+    if difCentX < 0:
+        rightOrLeft = "右へ"
+        print(rightOrLeft + str(abs(difCentX)) + ",出力:" + str(Power))
+    elif difCentX > 0:
+        rightOrLeft = "左へ"
+        print(rightOrLeft + str(abs(difCentX)) + ",出力:" + str(Power))
+    else:
+        rightOrLeft = "まっすぐ"
+        print(rightOrLeft + ",出力:" + str(Power))
+#--------------------------------------------------
+
+
+
+while True:
+    #clock.tick()：フレーム時間計測を開始
+    #sensor.snapshot()：カメラ画像を1枚撮影して img に格納
+    clock.tick()
+    img = sensor.snapshot()
+    #しきい値,ピクセル数の最小値,面積の最小値,隣り合った色をつなげる
+    blobs = img.find_blobs(blue_threshold, pixels_threshold=100, area_threshold=100, merge=True)
+
+    if blobs:
+        for b in blobs:
+            #中心の座標↓
+            cx = b.cx()
+            cy = b.cy()
+            #マーキング(四角形,十字)
+            img.draw_rectangle(b.rect())
+            img.draw_cross(cx, cy)
+
+            whichIGo(cx,cy)
+    else:
+        print("No blue object detected.")
+
+
+
+
+

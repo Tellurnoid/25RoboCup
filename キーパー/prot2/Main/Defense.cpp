@@ -15,8 +15,24 @@
 
     Vector Echo::lostGoalEchoV(){
         Vector v;
-        v = makeV(reverseAngle(180),defense.pwm_max*0.7);//超音波実装したら書く///////////////////
+        v.y = (goal_area_s - S) * 1.3;
+        if(E > W){
+          v.x = E - (wall_w * 0.5);
+          if(v.x<0)
+          v.x=0;
+        }
+        else{
+          v.x = (wall_w * 0.5) - W;
+          if(v.x>0)
+          v.x=0;
+        }
         return v;
+    }
+
+    Vector Echo::backWallBlockV(Vector v){
+      if(S < wall_S && v.y < 0 && abs(defense.line_angle)==90)
+        v.y *= -1.2;
+      return v;
     }
 
 void Defense::setBehavior(State s){
@@ -26,7 +42,19 @@ void Defense::init(){
   Serial.begin(115200);
 }
 void Defense::debugSerial(){
-  Serial.println(state);
+  Serial.print("State:");
+  Serial.print(state);
+  Serial.print(" (");
+  Serial.print(defense_v.x);
+  Serial.print(",");
+  Serial.print(defense_v.y);
+  Serial.print(")  ");
+
+  Serial.print("S:");
+  Serial.print(echo.S);
+
+
+  Serial.println();
 }
 void Defense::off(){}
 
@@ -60,7 +88,6 @@ void Defense::updateAllData(){
 
 void Defense::update(){
           updateAllData();
-          
           switch(state){
               case out_of_running:
                 off();
@@ -118,12 +145,12 @@ Vector Defense::ballV(){
       // data.dp.main_rotate = defense_rotate;
       return v;
   }
-
-Vector Defense::lineV(){
+Vector Defense::lineV_onlyP(){
     Vector v = makeV(reverseAngle(0),0);
     float power = line_dis * line_kp;
     float angle = line_angle;
     v = makeV(reverseAngle(line_angle),power);
+    last_line = v;
       // defense_v = v;
       //     data.dp.main_v = defense_v;
       //     defense_rotate = gyro.controlAngle(0);
@@ -131,15 +158,46 @@ Vector Defense::lineV(){
       return v;
 }
 
-Vector Defense::TlineV(Vector v){
-    keeperDash_count = 0;
-    v.x = 0;
-    if(v.y<0)
-      v.y = -1.5 * v.y;
-      // defense_v = v;
-      //     data.dp.main_v = defense_v;
-      //     defense_rotate = gyro.controlAngle(0);          data.dp.main_rotate = defense_rotate;
+Vector Defense::lineV(){
+  //PID制御(tbc)
+  // Vector v = makeV(reverseAngle(0),0);
+  //   //比例
+  //    line_P = line_dis * line_kp;
+
+  //   //微分
+  //   unsigned long now = millis();
+  //   float dt = (now - prev_time) / 1000.0;
+  //   line_D = line_kd * (line_dis - prev_line_dis) / dt;
+
+  //   //積分
+  //   line_I += line_ki * line_dis / dt;
+
+  //   float power = line_P + line_I + line_D;
+  //   if(power > pwm_max){
+  //     power = pwm_max;
+  //   }
+  //   float angle = line_angle;
+  //   v = makeV(reverseAngle(line_angle),power);
+  //   lost_v = v;
+
+  //   prev_line_dis = line_dis;
+  //   return v;
+    Vector v = makeV(reverseAngle(0),0);
+    float power = line_dis * line_kp;
+    float angle = line_angle;
+    v = makeV(reverseAngle(line_angle),power);
+    last_line = v;
       return v;
+}
+
+Vector Defense::TlineV(Vector v){
+      if(line_angle == 500){
+        v.x = 0;
+        if(v.y < 0){
+           v.y *= -1.5;
+          }
+      }
+     return v;
 }
 
 Vector Defense::notToOwnGoal(Vector v){
@@ -154,14 +212,26 @@ Vector Defense::notToOwnGoal(Vector v){
 void Defense::lineTrace(){
     Vector v = makeV(reverseAngle(0),0);
     if(line_angle == 400){
-      state = lost_line;
+      v = last_line;
+      lost_count++;
+      if(lost_count > 200){
+        state = lost_line;
+      }
     }
     else
     {
+      lost_count = 0;
+
       v = assembleV(lineV(),ballV(),pwm_max);
+      //縦線上で後退するときは減速
+      bool is_on_tate = (abs(line_angle) > 45 && abs(line_angle) < 135);
+      if(is_on_tate && v.y < 0){
+        v.x *= 0.5;
+        v.y *= 0.5;
+      }
       v = notToOwnGoal(v);
-      if(line_angle == 500)
-        v = TlineV(v);
+      v = TlineV(v);
+      v = echo.backWallBlockV(v);
     }
         defense_v = v;
         data.dp.main_v = defense_v;

@@ -99,7 +99,7 @@ float Ball::getBallD() {
 
 Vector Ball::ballV() {
   Vector ball_v;
-
+//Serial
   if (ball_angle == 400) {
     ball_v = {0, 0};
   }
@@ -160,10 +160,10 @@ void Field::getCrimp() {
     lastEchoValues[i] = echoValues[i];
     lastEchoDiff[i] = echoDiff[i];
 
-    Serial.print(":");
-    Serial.print(crimp[i]);
+    // Serial.print(":");
+    // Serial.print(crimp[i]);
   }
-  Serial.println();
+  // Serial.println();
 }
 
 
