@@ -37,6 +37,8 @@
       if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
         while (true);
       }
+
+      Serial.begin(115200);
     }
 
     void UI::startUp(){
@@ -89,11 +91,17 @@
       display.setCursor(15,25);
       display.setFont(&FreeSans12pt7b);
       display.setTextColor(1);
+
+      for(int i=0; i<NUM_APP; i++){
+        display.drawCircle((64/NUM_APP) + i * 128/NUM_APP, 50, (64/NUM_APP) -2, 1);
+      }
+
       if(cursor_home==0){
         app_logo();
       }
       else{
         display.print(app[cursor_home].name);
+         display.fillCircle((64/NUM_APP) + cursor_home * 128/NUM_APP, 50, (64/NUM_APP) -2, 1);
       }
       //ボタンの状態表示
       if(left != 0){
@@ -133,6 +141,7 @@
       }
     }
    
+
     void UI::app_game(){
       display.clearDisplay();
       display.setCursor(18,28);
@@ -142,44 +151,146 @@
         display.print("ATACK");
       }
       else if(cursor_val_int == 1){
-        display.print("DIFENCE");
+        display.print("DIFENSE");
       }
-      if(enter!=2 && is_on_game ==true){
+      if(enter!=1 && is_on_game ==true){
         display.fillRect(0,0,128,64,1);
+       // display.clearDisplay();
+        display.setCursor(18,28);
+        display.setTextColor(0);
+        if(cursor_val_int == 0){
+          display.print("ATACK");
+        }
+        else if(cursor_val_int == 1){
+          display.print("DIFENSE");
+        }
       }
-
-      bool any_key = (back || enter || right || left);
-      if (is_on_game && any_key) {
-        command.sendCommand(MAIN, START, 0);
-        sound.back();
-      }
+        // bool any_key = (enter!=0 || right!=0 || left!=0);
+        // if(is_on_game == true && any_key){
+        //   is_on_game = false;
+        //   command.sendCommand(MAIN, START, 0);
+        //   sound.back();
+        // }
       //カーソル移動
       //左
       if(left==1){
-        cursor_val_int = ((cursor_val_int + NUM_MODE - 1) % NUM_MODE);
-        sound.cursor();
-        is_on_game = false;
+        if(is_on_game){
+          is_on_game = false;
+          command.sendCommand(MAIN, START, 0);
+          sound.back();
+        }
+        else{
+          cursor_val_int = ((cursor_val_int + NUM_MODE - 1) % NUM_MODE);
+          sound.cursor();
+        }
         }
       //右
       if(right==1){
-        cursor_val_int = ((cursor_val_int + 1) % NUM_MODE);
-        sound.cursor();
-        is_on_game = false;
+          if(is_on_game){
+            is_on_game = false;
+            command.sendCommand(MAIN, START, 0);
+            sound.back();
+          }
+          else{
+            cursor_val_int = ((cursor_val_int + 1) % NUM_MODE);
+            sound.cursor();
+          }
         }
-      if(back!=0){
-        app_state = 0;
-        is_on_game = false;
-        display.fillRect(0,62,128,64,1);
-      }
       if(enter==1){
-        is_on_game = !is_on_game;
-        //ここに試合開始コマンド
-        if (is_on_game && cursor_val_int == 0) command.sendCommand(MAIN, START, 1);
-        else if (is_on_game  && cursor_val_int == 1) command.sendCommand(MAIN, START, 2);
-        else command.sendCommand(MAIN, START, 0);
-        sound.start();
+          if(is_on_game == false){
+            //ここに試合開始コマンド
+              if(cursor_val_int == 0){
+                command.sendCommand(MAIN, START, 1);
+                sound.start();
+                is_on_game = true;
+              }
+              else if(cursor_val_int == 1){
+                command.sendCommand(MAIN, START, 2);
+                sound.start();
+                is_on_game = true;
+            }
+          }
+          else{
+            is_on_game = false;
+            command.sendCommand(MAIN, START, 0);
+            sound.back();
+          }
       }
+
+      if(back!=0){
+        if(is_on_game == true){
+          sound.back();
+          is_on_game = false;
+          command.sendCommand(MAIN,START,0);
+        }
+        else{
+          app_state = 0;
+          display.fillRect(0,62,128,64,1);
+        }
+      }
+      Serial.print("enter:");Serial.print(enter);
+      Serial.print(" , is_on_game:");Serial.print(is_on_game);
+      Serial.println();
     }
+    // void UI::app_game(){
+    //   display.clearDisplay();
+    //   display.setCursor(18,28);
+    //   display.setFont(&FreeSans9pt7b);
+    //   display.setTextColor(1);
+    //   if(cursor_val_int == 0){
+    //     display.print("ATACK");
+    //   }
+    //   else if(cursor_val_int == 1){
+    //     display.print("DIFENCE");
+    //   }
+    //   if(enter=2 && is_on_game ==true){
+    //     display.fillRect(0,0,128,64,1);
+    //   }
+
+    //   bool any_key = (back || enter || right || left);
+    //   if (is_on_game && any_key) {
+    //     command.sendCommand(MAIN, START, 0);
+    //     is_on_game = false;
+    //     sound.back();
+    //   }
+    //   //カーソル移動
+    //   //左
+    //   if(left==1){
+    //     cursor_val_int = ((cursor_val_int + NUM_MODE - 1) % NUM_MODE);
+    //     sound.cursor();
+    //     is_on_game = false;
+    //     }
+    //   //右
+    //   if(right==1){
+    //     cursor_val_int = ((cursor_val_int + 1) % NUM_MODE);
+    //     sound.cursor();
+    //     is_on_game = false;
+    //     }
+    //   if(back!=0){
+    //     app_state = 0;
+    //     is_on_game = false;
+    //     display.fillRect(0,62,128,64,1);
+    //   }
+    //   if(enter==1){
+    //     //ここに試合開始コマンド
+    //     if (is_on_game == false && cursor_val_int == 0) {
+    //       command.sendCommand(MAIN, START, 1);
+    //       sound.start();
+    //       is_on_game = true;
+    //     }
+    //     else if (is_on_game == false && cursor_val_int == 1) {
+    //       command.sendCommand(MAIN, START, 2);
+    //       sound.start();
+    //       is_on_game = true;
+    //     }
+    //   else
+    //     {
+    //       command.sendCommand(MAIN, START, 0);
+    //       is_on_game = false;
+    //       sound.back();
+    //     }
+    //   }
+    // }
 
     void UI::app_kicker(){
       //(トリガー(コマンドなら1,)
@@ -192,10 +303,15 @@
      }
     void UI::app_logo(){
       display.clearDisplay();
-      display.setCursor(0,40);
-      display.setFont(&FreeSans9pt7b);
-      display.setTextColor(1);
-      display.print("URAWA BEOLSAE");
+      // display.setCursor(0,40);
+      // display.setFont(&FreeSans9pt7b);
+      // display.setTextColor(1);
+      // display.print("URAWA BEOLSAE");
+       display.drawBitmap(0, 24, URAWA_BEOLSAE_logo, 128, 16, 1);
+       for (int i=0; i<25; i++){
+        display.drawPixel(random(0,128),random(0,64),1);
+       }
+      //  display.drawCircle(random(0,128),random(0,64),random(20,64),1);
       if(back!=0){
         app_state = 0;
         display.fillRect(0,62,128,64,1);
@@ -204,10 +320,12 @@
 
         void UI::app_line(){
           display.clearDisplay();
-          display.setCursor(0,40);
-          display.setFont(&FreeSans12pt7b);
+          display.setCursor(0,20);
+          display.setFont(&FreeSans9pt7b);
           display.setTextColor(1);
           display.print("Line");
+          display.setFont(&FreeSans12pt7b);
+          display.setCursor(60,40);
           display.print(data.dp.line_angle);
           if(enter==1){
             command.sendCommand(SUB, LINE_CALIBRATE, 1);
@@ -221,26 +339,32 @@
           if(back!=0){
             app_state = 0;
             display.fillRect(0,62,128,64,1);
+            sound.back();
           }
         }
         void UI::app_ball(){
           display.clearDisplay();
-          display.setCursor(0,40);
-          display.setFont(&FreeSans12pt7b);
+          display.setCursor(0,20);
+          display.setFont(&FreeSans9pt7b);
           display.setTextColor(1);
           display.print("Ball");
+          display.setFont(&FreeSans12pt7b);
+          display.setCursor(60,40);
           display.print(data.dp.ball_angle);
           if(back!=0){
             app_state = 0;
             display.fillRect(0,62,128,64,1);
+            sound.back();
           }
         }
         void UI::app_gyro(){
           display.clearDisplay();
-          display.setCursor(15,20);
-          display.setFont(&FreeSans12pt7b);
+          display.setCursor(0,20);
+          display.setFont(&FreeSans9pt7b);
           display.setTextColor(1);
           display.print("Gyro");
+          display.setFont(&FreeSans12pt7b);
+          display.setCursor(60,40);
           display.print(data.dp.robot_angle);
           if(enter==1){
             command.sendCommand(MAIN, RESET_GYRO, 1);
@@ -249,13 +373,14 @@
           if(back!=0){
             app_state = 0;
             display.fillRect(0,62,128,64,1);
+            sound.back();
           }
         }
         void UI::app_echo(){
           display.clearDisplay();
-          display.setCursor(0,20);
           display.setFont(&FreeSans12pt7b);
           display.setTextColor(1);
+          display.setCursor(0,18);
           display.print("Echo");
           display.setFont();
           display.setCursor(0,29);
@@ -273,17 +398,35 @@
           if(back!=0){
             app_state = 0;
             display.fillRect(0,62,128,64,1);
+            sound.back();
           }
         }
         void UI::app_cam(){
           display.clearDisplay();
-          display.setCursor(15,20);
-          display.setFont(&FreeSans12pt7b);
+          display.setCursor(0,10);
+          display.setFont(&FreeSans9pt7b);
           display.setTextColor(1);
           display.print("Camera");
+          display.setCursor(0,43);
+          display.print("ang: ");display.print(ang_blue);
+          display.setCursor(0,58);
+          display.print(" dis: ");display.print(cd_blue);
+          display.setCursor(64,43);
+          display.print("ang: ");display.print(ang_yellow);
+          display.setCursor(64,58);
+          display.print(" dis: ");display.print(cd_yellow);
+
+          display.drawLine(0,29,128,29,1);
+          display.setFont();
+          display.setCursor(0,21);
+          display.print("Blue");
+          display.setCursor(64,21);
+          display.print("Yellow");
+          
           if(back!=0){
             app_state = 0;
             display.fillRect(0,62,128,64,1);
+            sound.back();
           }
         }
 

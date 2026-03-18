@@ -61,93 +61,54 @@ class UI{
         uint8_t cursor_home = 2;
         int     cursor_val_int;
         bool    cursor_val_bool;
-
-        //home用
-        //logo用
         
         //game用
         bool is_on_game = false;
         static constexpr uint16_t NUM_MODE = 2;
 
-
         //値変更関数用
         int count = 0;
 
-        //アプリ
-        static constexpr uint8_t NUM_APP = 7;//ここの変更忘れずに
-        // enum App{
-        // home,
-        // logo,
-        // game,
-        // led,
-        // kicker,
-        // view_vals
-        // };
-        // App app = home;
         struct States{
             uint8_t num;
             const char* name;
-        };
-
-        States app[NUM_APP] = {
-            {0,"home"},
-            {1,"logo"},
-            {2,"game"},
-            {3,"LineCalibrate"},
-            {4,"led"},
-            {5,"kicker"},
-            {6,"view_vals"}
+            void (UI::*func)();
         };
         uint8_t app_state = 0;
-
-        //view(センサーの値を見るアプリ)の中身
-        static constexpr uint8_t NUM_IN_VIEW = 7;//ここの変更忘れずに
-        States App_in_view[NUM_IN_VIEW] = {
-            {0,"Select"},
-            {1,"Line"},
-            {2,"Ball"},
-            {3,"Gyro"},
-            {4,"Echo"},
-            {5,"Cam"},
-            {6,"User's"}
-        };
-        uint8_t in_view_state = 0;
-
-
+        
 
     public:
-
-        // static constexpr uint8_t  SCREEN_WIDTH  = 128;
-        // static constexpr uint8_t  SCREEN_HEIGHT = 64;  // 座標は0~63
-        // static constexpr int8_t   OLED_RESET    = -1;
-        // static constexpr uint8_t  SCREEN_ADDRESS = 0x3C;
         static constexpr uint8_t  SCREEN_WIDTH  = 128;
         static constexpr uint8_t  SCREEN_HEIGHT = 64;  // 座標は0~63
         static constexpr int8_t   OLED_RESET    = -1;
         static constexpr uint8_t  SCREEN_ADDRESS = 0x3C;
         Adafruit_SSD1306 display;
         UI() : display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET) {}
-        //display display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
         void init();
         void startUp();
-        void writeNumber(int x, int y, int number);
         void main();
         void app_home();
         void app_game();
-        void app_line_calibrate();
-        void app_led();
         void app_kicker();
-        void app_view_vals();
-        void app_in_view_select();
-        void app_in_view_line();
-        void app_in_view_ball();
-        void app_in_view_gyro();
-        void app_in_view_echo();
-        void app_in_view_cam();
-        void app_in_view_user_vals();//シリアルモニター
+        void app_line();
+        void app_ball();
+        void app_gyro();
+        void app_echo();
+        void app_cam();
         void app_logo();
+        void writeNumber(int x, int y, int number);
         void changeIntVal(const char* name,int &val,int min,int max,int default_val);
         void changeBoolVal(const char* name,bool &val,bool default_val);
+
+        static States app[];         
+        static const size_t NUM_APP;
+
+        //Camera用
+        uint8_t ang_blue = 0;
+        uint8_t ang_yellow = 0;
+        uint8_t cd_blue = 0;
+        uint8_t cd_yellow = 0;
+        uint8_t which_cam = 0;//0:青が前,黄色が後ろ   1:黄色が前,青が後ろ
 
         template <class T>
         void simpleSwitch(
@@ -167,6 +128,7 @@ class UI{
             const uint8_t height_mini = 2;
             const uint8_t radius_mini = 7;
             display.clearDisplay();
+            display.setFont();
             //ボタンのアニメーション
             //押されていないときの絵画
             if(enter==0){
@@ -223,4 +185,26 @@ class UI{
                 display.drawCircle(5+radius_mini,38+height_mini-radius_mini,radius_mini,1);
             }
         }
+
+        private:
+        //128x16
+          static constexpr uint8_t URAWA_BEOLSAE_logo[1024] = {
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x10, 0x09, 0xf8, 0x11, 0x01, 0x01, 0x08, 0x03, 0xf0, 0xfe, 0x1f, 0x04, 0x03, 0xc0, 0x81, 0xfc,
+            0x10, 0x09, 0x0c, 0x39, 0x81, 0x03, 0x08, 0x02, 0x08, 0x80, 0x20, 0x84, 0x04, 0x20, 0x81, 0x00,
+            0x10, 0x09, 0x04, 0x28, 0x82, 0x82, 0x14, 0x02, 0x08, 0x80, 0x40, 0x44, 0x08, 0x01, 0x41, 0x00,
+            0x10, 0x09, 0x04, 0x2c, 0x82, 0x82, 0x14, 0x02, 0x08, 0x80, 0x80, 0x24, 0x08, 0x03, 0x41, 0x00,
+            0x10, 0x09, 0x04, 0x64, 0xc2, 0x82, 0x22, 0x02, 0x08, 0x80, 0x80, 0x24, 0x08, 0x02, 0x21, 0x00,
+            0x10, 0x09, 0x08, 0x44, 0x44, 0x44, 0x22, 0x02, 0x10, 0x80, 0x80, 0x24, 0x06, 0x02, 0x21, 0x00,
+            0x10, 0x09, 0xf0, 0xc6, 0x44, 0x44, 0x62, 0x03, 0xf0, 0xfc, 0x80, 0x24, 0x01, 0x86, 0x21, 0xf8,
+            0x10, 0x09, 0x20, 0x82, 0x44, 0x44, 0x41, 0x02, 0x08, 0x80, 0x80, 0x24, 0x00, 0x44, 0x11, 0x00,
+            0x10, 0x09, 0x10, 0xfe, 0x28, 0x28, 0x7f, 0x02, 0x04, 0x80, 0x80, 0x24, 0x00, 0x27, 0xf1, 0x00,
+            0x18, 0x19, 0x19, 0x03, 0x28, 0x28, 0x80, 0x82, 0x04, 0x80, 0x80, 0x24, 0x00, 0x28, 0x09, 0x00,
+            0x08, 0x11, 0x09, 0x01, 0x28, 0x28, 0x80, 0x82, 0x04, 0x80, 0x40, 0x44, 0x00, 0x28, 0x09, 0x00,
+            0x0c, 0x31, 0x05, 0x01, 0x10, 0x10, 0x80, 0x82, 0x08, 0x80, 0x20, 0x84, 0x08, 0x48, 0x09, 0x00,
+            0x07, 0xe1, 0x02, 0x00, 0x90, 0x11, 0x00, 0x43, 0xf0, 0xfe, 0x1f, 0x07, 0xe7, 0x90, 0x05, 0xfc,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        };
+ 
 };
