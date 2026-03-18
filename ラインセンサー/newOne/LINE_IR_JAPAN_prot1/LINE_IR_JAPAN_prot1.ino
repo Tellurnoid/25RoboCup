@@ -41,8 +41,9 @@ void setup(){
 void loop(){
   //  readMUX();
   //  printAllMUX();
-  analogWrite(27, 200);
-  readMUX_onlyLINE_debug();
+  analogWrite(27, 255);
+  
+  readMUX_onlyLINE_debug_relative2();
   // readMUX_onlyLINE_debug();
 }
 
@@ -198,10 +199,8 @@ void readMUX_onlyLINE_debug_relative(){
   for(uint8_t i = 0; i < 32; i++){
      sensorValue_LINE[i] = calcValue_LINE[i] - rawData_LINE[ch_LINE[i]];
      if(sensorValue_LINE[i] > 0){Serial.print("+");}
-     if(abs(sensorValue_LINE[i]) < 10){Serial.print("   ");}
-     else if(abs(sensorValue_LINE[i]) < 100){Serial.print("  ");}
-     else if(abs(sensorValue_LINE[i]) < 1000){Serial.print(" ");}
-     Serial.print(sensorValue_LINE[i]);Serial.print(",");
+     if(abs(sensorValue_LINE[i]) < 10){Serial.print("  ");}
+     Serial.print(sensorValue_LINE[i]/100);Serial.print(",");
   }  
   Serial.println();
 }
@@ -224,10 +223,13 @@ void readMUX_onlyLINE_debug_relative2(){
   }
   for(uint8_t i = 0; i < 32; i++){
      sensorValue_LINE[i] = calcValue_LINE[i] - rawData_LINE[ch_LINE[i]];
-     if(sensorValue_LINE[i] > 200){
-      Serial.print("***");
-      }else{
-      Serial.print("   ");
+     if(abs(sensorValue_LINE[i]) > 200){
+      Serial.print("*");
+      //Serial.print(i);
+      //Serial.print(":");
+      //Serial.print(sensorValue_LINE[i]);
+     }else{
+      Serial.print(" ");
      }
      Serial.print("");
   }  

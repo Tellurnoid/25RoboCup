@@ -35,6 +35,11 @@
       return v;
     }
 
+    Vector Echo::withoutLineV(){
+      Vector v;
+      if(E < wall_side)
+    }
+
 void Defense::setBehavior(State s){
   state = s;
 }

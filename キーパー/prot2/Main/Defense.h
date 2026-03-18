@@ -19,14 +19,15 @@ class Echo{
 
     //壁の距離はキャリブレーションするべし///////////////////////////
     //後ろ壁ラインアウト対策
-     
-     uint16_t wall_S = 125;
+     uint16_t wall_side = 125;//ラインアウト対策用
+     uint16_t wall_S = 125;   //ラインアウト対策用
      uint16_t goal_area_s = 325;
      uint16_t wall_w = 695*2;
      uint16_t wall_h = 618*2;
     void update();
     Vector lostGoalEchoV();
     Vector backWallBlockV(Vector v);
+    Vector withoutLineV();//ラインセンサー故障時に使用
 };
 
 

@@ -15,20 +15,6 @@
 #include "UART.h"
 //#include "commands.h"
 
-  //      static constexpr uint8_t NUM_APP = 7;
-        UI::States UI::app[] = {
-            {0,"Home",&UI::app_home},
-            {1,"Game",&UI::app_game},
-            {2,"Gyro",&UI::app_gyro},
-            {3,"Line",&UI::app_line},
-            {4,"Ball",&UI::app_ball},
-            {5,"Echo",&UI::app_echo},
-            {6,"Camera",&UI::app_cam},
-            {7,"Kicker",&UI::app_kicker}
-        };
-        // 要素数
-        const size_t UI::NUM_APP = sizeof(UI::app) / sizeof(UI::app[0]);
-
     void UI::init() {
       Wire.setSDA(4);
       Wire.setSCL(5);
@@ -37,6 +23,7 @@
       if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
         while (true);
       }
+
     }
 
     void UI::startUp(){
@@ -60,20 +47,39 @@
       enter = button.read(button.ENTER);
       left  = button.read(button.LEFT);
       right = button.read(button.RIGHT);
+      switch(app[app_state].num){
+        case 0:
+         app_home();
+         break;
+        case 1:
+         app_logo();
+         break;
+        case 2:
+         app_game();
+         break;
+        case 3:
+         app_line_calibrate();
+         break;
+        case 4:
+         app_led();
+         break;
+        case 5:
+         app_kicker();
+         break;
+        case 6:
+         app_view_vals();
+         break;
 
-      //配列のアプリ実行
-      //app[app_state].func();
-      (this->*app[app_state].func)();
-
-      // if(left==1 || right==1)
-      //   sound.cursor();
-      // if(enter==1)
-      //   sound.cursor();
-      // if(back==1)
-      //   sound.back();
+      }
+      if(left==1 || right==1)
+        sound.cursor();
+      if(enter==1)
+        sound.cursor();
+      if(back==1)
+        sound.back();
         
-      // display.setFont();
-      // display.setTextSize(1);
+      display.setFont();// 
+      display.setTextSize(1);
       // display.setTextColor(SSD1306_WHITE);
       // display.setCursor(0,0);
       // display.print(app[app_state].name);
@@ -89,12 +95,7 @@
       display.setCursor(15,25);
       display.setFont(&FreeSans12pt7b);
       display.setTextColor(1);
-      if(cursor_home==0){
-        app_logo();
-      }
-      else{
-        display.print(app[cursor_home].name);
-      }
+      display.print(app[cursor_home].name);
       //ボタンの状態表示
       if(left != 0){
         display.fillRect(0,0,2,64,1);        
@@ -110,27 +111,27 @@
           sound.error();
         }
         else{
-          app_state = cursor_home;
+          app_state = (cursor_home + NUM_APP) % NUM_APP;
           sound.enter();
+          // app_state = cursor_home - 1;
+          // if(app_state<0){
+          //   app_state = NUM_APP;
+          // }
         }
       }
       //カーソル移動
       //左
-      if(left==1){
+      if(left==1)
         cursor_home = ((cursor_home + NUM_APP - 1) % NUM_APP);
-        sound.cursor();
-      }
 
       //右
-      if(right==1){
+      if(right==1)
         cursor_home = ((cursor_home + 1) % NUM_APP);
-        sound.cursor();
-      }
+      
+      //戻るキーは無効なのでエラー音など
+      if(back!=0){}
 
-      //ホーム画面で戻るキーは無効なのでエラー音など
-      if(back!=0){
-        sound.error();
-      }
+      
     }
    
     void UI::app_game(){
@@ -148,26 +149,22 @@
         display.fillRect(0,0,128,64,1);
       }
 
-      bool any_key = (back || enter || right || left);
-      if (is_on_game && any_key) {
-        command.sendCommand(MAIN, START, 0);
-        sound.back();
-      }
       //カーソル移動
       //左
       if(left==1){
         cursor_val_int = ((cursor_val_int + NUM_MODE - 1) % NUM_MODE);
-        sound.cursor();
+        if (is_on_game) command.sendCommand(MAIN, START, 0);
         is_on_game = false;
         }
       //右
       if(right==1){
         cursor_val_int = ((cursor_val_int + 1) % NUM_MODE);
-        sound.cursor();
+        if (is_on_game) command.sendCommand(MAIN, START, 0);
         is_on_game = false;
         }
       if(back!=0){
         app_state = 0;
+        if (is_on_game) command.sendCommand(MAIN, START, 0);
         is_on_game = false;
         display.fillRect(0,62,128,64,1);
       }
@@ -180,7 +177,24 @@
         sound.start();
       }
     }
-
+    void UI::app_line_calibrate() {
+      display.clearDisplay();
+      display.setCursor(18,28);
+      display.setFont(&FreeSans9pt7b);
+      display.setTextColor(1);
+      if(back!=0){
+        app_state = 0;
+        display.fillRect(0,62,128,64,1);
+      }
+      if(enter==1){
+        command.sendCommand(SUB, LINE_CALIBRATE, 1);
+        sound.start();
+      }
+    }
+    void UI::app_led(){
+      int LEDPWM = 0;
+      changeIntVal("LED",LEDPWM,0,255,100);
+    }
     void UI::app_kicker(){
       //(トリガー(コマンドなら1,)
       simpleSwitch(2,&sound ,"kicker",&Sound::cursor,"charge",&Sound::enter,"charge",&Sound::error);
@@ -189,103 +203,162 @@
                 app_state = 0;
                 sound.back();
             }
-     }
+    }
     void UI::app_logo(){
       display.clearDisplay();
-      display.setCursor(0,40);
-      display.setFont(&FreeSans9pt7b);
+      display.setCursor(15,20);
+      display.setFont(&FreeSans12pt7b);
       display.setTextColor(1);
-      display.print("URAWA BEOLSAE");
+      display.print("LOGO");
       if(back!=0){
         app_state = 0;
         display.fillRect(0,62,128,64,1);
       }
     }
 
-        void UI::app_line(){
-          display.clearDisplay();
-          display.setCursor(0,40);
-          display.setFont(&FreeSans12pt7b);
-          display.setTextColor(1);
-          display.print("Line");
-          display.print(data.dp.line_angle);
-          if(enter==1){
-            command.sendCommand(SUB, LINE_CALIBRATE, 1);
-            sound.start();
-          }
-          if(enter==2){
-            display.setCursor(0,10);
-            display.setFont();
-            display.print("Calibrate Start!");
-          }
-          if(back!=0){
-            app_state = 0;
-            display.fillRect(0,62,128,64,1);
-          }
-        }
-        void UI::app_ball(){
-          display.clearDisplay();
-          display.setCursor(0,40);
-          display.setFont(&FreeSans12pt7b);
-          display.setTextColor(1);
-          display.print("Ball");
-          display.print(data.dp.ball_angle);
-          if(back!=0){
-            app_state = 0;
-            display.fillRect(0,62,128,64,1);
-          }
-        }
-        void UI::app_gyro(){
+    void UI::app_view_vals(){
+      switch(App_in_view[in_view_state].num){
+        case 0:
+         app_in_view_select();
+         break;
+        case 1:
+         app_in_view_line();
+         break;
+        case 2:
+         app_in_view_ball();
+         break;
+        case 3:
+         app_in_view_gyro();
+         break;
+        case 4:
+         app_in_view_echo();
+         break;
+        case 5:
+         app_in_view_cam();
+         break;
+        case 6:
+         app_in_view_user_vals();
+         break;
+      }
+      if(back!=0){
+        app_state = 0;
+        display.fillRect(0,62,128,64,1);
+      }
+    }
+        //view_vals()関数の選択画面
+        void UI::app_in_view_select(){
           display.clearDisplay();
           display.setCursor(15,20);
           display.setFont(&FreeSans12pt7b);
           display.setTextColor(1);
-          display.print("Gyro");
+          display.print(App_in_view[cursor_home].name);
+          //ボタンの状態表示
+          if(left != 0){
+            display.fillRect(0,0,2,64,1);        
+          }    
+          if(right != 0){
+            display.fillRect(126,0,128,64,1);
+          }
+
+          //決定
+          if(enter==1){
+            if(cursor_home == 0){
+              //表示専用カーソルのためエラー音
+            }
+            else{
+              in_view_state = (cursor_home + NUM_IN_VIEW) % NUM_IN_VIEW;
+              // app_state = cursor_home - 1;
+              // if(app_state<0){
+              //   app_state = NUM_APP;
+              // }
+            }
+          }
+          //カーソル移動
+          //左
+          if(left==1)
+            cursor_home = ((cursor_home + NUM_APP - 1) % NUM_APP);
+          //右
+          if(right==1)
+            cursor_home = ((cursor_home + 1) % NUM_APP);
+        }
+        void UI::app_in_view_line(){
+          display.clearDisplay();
+          display.setCursor(15,20);
+          display.setFont(&FreeSans12pt7b);
+          display.setTextColor(1);
+          display.print(App_in_view[in_view_state].name);
+
+          display.print(data.dp.line_angle);
+          if(back!=0){
+            in_view_state = 0;
+            display.fillRect(0,62,128,64,1);
+          }
+        }
+        void UI::app_in_view_ball(){
+          display.clearDisplay();
+          display.setCursor(15,20);
+          display.setFont(&FreeSans12pt7b);
+          display.setTextColor(1);
+          display.print(App_in_view[in_view_state].name);
+          
+          display.print(data.dp.ball_angle);
+          if(back!=0){
+            in_view_state = 0;
+            display.fillRect(0,62,128,64,1);
+          }
+        }
+        void UI::app_in_view_gyro(){
+          display.clearDisplay();
+          display.setCursor(15,20);
+          display.setFont(&FreeSans12pt7b);
+          display.setTextColor(1);
+          display.print(App_in_view[in_view_state].name);
+          
           display.print(data.dp.robot_angle);
+
           if(enter==1){
             command.sendCommand(MAIN, RESET_GYRO, 1);
             sound.start();
           }
+
           if(back!=0){
-            app_state = 0;
+            in_view_state = 0;
             display.fillRect(0,62,128,64,1);
           }
         }
-        void UI::app_echo(){
-          display.clearDisplay();
-          display.setCursor(0,20);
-          display.setFont(&FreeSans12pt7b);
-          display.setTextColor(1);
-          display.print("Echo");
-          display.setFont();
-          display.setCursor(0,29);
-          for(int i=0; i<4; i++){
-            display.print(i);
-            display.print(": ");
-            display.println(data.dp.echoValues[i]);
-          }
-          for(int i=4; i<8; i++){
-            display.setCursor(64,29+8*(i-4));
-            display.print(i);
-            display.print(": ");
-            display.println(data.dp.echoValues[i]);
-          }
-          if(back!=0){
-            app_state = 0;
-            display.fillRect(0,62,128,64,1);
-          }
-        }
-        void UI::app_cam(){
+        void UI::app_in_view_echo(){
           display.clearDisplay();
           display.setCursor(15,20);
           display.setFont(&FreeSans12pt7b);
           display.setTextColor(1);
-          display.print("Camera");
+          display.print(App_in_view[in_view_state].name);
           if(back!=0){
-            app_state = 0;
+            in_view_state = 0;
             display.fillRect(0,62,128,64,1);
           }
         }
+        void UI::app_in_view_cam(){
+          display.clearDisplay();
+          display.setCursor(15,20);
+          display.setFont(&FreeSans12pt7b);
+          display.setTextColor(1);
+          display.print(App_in_view[in_view_state].name);
+          if(back!=0){
+            in_view_state = 0;
+            display.fillRect(0,62,128,64,1);
+          }
+        }
+        void UI::app_in_view_user_vals(){
+          display.clearDisplay();
+          display.setCursor(15,20);
+          display.setFont(&FreeSans12pt7b);
+          display.setTextColor(1);
+          display.print(App_in_view[in_view_state].name);
+          if(back!=0){
+            in_view_state = 0;
+            display.fillRect(0,62,128,64,1);
+          }
+       }
 
         //任意のint変数を変更するUI(参照渡し)
         void UI::changeIntVal(const char* name,int &val ,int min,int max,int default_val){

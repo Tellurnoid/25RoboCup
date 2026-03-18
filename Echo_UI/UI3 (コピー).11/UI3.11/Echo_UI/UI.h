@@ -69,41 +69,85 @@ class UI{
         bool is_on_game = false;
         static constexpr uint16_t NUM_MODE = 2;
 
+
         //値変更関数用
         int count = 0;
 
+        //アプリ
+        static constexpr uint8_t NUM_APP = 7;//ここの変更忘れずに
+        // enum App{
+        // home,
+        // logo,
+        // game,
+        // led,
+        // kicker,
+        // view_vals
+        // };
+        // App app = home;
         struct States{
             uint8_t num;
             const char* name;
-            void (UI::*func)();
+        };
+
+        States app[NUM_APP] = {
+            {0,"home"},
+            {1,"logo"},
+            {2,"game"},
+            {3,"LineCalibrate"},
+            {4,"led"},
+            {5,"kicker"},
+            {6,"view_vals"}
         };
         uint8_t app_state = 0;
 
+        //view(センサーの値を見るアプリ)の中身
+        static constexpr uint8_t NUM_IN_VIEW = 7;//ここの変更忘れずに
+        States App_in_view[NUM_IN_VIEW] = {
+            {0,"Select"},
+            {1,"Line"},
+            {2,"Ball"},
+            {3,"Gyro"},
+            {4,"Echo"},
+            {5,"Cam"},
+            {6,"User's"}
+        };
+        uint8_t in_view_state = 0;
+
+
+
     public:
+
+        // static constexpr uint8_t  SCREEN_WIDTH  = 128;
+        // static constexpr uint8_t  SCREEN_HEIGHT = 64;  // 座標は0~63
+        // static constexpr int8_t   OLED_RESET    = -1;
+        // static constexpr uint8_t  SCREEN_ADDRESS = 0x3C;
         static constexpr uint8_t  SCREEN_WIDTH  = 128;
         static constexpr uint8_t  SCREEN_HEIGHT = 64;  // 座標は0~63
         static constexpr int8_t   OLED_RESET    = -1;
         static constexpr uint8_t  SCREEN_ADDRESS = 0x3C;
         Adafruit_SSD1306 display;
         UI() : display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET) {}
+        //display display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
         void init();
         void startUp();
+        void writeNumber(int x, int y, int number);
         void main();
         void app_home();
         void app_game();
+        void app_line_calibrate();
+        void app_led();
         void app_kicker();
-        void app_line();
-        void app_ball();
-        void app_gyro();
-        void app_echo();
-        void app_cam();
+        void app_view_vals();
+        void app_in_view_select();
+        void app_in_view_line();
+        void app_in_view_ball();
+        void app_in_view_gyro();
+        void app_in_view_echo();
+        void app_in_view_cam();
+        void app_in_view_user_vals();//シリアルモニター
         void app_logo();
-        void writeNumber(int x, int y, int number);
         void changeIntVal(const char* name,int &val,int min,int max,int default_val);
         void changeBoolVal(const char* name,bool &val,bool default_val);
-
-        static States app[];         
-        static const size_t NUM_APP;
 
         template <class T>
         void simpleSwitch(
@@ -123,7 +167,6 @@ class UI{
             const uint8_t height_mini = 2;
             const uint8_t radius_mini = 7;
             display.clearDisplay();
-            display.setFont();
             //ボタンのアニメーション
             //押されていないときの絵画
             if(enter==0){
