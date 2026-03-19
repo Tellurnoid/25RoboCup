@@ -1,6 +1,18 @@
 #include <Arduino.h>
 #include "Instance.h"
 #include "Defense.h"
+  
+    //多分使わない
+    void Echo::calibrateW(){
+      uint16_t count = 50;
+      uint16_t sum = 0;
+      for(uint16_t i=0; i<count; i++){
+        uart.update();
+        update();
+        sum += (E + W)/2;
+      }
+      wall_w = sum/count;
+    }
 
     void Echo::update(){
         N   = data.dp.echoValues[0];
@@ -10,21 +22,35 @@
         S   = data.dp.echoValues[4];
         SW  = data.dp.echoValues[5];
         W   = data.dp.echoValues[6];
-        NW  = data.dp.echoValues[7];      
+        NW  = data.dp.echoValues[7];   
     }
 
     Vector Echo::lostGoalEchoV(){
         Vector v;
-        v.y = (goal_area_s - S) * 1.3;
-        if(E > W){
-          v.x = E - (wall_w * 0.5);
-          if(v.x<0)
-          v.x=0;
+        float last_vx;
+        //v.y = defense.pwmDomain(goal_area_s - S + 200);
+        v.y = goal_area_s - S - 100;
+       
+
+        
+        if(E != -1 && W != -1){
+          //遮蔽物なしで横幅の計測成功したとき
+          if(E + W < 700){
+            v.x = 0;
+          }
+          else if(E < wall_w){
+            v.x = (E - wall_w)*1.5; 
+          }
+          else if(W < wall_w){
+            v.x = (wall_w - W)*1.5;
+          }
+          else{
+            v.x = 0;
+          }
+          last_vx = v.x;
         }
         else{
-          v.x = (wall_w * 0.5) - W;
-          if(v.x>0)
-          v.x=0;
+          v.x = last_vx;
         }
         return v;
     }
@@ -37,8 +63,33 @@
 
     Vector Echo::withoutLineV(){
       Vector v;
-      if(E < wall_side)
+        v.x = 0;
+        v.y = defense.pwmDomain(goal_area_s - S + 100);
+      
+        v = addV(v,defense.ballV());
+        if(E < wall_side + tolerance){
+          v.x = -1 * defense.pwm_max;
+        }
+        else if(W < wall_side + tolerance){
+          v.x = defense.pwm_max;
+        }
+      return v;
     }
+
+//最大値、最小値の中に留める関数(404で無効化)
+int Defense::pwmDomain(int val){
+    int max = pwm_max;
+    int min = pwm_max * -1;
+    if(val < min){
+        return min;
+    }
+    else if(val > max){
+        return max;
+    }
+    else{
+        return val;
+    }
+}
 
 void Defense::setBehavior(State s){
   state = s;
@@ -55,8 +106,8 @@ void Defense::debugSerial(){
   Serial.print(defense_v.y);
   Serial.print(")  ");
 
-  Serial.print("S:");
-  Serial.print(echo.S);
+  Serial.print("cam:");
+  Serial.print(cam_angle);
 
 
   Serial.println();
@@ -77,7 +128,7 @@ void Defense::updateBall(){
     ball_dis   = data.dp.ball_distance;
 }
 void Defense::updateCam(){
-    //でき次第書く////////////////////////////////////////
+    cam_angle = data.dp.goal_angle;
 }
 //angleZ更新用
 void Defense::updateMPU(){
@@ -113,6 +164,14 @@ void Defense::update(){
                 lostGoalEcho();
                 break;
           }
+          // if(state==out_if_running){
+          //   off();
+          // }
+          // else{
+          //   lostGoalEcho();
+          // }
+
+          
         if(state!=out_of_running){
           debugSerial();
         }
@@ -205,6 +264,20 @@ Vector Defense::TlineV(Vector v){
      return v;
 }
 
+Vector Defense::selfTraceV(float percent){
+  Vector v;
+  float angle;
+  if(echo.E == -1 || echo.W == -1){
+    v = {0,0};
+  }
+  else{
+    if(echo.position_x > 0){
+       //= (abs(line_angle) > 90)? angle = line_angle+90:angle = line_angle-90;
+    }
+  }
+  return v;
+}
+
 Vector Defense::notToOwnGoal(Vector v){
     //ライントレース中ボールが背後にあったら8割の速度にする
     if(line_angle != 400 && abs(ball_angle) > 90){
@@ -216,6 +289,7 @@ Vector Defense::notToOwnGoal(Vector v){
 
 void Defense::lineTrace(){
     Vector v = makeV(reverseAngle(0),0);
+    //ラインが見えない
     if(line_angle == 400){
       v = last_line;
       lost_count++;
@@ -223,6 +297,12 @@ void Defense::lineTrace(){
         state = lost_line;
       }
     }
+    //ゴールの中央にゆっくり向かう
+    else if(ball_angle == 400){
+      lost_count = 0;
+      v = assembleV(lineV(),selfTraceV(40),pwm_max);
+    }
+    //ラインもボールも認識中
     else
     {
       lost_count = 0;
@@ -249,12 +329,13 @@ void Defense::lostGoalCamera(){
     if(line_angle !=400){
       state = line_tracing;
     }
-    if(c_x == 400){
+    if(cam_angle == 400){
       state = back_to_goal_withECHO;
     }
     //全包囲カメラつけたら書く////////////////////////////////////////////
     else{
-
+      v = makeV(reverseAngle(cam_angle),pwm_max);
+      v.y = echo.goal_area_s - echo.S;
     }
       defense_v = v;
       data.dp.main_v = defense_v;
@@ -265,6 +346,9 @@ void Defense::lostGoalCamera(){
       Vector v = {0,0};
       if(line_angle != 400){
         state = line_tracing;
+      }
+      else if(cam_angle != 400){
+        state = back_to_goal_withCAM;
       }
       else{
         v = echo.lostGoalEchoV();

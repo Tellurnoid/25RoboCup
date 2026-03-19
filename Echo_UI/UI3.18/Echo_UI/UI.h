@@ -58,7 +58,7 @@ class UI{
         
 
         //UI全体用
-        uint8_t cursor_home = 2;
+        uint8_t cursor_home = 0;
         int     cursor_val_int;
         bool    cursor_val_bool;
         
@@ -104,7 +104,7 @@ class UI{
         static const size_t NUM_APP;
 
         //Camera用
-        uint8_t ang_blue = 0;
+        int16_t ang_blue = 0;
         uint8_t ang_yellow = 0;
         uint8_t cd_blue = 0;
         uint8_t cd_yellow = 0;

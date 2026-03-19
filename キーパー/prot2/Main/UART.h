@@ -30,6 +30,11 @@ class UART {
       int16_t ball_angle;
       int16_t ball_distance;
       int16_t line_angle;
+
+      uint8_t id;
+      uint8_t ack;
+      uint8_t content_id;
+      int16_t content;
     };
     ToSub to_sub;
 
@@ -59,6 +64,7 @@ class UART {
       int16_t ball_angle;
       int16_t line_angle;
       int16_t robot_angle;
+      int16_t goal_angle;
     };
     ToUI to_ui;
 
@@ -69,10 +75,27 @@ class UART {
     };
     ToMotor to_motor;
 
+    struct __attribute__((packed)) FromMotor {
+      int16_t vx;
+      int16_t vy;
+      int16_t move_x;
+      int16_t move_y;
+    };
+    FromMotor from_motor;
+
+    struct __attribute__((packed)) FromCamera {
+      int16_t angle;
+    };
+    FromCamera from_camera;
+
+
+
     uint8_t calcChecksum(uint8_t* data, uint8_t len);
     void flushUntilHeader();
 
   public:
+
+
     enum ReadResult : uint8_t {
       READ_OK = 0,
       READ_NO_HEADER,
@@ -164,12 +187,12 @@ class UART {
         return result;
     }
     void init();
-    void update();
+    void update();  
 };
 
 class Data{
   public:
-struct DataPacket { // ここに、処理で使うようなデータを全部宣言、UART.cpp等で代入
+    struct DataPacket { // ここに、処理で使うようなデータを全部宣言、UART.cpp等で代入
       int16_t ball_angle;
       int16_t ball_distance;
       int16_t line_angle;
@@ -179,8 +202,8 @@ struct DataPacket { // ここに、処理で使うようなデータを全部宣
       int16_t velo_y;
       Vector velocity_v;
 
-      int16_t move_x;
-      int16_t move_y;
+      float move_x;
+      float move_y;
       
       int16_t echoValues[8];
       // int16_t echo_0;
@@ -201,6 +224,8 @@ struct DataPacket { // ここに、処理で使うようなデータを全部宣
 
       Vector main_v;
       int16_t main_rotate;
+
+      int16_t goal_angle;
     };
 
     DataPacket dp;  // DataPacketの実体を作成、このdpから引き出す

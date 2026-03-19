@@ -136,8 +136,9 @@
       }
 
       //ホーム画面で戻るキーは無効なのでエラー音など
-      if(back!=0){
-        sound.error();
+      if(back==1){
+          app_state = 1;
+          sound.enter();
       }
     }
    
@@ -402,6 +403,7 @@
           }
         }
         void UI::app_cam(){
+          ang_blue = data.dp.goal_angle;
           display.clearDisplay();
           display.setCursor(0,10);
           display.setFont(&FreeSans9pt7b);
@@ -411,10 +413,10 @@
           display.print("ang: ");display.print(ang_blue);
           display.setCursor(0,58);
           display.print(" dis: ");display.print(cd_blue);
-          display.setCursor(64,43);
-          display.print("ang: ");display.print(ang_yellow);
-          display.setCursor(64,58);
-          display.print(" dis: ");display.print(cd_yellow);
+          // display.setCursor(64,43);
+          // display.print("ang: ");display.print(ang_yellow);
+          // display.setCursor(64,58);
+          // display.print(" dis: ");display.print(cd_yellow);
 
           display.drawLine(0,29,128,29,1);
           display.setFont();

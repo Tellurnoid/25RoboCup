@@ -2,7 +2,6 @@
 #include <Arduino.h>
 #include "Instance.h"
 
-
 class Echo{
   private:
     
@@ -21,13 +20,24 @@ class Echo{
     //後ろ壁ラインアウト対策
      uint16_t wall_side = 125;//ラインアウト対策用
      uint16_t wall_S = 125;   //ラインアウト対策用
-     uint16_t goal_area_s = 325;
-     uint16_t wall_w = 695*2;
-     uint16_t wall_h = 618*2;
+     uint16_t goal_area_s = 320;
+     float wall_w = 700;            
+     float wall_h = 618*2;
+
+     //超音波のみで計測した推定位置
+     //コート中央を原点とする
+     // -wall_w < X < +wall_w
+     // -wall_h < Y < +wall_h
+     uint16_t tolerance = 100;//許容誤差
+     float position_x;
+     //uint16_t position_y;
     void update();
     Vector lostGoalEchoV();
     Vector backWallBlockV(Vector v);
     Vector withoutLineV();//ラインセンサー故障時に使用
+
+    //横幅のキャリブレーション。多分使わない
+    void calibrateW();
 };
 
 
@@ -51,7 +61,7 @@ class Defense{
         int   lost_count = 0;
 
         //カメラ
-        int16_t c_x = 400;
+        int16_t cam_angle = 400;
 
     public:
         float ball_angle;
@@ -73,6 +83,7 @@ class Defense{
 
         void init();
         void debugSerial();
+        int  pwmDomain(int val);//最大値、最小値の中に留める関数(404で無効化)
         void off();
         void update();
         void setBehavior(State s);
@@ -86,6 +97,7 @@ class Defense{
         Vector ballV();
         Vector lineV();
         Vector lineV_onlyP();
+        Vector selfTraceV(float perent);
         Vector TlineV(Vector v);
         Vector notToOwnGoal(Vector v);
         void lostGoalEcho();

@@ -13,6 +13,7 @@ void UART::updateUART() {
     data.dp.ball_angle = from_main.ball_angle;
     data.dp.line_angle = from_main.line_angle;
     data.dp.robot_angle = from_main.robot_angle;
+    data.dp.goal_angle = from_main.goal_angle;
   }
 
   to_main.echo_0 = data.dp.echoValues[0];

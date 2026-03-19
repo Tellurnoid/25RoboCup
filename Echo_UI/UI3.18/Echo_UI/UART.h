@@ -52,6 +52,7 @@ class UART {
       int16_t ball_angle;
       int16_t line_angle;
       int16_t robot_angle;
+      int16_t goal_angle;
     };
     // FromMain from_main;
 
@@ -164,7 +165,7 @@ class Data{
       int16_t ball_angle;
       int16_t line_angle;
       int16_t robot_angle;
-
+      int16_t goal_angle;
       int16_t echoValues[8];
     };
     
