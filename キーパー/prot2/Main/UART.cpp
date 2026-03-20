@@ -53,7 +53,7 @@ void UART::update() {
 
   if (readPacket(PIOSerial4, from_camera) == UART::READ_OK) {
     data.dp.goal_angle = from_camera.angle;
-    Serial.println(data.dp.goal_angle);
+    //Serial.println(data.dp.goal_angle);
   }
 
 

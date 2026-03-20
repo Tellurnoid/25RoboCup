@@ -18,7 +18,7 @@ img = sensor.snapshot()
 
 # その後に設定
 sensor.set_auto_gain(False)
-#sensor.set_auto_whitebal(False)
+sensor.set_auto_whitebal(False)
 sensor.set_auto_exposure(False)
 
 # 上下反転（左右反転は使わない）
@@ -60,7 +60,7 @@ def send_packet(data):
 # ===============================
 # LAB色空間で青色検出
 # ===============================
-blue_threshold = [(46, 74, 5, 41, -80, -30)]
+blue_threshold = [(45, 85, -34, -18, 14, 34)]
 
 cameraWidth  = 320 #QVGA
 cameraHeight = 240

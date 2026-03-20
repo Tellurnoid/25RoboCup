@@ -166,27 +166,51 @@
           display.print("DIFENSE");
         }
       }
-        // bool any_key = (enter!=0 || right!=0 || left!=0);
-        // if(is_on_game == true && any_key){
-        //   is_on_game = false;
-        //   command.sendCommand(MAIN, START, 0);
-        //   sound.back();
-        // }
+
+
+
+      Serial.print(right);
+      Serial.print(",");
+      Serial.println(long_press);
       //カーソル移動
+      if(left ==1 || right ==1){
+        long_press = 0;
+      }
+      else if(left == 2){
+        display.fillRect(63,60,3,4,1);
+        long_press = long_press + 1.00f;
+        display.fillRect(64,60,64 * long_press / change_time, 4 ,1);
+        display.fillRect(64 - 64 * long_press / change_time,60,64 * long_press / change_time, 4 ,1);
+      }
+      else if(right == 2){
+        display.fillRect(63,60,3,4,1);
+        long_press = long_press + 1.00f;
+        display.fillRect(64 * long_press / change_time,60,64 - (64 * long_press / change_time), 4 ,1);
+        display.fillRect(64,60,64 -(64 * long_press / change_time), 4 ,1);
+      }
+      else if(left == 3 || right == 3){
+
+      }
+      else{
+        long_press = 0;
+      }
+
       //左
-      if(left==1){
+      if(left==2 && long_press == change_time){
         if(is_on_game){
           is_on_game = false;
           command.sendCommand(MAIN, START, 0);
           sound.back();
-        }
-        else{
+         }
+         else{
           cursor_val_int = ((cursor_val_int + NUM_MODE - 1) % NUM_MODE);
           sound.cursor();
-        }
+          display.drawRect(0,0,128,64,1);
+         }
+        long_press = 0;
         }
       //右
-      if(right==1){
+      if(right==2 && long_press == change_time){
           if(is_on_game){
             is_on_game = false;
             command.sendCommand(MAIN, START, 0);
@@ -195,7 +219,9 @@
           else{
             cursor_val_int = ((cursor_val_int + 1) % NUM_MODE);
             sound.cursor();
+            display.drawRect(0,0,128,64,1);
           }
+          long_press = 0;
         }
       if(enter==1){
           if(is_on_game == false){
@@ -216,11 +242,10 @@
             command.sendCommand(MAIN, START, 0);
             sound.back();
           }
+          long_press = 0;
       }
-
       if(back!=0){
         if(is_on_game == true){
-          sound.back();
           is_on_game = false;
           command.sendCommand(MAIN,START,0);
         }
@@ -228,10 +253,8 @@
           app_state = 0;
           display.fillRect(0,62,128,64,1);
         }
+         sound.back();
       }
-      Serial.print("enter:");Serial.print(enter);
-      Serial.print(" , is_on_game:");Serial.print(is_on_game);
-      Serial.println();
     }
     // void UI::app_game(){
     //   display.clearDisplay();
@@ -378,6 +401,9 @@
           }
         }
         void UI::app_echo(){
+        for(int i=0; i<8; i++){
+          ave[i] = ave[i]*(1 - new_data_ratio) + data.dp.echoValues[i]*new_data_ratio;
+        }
           display.clearDisplay();
           display.setFont(&FreeSans12pt7b);
           display.setTextColor(1);
@@ -388,13 +414,13 @@
           for(int i=0; i<4; i++){
             display.print(i);
             display.print(": ");
-            display.println(data.dp.echoValues[i]);
+            display.println(ave[i]);
           }
           for(int i=4; i<8; i++){
             display.setCursor(64,29+8*(i-4));
             display.print(i);
             display.print(": ");
-            display.println(data.dp.echoValues[i]);
+            display.println(ave[i]);
           }
           if(back!=0){
             app_state = 0;

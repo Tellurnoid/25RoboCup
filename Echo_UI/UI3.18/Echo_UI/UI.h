@@ -64,7 +64,9 @@ class UI{
         
         //game用
         bool is_on_game = false;
+        float long_press;
         static constexpr uint16_t NUM_MODE = 2;
+        float change_time = 20;
 
         //値変更関数用
         int count = 0;
@@ -96,6 +98,7 @@ class UI{
         void app_echo();
         void app_cam();
         void app_logo();
+        void animate_progressCiecle(int16_t x,int16_t y, int16_t r, int16_t deg);
         void writeNumber(int x, int y, int number);
         void changeIntVal(const char* name,int &val,int min,int max,int default_val);
         void changeBoolVal(const char* name,bool &val,bool default_val);
@@ -109,6 +112,10 @@ class UI{
         uint8_t cd_blue = 0;
         uint8_t cd_yellow = 0;
         uint8_t which_cam = 0;//0:青が前,黄色が後ろ   1:黄色が前,青が後ろ
+
+        //echo用
+        int16_t ave[8] = {0,0,0,0,0,0,0,0};
+        float new_data_ratio = 0.4;
 
         template <class T>
         void simpleSwitch(

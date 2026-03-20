@@ -42,8 +42,9 @@ void loop(){
   //  readMUX();
   //  printAllMUX();
   analogWrite(27, 255);
-  
-  readMUX_onlyLINE_debug_relative2();
+
+  readMUX_onlyIR_debug2();
+  //readMUX_onlyLINE_debug_relative2();
   // readMUX_onlyLINE_debug();
 }
 
@@ -103,6 +104,27 @@ void readMUX_onlyIR_debug(){
       for (uint8_t ch = 0; ch < 16; ch++) {
         Serial.print(",");
         Serial.print(sensorValue_IR[ch]/10);
+      }
+      Serial.println();
+}
+void readMUX_onlyIR_debug2(){
+  //読む
+  for(uint8_t ch=0; ch<16; ch++){
+    selectChannel_16(ch);
+    delayMicroseconds(10);
+    //まず一つの配列、rawDataに流し込む
+    sensorValue_IR[ch]      = analogRead(IR_COM);
+  }
+  //整列させて代入
+      Serial.print("IR: ");
+      for (uint8_t ch = 0; ch < 16; ch++) {
+        Serial.print(" ");
+        if(sensorValue_IR[ch]/10 == 409){
+          Serial.print(" ");
+        }
+        else {
+          Serial.print("*");
+        }
       }
       Serial.println();
 }

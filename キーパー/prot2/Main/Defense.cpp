@@ -15,44 +15,17 @@
     }
 
     void Echo::update(){
-        N   = data.dp.echoValues[0];
-        NE  = data.dp.echoValues[1];
-        E   = data.dp.echoValues[2];
-        SE  = data.dp.echoValues[3];
-        S   = data.dp.echoValues[4];
-        SW  = data.dp.echoValues[5];
-        W   = data.dp.echoValues[6];
-        NW  = data.dp.echoValues[7];   
-    }
-
-    Vector Echo::lostGoalEchoV(){
-        Vector v;
-        float last_vx;
-        //v.y = defense.pwmDomain(goal_area_s - S + 200);
-        v.y = goal_area_s - S - 100;
-       
-
-        
-        if(E != -1 && W != -1){
-          //遮蔽物なしで横幅の計測成功したとき
-          if(E + W < 700){
-            v.x = 0;
-          }
-          else if(E < wall_w){
-            v.x = (E - wall_w)*1.5; 
-          }
-          else if(W < wall_w){
-            v.x = (wall_w - W)*1.5;
-          }
-          else{
-            v.x = 0;
-          }
-          last_vx = v.x;
+        for(int i=0; i<8; i++){
+          ave[i] = ave[i]*(1 - new_data_ratio) + data.dp.echoValues[i]*new_data_ratio;
         }
-        else{
-          v.x = last_vx;
-        }
-        return v;
+        N   = ave[0];
+        NE  = ave[1];
+        E   = ave[2];
+        SE  = ave[3];
+        S   = ave[4];
+        SW  = ave[5];
+        W   = ave[6];
+        NW  = ave[7];   
     }
 
     Vector Echo::backWallBlockV(Vector v){
@@ -105,9 +78,24 @@ void Defense::debugSerial(){
   Serial.print(",");
   Serial.print(defense_v.y);
   Serial.print(")  ");
+  Serial.print(",   leaveMode:");
+  Serial.print(leave_mode);
+  Serial.print(", echo_dif=");
+  Serial.print(echo.echo_dif);
 
-  Serial.print("cam:");
-  Serial.print(cam_angle);
+Serial.print(", N=");
+Serial.print(echo.N); Serial.print(" ,NE=");
+Serial.print(echo.NE); Serial.print(" ,E=");
+Serial.print(echo.E); Serial.print(" ,SE=");
+Serial.print(echo.SE); Serial.print(" ,S=");
+Serial.print(echo.S); Serial.print(" ,SW=");
+Serial.print(echo.SW);Serial.print(" ,W=");
+Serial.print(echo.W); Serial.print(" ,NW=");
+Serial.print(echo.NW); Serial.print(",");
+Serial.print(",   powers=");
+Serial.print(echo.central_power); Serial.print(",");
+Serial.print(echo.righter_power); Serial.print(",");
+Serial.println(echo.lefter_power);
 
 
   Serial.println();
@@ -163,15 +151,14 @@ void Defense::update(){
               case back_to_goal_withECHO:
                 lostGoalEcho();
                 break;
+              case leave_line:
+                leaveLine(leave_mode);
+                break;
+              case self_trace:
+                selfTrace();
+                break;
           }
-          // if(state==out_if_running){
-          //   off();
-          // }
-          // else{
-          //   lostGoalEcho();
-          // }
 
-          
         if(state!=out_of_running){
           debugSerial();
         }
@@ -267,6 +254,9 @@ Vector Defense::TlineV(Vector v){
 Vector Defense::selfTraceV(float percent){
   Vector v;
   float angle;
+  if(ball_angle != 400){
+    state = line_tracing;
+  }
   if(echo.E == -1 || echo.W == -1){
     v = {0,0};
   }
@@ -289,6 +279,8 @@ Vector Defense::notToOwnGoal(Vector v){
 
 void Defense::lineTrace(){
     Vector v = makeV(reverseAngle(0),0);
+     is_on_yoko = (line_angle == 0 || abs(line_angle) == 180);
+     is_on_tate = (abs(line_angle) == 90);
     //ラインが見えない
     if(line_angle == 400){
       v = last_line;
@@ -297,59 +289,180 @@ void Defense::lineTrace(){
         state = lost_line;
       }
     }
-    //ゴールの中央にゆっくり向かう
+      //ゴールの中央にゆっくり向かう
     else if(ball_angle == 400){
-      lost_count = 0;
-      v = assembleV(lineV(),selfTraceV(40),pwm_max);
+        lost_count = 0;
+        state = self_trace;
     }
-    //ラインもボールも認識中
-    else
-    {
-      lost_count = 0;
-
-      v = assembleV(lineV(),ballV(),pwm_max);
-      //縦線上で後退するときは減速
-      bool is_on_tate = (abs(line_angle) > 45 && abs(line_angle) < 135);
-      if(is_on_tate && v.y < 0){
-        v.x *= 0.5;
-        v.y *= 0.5;
-      }
-      v = notToOwnGoal(v);
-      v = TlineV(v);
-      v = echo.backWallBlockV(v);
+    else if(ball_angle == 500){
+        lost_count = 0;
+        v = assembleV(lineV(),ballV(),pwm_max);
+        v = TlineV(v);
+        v = echo.backWallBlockV(v);
     }
-        defense_v = v;
-        data.dp.main_v = defense_v;
-        defense_rotate = gyro.controlAngle(0);
-        data.dp.main_rotate = defense_rotate;
+    else{
+        //ゴールラインのトレースを始めたとき
+        if(echo.S < echo.wall_S && echo.N > echo.goal_area_s*1.5 && is_on_yoko){
+          leave_mode = 'S';
+          lost_count = 0;
+          sound.single();
+          state = leave_line;
+        }
+        //相手のゴール前でトレースを始めたとき
+        else if(echo.N < echo.goal_area_s && echo.S > echo.goal_area_s*1.5){
+          leave_mode = 'N';
+          lost_count = 0;
+          sound.single();
+          state = leave_line;
+        }
+        //タッチライン(右)のトレースを始めたとき
+        else if(echo.E < echo.wall_side && echo.W > echo.wall_side *1.5  && is_on_tate){
+          leave_mode = 'E';
+          lost_count = 0;
+          sound.single();
+          state = leave_line;
+        }
+      //タッチライン(左)のトレースを始めたとき
+        else if(echo.W < echo.wall_side && echo.E > echo.wall_side * 1.5 && is_on_tate){
+          leave_mode = 'W';
+          lost_count = 0;
+          sound.single();
+          state = leave_line;
+        }
+       //ラインもボールも認識中
+        else{
+        lost_count = 0;
+        v = assembleV(lineV(),ballV(),pwm_max);
+        //縦線上で後退するときは減速
+        bool is_on_tate = (abs(line_angle) > 45 && abs(line_angle) < 135);
+        if(is_on_tate && v.y < 0){
+          v.x *= 0.3;
+          v.y *= 0.3;
+        }
+        v = notToOwnGoal(v);
+        v = TlineV(v);
+        v = echo.backWallBlockV(v);
+        }
+    }
+      defense_v = v;
+      data.dp.main_v = defense_v;
+      defense_rotate = gyro.controlAngle(0);
+      data.dp.main_rotate = defense_rotate;
   }
 
 void Defense::lostGoalCamera(){
     Vector v = makeV(reverseAngle(0),0);
-    if(line_angle !=400){
-      state = line_tracing;
-    }
     if(cam_angle == 400){
       state = back_to_goal_withECHO;
+    }
+    else if(line_angle != 400){
+        if(line_angle==500){
+          state = line_tracing;
+        }
+        //ゴールラインのトレースを始めたとき
+        else if(echo.S < echo.wall_S && echo.N > echo.goal_area_s*1.5 && is_on_yoko){
+          leave_mode = 'S';
+          sound.single();
+          state = leave_line;
+        }
+        //相手のゴール前でトレースを始めたとき
+        else if(echo.N < echo.goal_area_s && echo.S > echo.goal_area_s*1.5){
+          leave_mode = 'N';
+          sound.single();
+          state = leave_line;
+        }
+        //タッチライン(右)のトレースを始めたとき
+        else if(echo.E < echo.wall_side && echo.W > echo.wall_side *1.5  && is_on_tate){
+          leave_mode = 'E';
+          sound.single();
+          state = leave_line;
+        }
+      //タッチライン(左)のトレースを始めたとき
+        else if(echo.W < echo.wall_side && echo.E > echo.wall_side * 1.5 && is_on_tate){
+          leave_mode = 'W';
+          sound.single();
+          state = leave_line;
+        }
+        else{
+          state = line_tracing;
+        }
     }
     //全包囲カメラつけたら書く////////////////////////////////////////////
     else{
       v = makeV(reverseAngle(cam_angle),pwm_max);
-      v.y = echo.goal_area_s - echo.S;
+      v.y = echo.goal_area_s - echo.S -100;
     }
       defense_v = v;
       data.dp.main_v = defense_v;
       defense_rotate = gyro.controlAngle(0);     
       data.dp.main_rotate = defense_rotate; 
 }
+
+
+    Vector Echo::lostGoalEchoV(){
+        Vector v;
+        float last_vx;
+        //v.y = defense.pwmDomain(goal_area_s - S + 200);
+        v.y = goal_area_s - S - 100;
+        
+        if(E != -1 && W != -1){
+          //遮蔽物なしで横幅の計測成功したとき
+          if(E + W < 700){
+            v.x = 0;
+          }
+          else if(E < wall_w){
+            v.x = (E - wall_w)*1.5; 
+          }
+          else if(W < wall_w){
+            v.x = (wall_w - W)*1.5;
+          }
+          else{
+            v.x = 0;
+          }
+          last_vx = v.x;
+        }
+        else{
+          v.x = last_vx;
+        }
+        return v;
+    }
     void Defense::lostGoalEcho(){
       Vector v = {0,0};
-      if(line_angle != 400){
-        state = line_tracing;
-      }
-      else if(cam_angle != 400){
+      if(cam_angle != 400){
         state = back_to_goal_withCAM;
       }
+      else if(line_angle != 400){
+        if(line_angle==500){
+          state = line_tracing;
+        }
+        //ゴールラインのトレースを始めたとき
+        else if(echo.S < echo.wall_S && echo.N > echo.goal_area_s*1.5 && is_on_yoko){
+          leave_mode = 'S';
+          sound.single();
+          state = leave_line;
+        }
+        //相手のゴール前でトレースを始めたとき
+        else if(echo.N < echo.goal_area_s && echo.S > echo.goal_area_s*1.5){
+          leave_mode = 'N';
+          sound.single();
+          state = leave_line;
+        }
+        //タッチライン(右)のトレースを始めたとき
+        else if(echo.E < echo.wall_side && echo.W > echo.wall_side *1.5  && is_on_tate){
+          leave_mode = 'E';
+          sound.single();
+          state = leave_line;
+        }
+      //タッチライン(左)のトレースを始めたとき
+        else if(echo.W < echo.wall_side && echo.E > echo.wall_side * 1.5 && is_on_tate){
+          leave_mode = 'W';
+          sound.single();
+          state = leave_line;
+        }
+        else{
+          state = line_tracing;
+        }
+    }
       else{
         v = echo.lostGoalEchoV();
       }
@@ -363,8 +476,7 @@ void Defense::lostLine(){
     keeperDash_count = 0;
     //復帰した瞬間の回転待ち
     if(abs(angleZ) > 90){
-      v = makeV(reverseAngle(0),0);
-      
+      v = makeV(reverseAngle(0),0);  
     }
     //ラインを見失って一定時間経過後、カメラで戻る
     if(lost_count >= 400){
@@ -378,6 +490,93 @@ void Defense::lostLine(){
       defense_rotate = gyro.controlAngle(0);
       data.dp.main_rotate = defense_rotate;
 }
+
+  Vector Echo::leaveLineV(char direction){
+    Vector v;
+    // float kp = 3;
+    // int echo_dif = 1000;
+    // float central_power;
+    // float central_angle;
+    // float righter_power;
+    // float righter_angle;
+    // float lefter_power;
+    // float lefter_angle;
+    // Vector central = {0,0};
+    // Vector righter = {0,0};
+    // Vector lefter  = {0,0};
+
+    if(direction == 'N'){
+      //後方３つの超音波を見て動く
+      central_power = leave_kp * abs((N  < S) ? echo_dif - N : 0);
+      righter_power = leave_kp * abs((NE < SW)? echo_dif - NE: 0);
+      lefter_power  = leave_kp * abs((NW < SE)? echo_dif - NW: 0);
+      back_wall_power = 0;
+      central_angle = 270;
+      // righter_angle = 225;
+      // lefter_angle  = 315;
+    }
+    else if(direction == 'S'){
+      central_power = leave_kp * abs((S  < N) ? echo_dif - S : 0);
+      righter_power = leave_kp * abs((SW < NE)? echo_dif - SW: 0);
+      lefter_power  = leave_kp * abs((SE < NW)? echo_dif - SE: 0);
+      back_wall_power = 0;
+      central_angle = 90;
+      // righter_angle = 45;
+      // lefter_angle  = 135;
+    }
+    else if(direction == 'E'){
+      central_power = leave_kp * abs((E  < W)  ? echo_dif - E : 0);
+      righter_power = leave_kp * abs((SE < NW) ? echo_dif - SE: 0);
+      lefter_power  = leave_kp * abs((NE < SW) ? echo_dif - NE: 0);
+      back_wall_power = leave_kp * ((S < wall_S)? echo_dif - S: 0);
+      central_angle = 180;
+      // righter_angle = 135;
+      // lefter_angle  = 225; 
+    }
+    else if(direction == 'W'){
+      central_power = leave_kp * abs((W  < E)  ? echo_dif - W : 0);
+      righter_power = leave_kp * abs((NW < SE) ? echo_dif - NW: 0);
+      lefter_power  = leave_kp * abs((SW < NE) ? echo_dif - SW: 0);
+      back_wall_power = leave_kp * ((S < wall_S)? echo_dif - S: 0);
+      central_angle = 0;
+      // righter_angle = 215;
+      // lefter_angle  = 45;
+    }
+    righter_angle = wrap360(central_angle + 45);
+    lefter_angle = wrap360(central_angle - 45);
+    v = {
+          central.x + righter.x + lefter.x + back_wall.x,
+          central.y + righter.y + lefter.y + back_wall.y,
+        };
+    return v;
+  }
+  //directionは進む方向ではなく壁の方向なので注意
+  void Defense::leaveLine(char direction){
+    Vector v;
+    if(line_angle == 400){
+      state = back_to_goal_withCAM;
+    }
+    else if(line_angle == 500 && echo.S < echo.goal_area_s){
+      state = line_tracing;
+    }
+    else{
+      sound.single();
+      v = echo.leaveLineV(direction);
+      defense_v = v;
+      data.dp.main_v = defense_v;
+      defense_rotate = gyro.controlAngle(0);          
+      data.dp.main_rotate = defense_rotate;
+    }
+  }
+
+void Defense::selfTrace(){
+      defense_v = assembleV(lineV(),selfTraceV(40),pwm_max);
+      data.dp.main_v = defense_v;
+      defense_rotate = gyro.controlAngle(0);          
+      data.dp.main_rotate = defense_rotate;
+}
+
+
 
 void Defense::dash(){
     Vector v = makeV(reverseAngle(0),0);
