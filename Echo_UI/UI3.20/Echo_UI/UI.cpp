@@ -175,6 +175,11 @@
       //カーソル移動
       if(left ==1 || right ==1){
         long_press = 0;
+        if(is_on_game){
+          is_on_game = false;
+          command.sendCommand(MAIN, START, 0);
+          sound.back();
+        }
       }
       else if(left == 2){
         display.fillRect(63,60,3,4,1);

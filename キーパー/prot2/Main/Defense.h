@@ -17,13 +17,13 @@ class Echo{
     int16_t NW;
 
 
-    float kp = 0.8f;
+    float leave_kp = 1.0f;
     float echo_dif = 500.0f;
-    float central_power;
+    float central_power = 0;
     float central_angle;
-    float righter_power;
+    float righter_power = 0;
     float righter_angle;
-    float lefter_power;
+    float lefter_power = 0;
     float lefter_angle;
     float back_wall_power;
     Vector central = {0,0};
@@ -41,7 +41,8 @@ class Echo{
      float wall_side = 170.0f;//ラインアウト対策用
      float wall_S = 125.0f;   //ラインアウト対策用
      float goal_area_s = 320.0f;
-     float wall_w = 700.0f;            
+     float wall_w = 593.0f;
+
      float wall_h = 1236.0f;
 
      //超音波のみで計測した推定位置
@@ -71,17 +72,26 @@ class Defense{
         Vector defense_v;
         float defense_rotate;
         char leave_mode = 'N';//壁の方向で定義
+        float vel_power;
+        float vel_x;
+        float vel_y;
 
         //ライントレースで使う
-        float line_kp = 6.00f;
-        float line_ki = 3.00f;
-        float line_kd = 0.50f;
+        static constexpr bool    bottom_trace = false; //trueだとおしりでトレース
+        static constexpr uint8_t bottom_trace_dis = 75; 
+        static constexpr float   bottom_trace_kp = 1.8f;
+        static constexpr float   lost_bottom_kp = 5.0f;////lost_lineV用
+        static constexpr float  lost_line_kp = 1.0f;//lost_lineV用
+        static constexpr float line_kp = 6.00f;
+        static constexpr float line_ki = 3.00f;
+        static constexpr float line_kd = 0.50f;
         float line_P;
         float line_I;
         float line_D;
         int   lost_count = 0;
         bool is_on_tate = false;
         bool is_on_yoko = false;
+        int leave_count;
 
         //カメラ
         int16_t cam_angle = 400;
@@ -93,7 +103,7 @@ class Defense{
         float line_dis; 
         float angleZ;
         float pwm_max = 780.0f;
-    
+
         enum State{
             out_of_running,//0
             line_tracing,//1
@@ -117,6 +127,7 @@ class Defense{
         void updateBall();
         void updateCam();
         void updateMPU();
+        void updateVelocity();
         void updateAllData();
     
         Vector ballV();
@@ -125,6 +136,7 @@ class Defense{
         Vector selfTraceV(float perent);
         Vector TlineV(Vector v);
         Vector notToOwnGoal(Vector v);
+        Vector cameraV();
         
         void lostGoalEcho();
         void lineTrace();
@@ -133,4 +145,5 @@ class Defense{
         void dash();
         void leaveLine(char direction);
         void selfTrace();
+        uint16_t isNeedToLeave();//0:問題なし 1:脱出  2:500
 };
