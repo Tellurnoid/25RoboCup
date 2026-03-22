@@ -8,32 +8,30 @@ from machine import UART
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
 sensor.set_framesize(sensor.QVGA)
-#sensor.set_framesize(sensor.QQVGA)  # 160x120
 
 sensor.skip_frames(time=2000)
 clock = time.clock()
 
-# 1フレーム取得
 img = sensor.snapshot()
 
-# その後に設定
-sensor.set_auto_gain(False)
-#sensor.set_auto_whitebal(False)
-sensor.set_auto_exposure(False)
-
-# 上下反転（左右反転は使わない）
-#sensor.set_vflip(1)
-# sensor.set_hmirror(1)  # ← 色ズレ防止でOFF
+sensor.set_auto_gain(False, gain_db=16)
+sensor.set_auto_whitebal(False,rgb_gain_db=(73.0, 62.0, 134.0))#R G B , rgb_gain_db=(10.0, 10.0, 20.0)
+sensor.set_auto_exposure(False, exposure_us=500)
+#値の目安がわからないとき：
+#すべてオートにして出力↓
+#print("gain:", sensor.get_gain_db())
+#print("exp:", sensor.get_exposure_us())
+#print("wb:", sensor.get_rgb_gain_db())
 
 # ===============================
-# UART 初期化
+# UART
 # ===============================
 fm.register(34, fm.fpioa.UART1_TX)
 fm.register(35, fm.fpioa.UART1_RX)
 uart1 = UART(UART.UART1, 115200, timeout=10, read_buf_len=256)
 
 # ===============================
-# XOR チェックサム（Arduino互換）
+# チェックサム
 # ===============================
 def calc_checksum(data):
     cs = len(data)
@@ -41,33 +39,54 @@ def calc_checksum(data):
         cs ^= b
     return cs & 0xFF
 
-# ===============================
-# sendPacket（Arduino互換）
-# ===============================
 def send_packet(data):
     length = len(data)
     if length > 64:
-        return  # Arduino側 buf[64] 対策
+        return
 
     cs = calc_checksum(data)
 
-    uart1.write(bytes([0xAA]))      # header
-    uart1.write(bytes([0x55]))      # header2
-    uart1.write(bytes([length]))    # len
-    uart1.write(data)               # payload
-    uart1.write(bytes([cs]))        # checksum
+    uart1.write(bytes([0xAA]))
+    uart1.write(bytes([0x55]))
+    uart1.write(bytes([length]))
+    uart1.write(data)
+    uart1.write(bytes([cs]))
 
-# ===============================
-# LAB色空間で青色検出
-# ===============================
-blue_threshold = [(29, 96, 13, 51, -79, -28)]
+# ========================================================================================
+# 色閾値
+# =========================================================================================
 
-cameraWidth  = 320 #QVGA
+###  青
+blue_threshold   = [(27, 80, 0, 37, -69, -18)]
+
+###  黄色
+yellow_threshold = [(77, 98, -35, -2, 42, 94)]
+
+
+
+cameraWidth  = 320
 cameraHeight = 240
 
-#cameraWidth  = 160  # QQVGA
-#cameraHeight = 120
+# ===============================
+# blob → (angle, distance)変換
+# ===============================
+def calc_blob_param(b):
+    cx = int(cameraWidth / 2 - b.cx())
+    cy = int(cameraHeight / 2 - b.cy())
 
+    rad = math.atan2(cy, cx)
+    deg = rad * 180 / math.pi
+    angle = int(-deg)
+
+    camera_dis = int(math.sqrt(cy*cy + cx*cx))
+
+    den = (105.0 - camera_dis)
+    if abs(den) < 1:
+        den = 1
+
+    dis = int(max(min(3500.0 / den, 32767), -32768))
+
+    return angle, dis
 
 # ===============================
 # メインループ
@@ -76,45 +95,54 @@ while True:
     clock.tick()
     img = sensor.snapshot()
 
-    blobs = img.find_blobs(
-        blue_threshold,
-        pixels_threshold=20,
-        area_threshold=20,
-        merge=True
-    )
+    # --- 青 ---
+    blue_blobs = img.find_blobs(blue_threshold,
+                               pixels_threshold=20,
+                               area_threshold=20,
+                               merge=True)
 
-    if blobs:
-        # 一番大きいblobを使う（安定）
-        b = max(blobs, key=lambda x: x.pixels())
+    if blue_blobs:
+        b = max(blue_blobs, key=lambda x: x.pixels())
+        blue_angle, blue_dis = calc_blob_param(b)
 
-        cx = int(cameraWidth / 2 - b.cx())
-        #cx = b.cx()
-        cy = int(cameraHeight / 2 - b.cy())
-
-        x, y, w, h = b.rect()
-        area = w * h
-
-        # 描画
-        img.draw_rectangle(b.rect())
-        img.draw_cross(b.cx(), b.cy())
-
-        # Arduino struct SendPacketData0 { int cx; int cy; int area; };
-
-        HFOV = 60.0
-
-        rad = math.atan2(cy, cx)
-        deg = rad * 180 / math.pi
-        angle = int(-deg)
-        #print(angle)
-        # ×100 → 小数対応（0.01deg単位）
-
-        data = struct.pack('<h', angle) #hの数が変数の数?
-        send_packet(data)
-        print(angle)
-
+        img.draw_rectangle(b.rect(), color=(0,0,255))
+        img.draw_cross(b.cx(), b.cy(), color=(0,0,255))
     else:
-        # 検出なし → cx = 400 を送る
-        data = struct.pack('<h', 400)
-        send_packet(data)
+        blue_angle, blue_dis = 400, -1
 
-    #time.sleep_ms(30)
+    # --- 黄色 ---
+    yellow_blobs = img.find_blobs(yellow_threshold,
+                                 pixels_threshold=20,
+                                 area_threshold=20,
+                                 merge=True)
+
+    if yellow_blobs:
+        y = max(yellow_blobs, key=lambda x: x.pixels())
+        yellow_angle, yellow_dis = calc_blob_param(y)
+
+        img.draw_rectangle(y.rect(), color=(255,255,0))
+        img.draw_cross(y.cx(), y.cy(), color=(255,255,0))
+    else:
+        yellow_angle, yellow_dis = 400, -1
+
+    # ===============================
+    # 送信（青 + 黄）
+    # struct: <hhhh
+    # ===============================
+    data = struct.pack('<hhhh',
+                       blue_angle, blue_dis,
+                       yellow_angle, yellow_dis)
+
+    send_packet(data)
+
+    #print("----")
+    #print("Blue   : angle = {:4d}, distance = {:5d}".format(blue_angle, blue_dis))
+    #print("Yellow : angle = {:4d}, distance = {:5d}".format(yellow_angle, yellow_dis))
+
+#マイコン側のデータ型はこうなる by chatGPT
+#struct {
+  #int16_t blue_angle;
+  #int16_t blue_dis;
+  #int16_t yellow_angle;
+  #int16_t yellow_dis;
+#} data;

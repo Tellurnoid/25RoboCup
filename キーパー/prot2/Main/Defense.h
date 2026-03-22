@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include "Instance.h"
-
+#include <Adafruit_NeoPixel.h>
 class Echo{
   private:
     
@@ -32,15 +32,33 @@ class Echo{
     Vector back_wall = {0,0};
 
 
+    //脱出直前おしりトレース用
+                        bool    bottom_trace = false; //trueだとおしりでトレース
+    static constexpr uint8_t bottom_trace_dis = 75; 
+    static constexpr float   bottom_trace_kp = 1.5f;
+    static constexpr float   lost_bottom_kp = 5.0f;////lost_lineV用
 
+    //脱出直前サイドトレース用
+    uint8_t side_trace = 0;//
+    static constexpr uint8_t side_trace_dis = 75; 
+    static constexpr float   side_trace_kp = 1.5f;
+    static constexpr float   lost_side_kp = 5.0f;////lost_lineV用
+
+    void convertLine_sideOrBottom();
+    void updateLineOrBottom();
+
+    //超音波復帰用
+    static constexpr float lost_goal_echo_kp = 1.2;
+    static constexpr int16_t speed_back = 300;
 
     int16_t ave[8] = {0,0,0,0,0,0,0,0};
     float new_data_ratio = 0.4;
     //壁の距離はキャリブレーションするべし///////////////////////////
     //後ろ壁ラインアウト対策
-     float wall_side = 170.0f;//ラインアウト対策用
+     float wall_side = 150.0f;//ラインアウト対策用
      float wall_S = 125.0f;   //ラインアウト対策用
-     float goal_area_s = 320.0f;
+     float goal_area_n = 400.0f;//相手ゴール
+     float goal_area_s = 320.0f;//守るべきゴール
      float wall_w = 593.0f;
 
      float wall_h = 1236.0f;
@@ -55,7 +73,8 @@ class Echo{
     void update();
     Vector lostGoalEchoV();
     Vector backWallBlockV(Vector v);
-    Vector withoutLineV();//ラインセンサー故障時に使用
+    //ラインセンサー故障時に使用
+    Vector withoutLineV();
     Vector leaveLineV(char direction);
     //横幅のキャリブレーション。多分使わない
     void calibrateW();
@@ -66,7 +85,15 @@ class Echo{
 class Defense{
     private:
         Echo echo;
+
+        //デバッグ用LED
+    //     Adafruit_NeoPixel pixels;
+    // LedController(uint16_t num, uint8_t pin)
+    //   : pixels(num, pin, NEO_GRB + NEO_KHZ800) {}
+
         //キーパー全体で使う
+        static constexpr uint8_t LED = 15;
+        static constexpr uint8_t SW = 3;
         uint16_t keeperDash_count = 0;
         Vector last_line;
         Vector defense_v;
@@ -76,33 +103,44 @@ class Defense{
         float vel_x;
         float vel_y;
 
+
+
+        //カメラ
+    
+        //<<<<<<<<重要>>>>>>>>>  true ⇒ 青に攻める  |  false ⇒ 黄色に攻める
+        bool is_atack_to_BLUE = true;
+
+        //守るゴール
+        int16_t cam_angle = 400;
+        int16_t cam_dis = -1;
+        //攻めるゴール
+        int16_t cam_atack_angle = 400;
+        int16_t cam_atack_dis   = -1;
+        //ゴールから遠いと判断するしきい値
+        static constexpr int16_t cam_far_from_goal = 120;
+
+    public:
         //ライントレースで使う
-        static constexpr bool    bottom_trace = false; //trueだとおしりでトレース
-        static constexpr uint8_t bottom_trace_dis = 75; 
-        static constexpr float   bottom_trace_kp = 1.8f;
-        static constexpr float   lost_bottom_kp = 5.0f;////lost_lineV用
         static constexpr float  lost_line_kp = 1.0f;//lost_lineV用
-        static constexpr float line_kp = 6.00f;
-        static constexpr float line_ki = 3.00f;
-        static constexpr float line_kd = 0.50f;
+        static constexpr float line_default_kp = 4.00f;
+                         float line_kp = 6.00f;
+        static constexpr float line_ki = 0.00f;
+        static constexpr float line_kd = 0.00f;
         float line_P;
         float line_I;
         float line_D;
         int   lost_count = 0;
-        bool is_on_tate = false;
-        bool is_on_yoko = false;
         int leave_count;
 
-        //カメラ
-        int16_t cam_angle = 400;
-
-    public:
         float ball_angle;
         float ball_dis;
         float line_angle;
         float line_dis; 
         float angleZ;
         float pwm_max = 780.0f;
+        bool is_on_tate = false;
+        bool is_on_yoko = false;
+        bool is_on_atack_goal = false;
 
         enum State{
             out_of_running,//0

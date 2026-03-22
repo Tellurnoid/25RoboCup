@@ -52,8 +52,10 @@ void UART::update() {
   }
 
   if (readPacket(PIOSerial4, from_camera) == UART::READ_OK) {
-    data.dp.goal_angle = from_camera.angle;
-    //Serial.println(data.dp.goal_angle);
+    data.dp.blue_angle = from_camera.blue_angle;
+    data.dp.blue_distance = from_camera.blue_dis;
+    data.dp.yellow_angle = from_camera.yellow_angle;
+    data.dp.yellow_distance = from_camera.yellow_dis;
   }
 
 
@@ -67,7 +69,10 @@ void UART::update() {
   to_ui.ball_angle = data.dp.ball_angle;
   to_ui.line_angle = data.dp.line_angle;
   to_ui.robot_angle = data.dp.robot_angle;
-  to_ui.goal_angle = data.dp.goal_angle;
+  to_ui.blue_angle = data.dp.blue_angle;
+  to_ui.blue_distance = data.dp.blue_distance;
+  to_ui.yellow_angle = data.dp.yellow_angle;
+  to_ui.yellow_distance = data.dp.yellow_distance;
 
   sendPacket(PIOSerial2, to_ui);
 

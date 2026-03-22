@@ -1,11 +1,9 @@
 #pragma once
 
-// #include <Arduino.h>
-#include "Instance.h"
-// #include "IMU.h"
+#include <Arduino.h>
 
 enum ID : uint8_t {
-  MAIN,
+  MAIN = 0,
   SUB,
   MOTOR,
   CAMERA
@@ -16,34 +14,24 @@ enum Main_UI : uint8_t {
   RESET_GYRO
 };
 
+enum Sub_UI : uint8_t {
+  LINE_CALIBRATE = 0
+};
+
 class UART {
   private:
-    struct __attribute__((packed)) FromSub {  // attributeでパディング(データの途中になんか入る)のを禁止、sizeOf Tが壊れないようにするため
-      int16_t ball_angle;
-      int16_t ball_distance;
-      int16_t line_angle;
-      int16_t line_distance;
-    };
-    FromSub from_sub;
+    // enum ID : uint8_t {
+    //   MAIN,
+    //   SUB,
+    //   MOTOR,
+    //   CAMERA
+    // };
 
-    struct __attribute__((packed)) ToSub {
-      int16_t ball_angle;
-      int16_t ball_distance;
-      int16_t line_angle;
+    // enum Main_UI : uint8_t {
+    //   START = 0
+    // };
 
-      uint8_t id;
-      uint8_t ack;
-      uint8_t content_id;
-      int16_t content;
-    };
-    ToSub to_sub;
-
-    struct __attribute__((packed)) FromUI {  // attributeでパディング(データの途中になんか入る)のを禁止、sizeOf Tが壊れないようにするため
-      // int16_t vx;
-      // int16_t vy;
-      // int16_t move_x;
-      // int16_t move_y;
-      
+    struct __attribute__((packed)) ToMain {  // attributeでパディング(データの途中になんか入る)のを禁止、sizeOf Tが壊れないようにするため
       int16_t echo_0;
       int16_t echo_1;
       int16_t echo_2;
@@ -58,9 +46,9 @@ class UART {
       uint8_t content_id;
       int16_t content;
     };
-    FromUI from_ui;
+    // ToMain to_main;
 
-    struct __attribute__((packed)) ToUI {
+    struct __attribute__((packed)) FromMain {
       int16_t ball_angle;
       int16_t line_angle;
       int16_t robot_angle;
@@ -69,30 +57,7 @@ class UART {
       int16_t yellow_angle;
       int16_t yellow_distance;
     };
-    ToUI to_ui;
-
-    struct __attribute__((packed)) ToMotor {
-      float vx;
-      float vy;
-      int16_t omega;
-    };
-    ToMotor to_motor;
-
-    struct __attribute__((packed)) FromMotor {
-      int16_t vx;
-      int16_t vy;
-      int16_t move_x;
-      int16_t move_y;
-    };
-    FromMotor from_motor;
-
-    struct __attribute__((packed)) FromCamera {
-      int16_t blue_angle;
-      int16_t blue_dis;
-      int16_t yellow_angle;
-      int16_t yellow_dis;
-    };
-    FromCamera from_camera;
+    // FromMain from_main;
 
 
 
@@ -100,7 +65,8 @@ class UART {
     void flushUntilHeader();
 
   public:
-
+    ToMain to_main;
+    FromMain from_main;
 
     enum ReadResult : uint8_t {
       READ_OK = 0,
@@ -192,54 +158,24 @@ class UART {
 
         return result;
     }
-    void init();
-    void update();  
+    void initUART();
+    void updateUART();
 };
 
 class Data{
   public:
     struct DataPacket { // ここに、処理で使うようなデータを全部宣言、UART.cpp等で代入
       int16_t ball_angle;
-      int16_t ball_distance;
       int16_t line_angle;
-      int16_t line_distance;
-
-      int16_t velo_x;
-      int16_t velo_y;
-      Vector velocity_v;
-
-      float move_x;
-      float move_y;
-      
-      int16_t echoValues[8];
-      // int16_t echo_0;
-      // int16_t echo_1;
-      // int16_t echo_2;
-      // int16_t echo_3;
-      // int16_t echo_4;
-      // int16_t echo_5;
-      // int16_t echo_6;
-      // int16_t echo_7;
-
-      uint8_t id;
-      uint8_t ack;
-      uint8_t content_id;
-      int16_t content;
-
       int16_t robot_angle;
-
-      Vector main_v;
-      int16_t main_rotate;
-
       int16_t blue_angle;
       int16_t blue_distance;
       int16_t yellow_angle;
       int16_t yellow_distance;
-
-      bool kicker_charge;
+      int16_t echoValues[8];
     };
-
+    
     DataPacket dp;  // DataPacketの実体を作成、このdpから引き出す
-    void init();
-    void update();
+
+    void updateData();
 };
