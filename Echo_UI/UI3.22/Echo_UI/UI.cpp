@@ -323,7 +323,7 @@
 
     void UI::app_kicker(){
       //(トリガー(コマンドなら1,)
-      simpleSwitch(2,&sound ,"kicker",&Sound::cursor,"charge",&Sound::enter,"charge",&Sound::error);
+      simpleSwitch(2,&sound,"kicker",&Sound::cursor,"charge",&Sound::enter,"charge",&Sound::error);
             //ホームに戻る
             if(back!=0){
                 app_state = 0;

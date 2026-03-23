@@ -16,7 +16,7 @@ img = sensor.snapshot()
 
 sensor.set_auto_gain(False, gain_db=16)
 sensor.set_auto_whitebal(False,rgb_gain_db=(73.0, 62.0, 134.0))#R G B , rgb_gain_db=(10.0, 10.0, 20.0)
-sensor.set_auto_exposure(False, exposure_us=500)
+sensor.set_auto_exposure(False, exposure_us=250)
 #値の目安がわからないとき：
 #すべてオートにして出力↓
 #print("gain:", sensor.get_gain_db())
@@ -60,7 +60,7 @@ def send_packet(data):
 blue_threshold   = [(27, 80, 0, 37, -69, -18)]
 
 ###  黄色
-yellow_threshold = [(77, 98, -35, -2, 42, 94)]
+yellow_threshold = [(39, 92, -23, 6, 44, 87)]
 
 
 
