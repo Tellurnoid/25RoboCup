@@ -34,3 +34,4 @@ extern State state;
 // class Echo;
 class Defense;
 extern Defense defense;
+

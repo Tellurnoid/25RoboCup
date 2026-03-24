@@ -130,7 +130,7 @@ class Attack {
     void init();
 
     void setBehavior(Behavior b);
-
+    void startKeeperDash();
     void update();
 
     // AttackData getAttackData() {

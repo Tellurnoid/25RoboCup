@@ -80,7 +80,7 @@ void Ball::update() {
   ball_angle = data.dp.ball_angle;
   ball_distance = data.dp.ball_distance;
 }
-
+void Attack::startKeeperDash(){}
 float Ball::getBallD() {
   uint32_t now = millis();
   uint32_t dt_ms = now - last_time;

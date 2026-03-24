@@ -40,3 +40,30 @@ A.おそらくライン誤検出
 ◯withoutLINEVの試験
  
 ◯ゴールとボールの中央
+
+
+//カメラのコネクタが後ろのとき
+
+void Defense::updateCam(){
+    //黄色を守り、青に攻める
+     if(is_atack_to_BLUE == true){
+        cam_angle       = data.dp.yellow_angle;
+        cam_dis         = data.dp.yellow_distance;
+        cam_atack_angle = data.dp.blue_angle;
+        cam_atack_dis   = data.dp.blue_distance;
+     }
+     //青を守り、黄色に攻める
+     else{
+        cam_angle       = data.dp.blue_angle;
+        cam_dis         = data.dp.blue_distance;
+        cam_atack_angle = data.dp.yellow_angle;
+        cam_atack_dis   = data.dp.yellow_distance;
+     }
+     if(is_off_cam == true){
+    //超音波のみでデバッグするとき用↓
+        cam_angle       = 400;
+        cam_atack_angle = 400;
+        cam_dis         = 0;
+        cam_atack_dis   = 0;
+     }
+  }

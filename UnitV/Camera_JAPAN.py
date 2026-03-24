@@ -14,14 +14,9 @@ clock = time.clock()
 
 img = sensor.snapshot()
 
-sensor.set_auto_gain(False, gain_db=16)
-sensor.set_auto_whitebal(False,rgb_gain_db=(73.0, 62.0, 134.0))#R G B , rgb_gain_db=(10.0, 10.0, 20.0)
-sensor.set_auto_exposure(False, exposure_us=250)
-#値の目安がわからないとき：
-#すべてオートにして出力↓
-#print("gain:", sensor.get_gain_db())
-#print("exp:", sensor.get_exposure_us())
-#print("wb:", sensor.get_rgb_gain_db())
+sensor.set_auto_gain(False, gain_db=50)
+sensor.set_auto_whitebal(False, rgb_gain_db=(77.0, 64.0, 128.0))  # R G B
+sensor.set_auto_exposure(False, exposure_us=400)
 
 # ===============================
 # UART
@@ -39,6 +34,7 @@ def calc_checksum(data):
         cs ^= b
     return cs & 0xFF
 
+
 def send_packet(data):
     length = len(data)
     if length > 64:
@@ -52,20 +48,20 @@ def send_packet(data):
     uart1.write(data)
     uart1.write(bytes([cs]))
 
+
 # ========================================================================================
 # 色閾値
-# =========================================================================================
+# ========================================================================================
 
-###  青
-blue_threshold   = [(27, 80, 0, 37, -69, -18)]
+# 青
+blue_threshold = [(72, 100, -3, 28, -43, -11)]
 
-###  黄色
-yellow_threshold = [(39, 92, -23, 6, 44, 87)]
-
-
+# 黄色
+yellow_threshold = [(53, 95, -23, 0, 32, 88)]
 
 cameraWidth  = 320
 cameraHeight = 240
+
 
 # ===============================
 # blob → (angle, distance)変換
@@ -78,7 +74,7 @@ def calc_blob_param(b):
     deg = rad * 180 / math.pi
     angle = int(-deg)
 
-    camera_dis = int(math.sqrt(cy*cy + cx*cx))
+    camera_dis = int(math.sqrt(cy * cy + cx * cx))
 
     den = (105.0 - camera_dis)
     if abs(den) < 1:
@@ -88,6 +84,7 @@ def calc_blob_param(b):
 
     return angle, dis
 
+
 # ===============================
 # メインループ
 # ===============================
@@ -96,32 +93,36 @@ while True:
     img = sensor.snapshot()
 
     # --- 青 ---
-    blue_blobs = img.find_blobs(blue_threshold,
-                               pixels_threshold=20,
-                               area_threshold=20,
-                               merge=True)
+    blue_blobs = img.find_blobs(
+        blue_threshold,
+        pixels_threshold=20,
+        area_threshold=20,
+        merge=True
+    )
 
     if blue_blobs:
         b = max(blue_blobs, key=lambda x: x.pixels())
         blue_angle, blue_dis = calc_blob_param(b)
-
-        img.draw_rectangle(b.rect(), color=(0,0,255))
-        img.draw_cross(b.cx(), b.cy(), color=(0,0,255))
+        img.binary(blue_threshold)  #Preview
+        img.draw_rectangle(b.rect(), color=(0, 0, 255))
+        img.draw_cross(b.cx(), b.cy(), color=(0, 0, 255))
     else:
         blue_angle, blue_dis = 400, -1
 
     # --- 黄色 ---
-    yellow_blobs = img.find_blobs(yellow_threshold,
-                                 pixels_threshold=20,
-                                 area_threshold=20,
-                                 merge=True)
+    yellow_blobs = img.find_blobs(
+        yellow_threshold,
+        pixels_threshold=20,
+        area_threshold=20,
+        merge=True
+    )
 
     if yellow_blobs:
         y = max(yellow_blobs, key=lambda x: x.pixels())
         yellow_angle, yellow_dis = calc_blob_param(y)
 
-        img.draw_rectangle(y.rect(), color=(255,255,0))
-        img.draw_cross(y.cx(), y.cy(), color=(255,255,0))
+        img.draw_rectangle(y.rect(), color=(255, 255, 0))
+        img.draw_cross(y.cx(), y.cy(), color=(255, 255, 0))
     else:
         yellow_angle, yellow_dis = 400, -1
 
@@ -129,20 +130,33 @@ while True:
     # 送信（青 + 黄）
     # struct: <hhhh
     # ===============================
-    data = struct.pack('<hhhh',
-                       blue_angle, blue_dis,
-                       yellow_angle, yellow_dis)
+    data = struct.pack(
+        '<hhhh',
+        blue_angle, blue_dis,
+        yellow_angle, yellow_dis
+    )
+
 
     send_packet(data)
 
-    #print("----")
-    #print("Blue   : angle = {:4d}, distance = {:5d}".format(blue_angle, blue_dis))
-    #print("Yellow : angle = {:4d}, distance = {:5d}".format(yellow_angle, yellow_dis))
+    #print("exp:", sensor.get_exposure_us())
+    #print("gain:", sensor.get_gain_db())
+    #print("wb:", sensor.get_rgb_gain_db())
+    # 値の目安がわからないとき：
+    # すべてオートにして出力↓
+    # print("gain:", sensor.get_gain_db())
+    # print("exp:", sensor.get_exposure_us())
+    # print("wb:", sensor.get_rgb_gain_db())
 
-#マイコン側のデータ型はこうなる by chatGPT
-#struct {
-  #int16_t blue_angle;
-  #int16_t blue_dis;
-  #int16_t yellow_angle;
-  #int16_t yellow_dis;
-#} data;
+    # print("----")
+    # print("Blue   : angle = {:4d}, distance = {:5d}".format(blue_angle, blue_dis))
+    # print("Yellow : angle = {:4d}, distance = {:5d}".format(yellow_angle, yellow_dis))
+
+
+# マイコン側のデータ型
+# struct {
+#     int16_t blue_angle;
+#     int16_t blue_dis;
+#     int16_t yellow_angle;
+#     int16_t yellow_dis;
+# } data;

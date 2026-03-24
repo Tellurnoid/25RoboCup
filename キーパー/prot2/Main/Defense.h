@@ -93,6 +93,7 @@
         //   : pixels(num, pin, NEO_GRB + NEO_KHZ800) {}
 
             //キーパー全体で使う
+            static constexpr bool is_use_debug = true;
             static constexpr uint8_t LED = 15;
             static constexpr uint8_t SW = 3;
             uint16_t keeperDash_count = 0;
@@ -107,7 +108,8 @@
 
 
             //カメラ
-        
+            bool is_off_cam = false;//trueでカメラ無効化
+
             //<<<<<<<<重要>>>>>>>>>  true ⇒ 青に攻める  |  false ⇒ 黄色に攻める
             bool is_atack_to_BLUE = true;
 
@@ -127,7 +129,16 @@
             int dash_count;
             static constexpr int how_much_dash = 400;
 
+            //キーパーダッシュ連続作動防止
+            unsigned long start_time;
+            const uint16_t wait_time = 3000; // 5秒（ミリ秒）
+
         public:
+            //キーパーダッシュ アタッカーと共有
+            bool keeper_dashing = false;
+
+
+
             //LED
             #define PIN 15
             #define NUMPIXELS 1
@@ -169,9 +180,8 @@
             bool is_on_yoko = false;
             bool is_on_atack_goal = false;
             
-
             enum State{
-                out_of_running,//0
+                OFF,//0
                 line_tracing,//1
                 lost_line,//2
                 keeper_dash,//3
@@ -181,17 +191,19 @@
                 self_trace,//7
                 leave_dash//8
             };
-            State state = out_of_running;
+            State state = OFF;
 
             void init();
             //void setPixels(Adafruit_NeoPixel* p);
             void LED_init();
+            void ledOff();
             void debugSerial();
             void debugLED();
             int  pwmDomain(int val);//最大値、最小値の中に留める関数(404で無効化)
             void off();
             void update();
             void setBehavior(State s);
+            void finishKeeperDash();
 
             void updateLine();
             void updateBall();

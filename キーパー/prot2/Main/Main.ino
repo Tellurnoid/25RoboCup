@@ -3,6 +3,7 @@
 #include "Attack.h"
 #include "Defense.h"
 
+
 void setup() {
   uart.init();
   data.init();
@@ -12,7 +13,9 @@ void setup() {
 }
 
 uint8_t ack = 0;
-
+//ディフェンスがキーパーダッシュしているフラグ↓
+//bool defense.keeper_dashing;
+//keeper_dash
 void loop() {
   uart.update();
   data.update();
@@ -25,15 +28,16 @@ void loop() {
           data.dp.main_v = {0,0};
           data.dp.main_rotate = 0;
           attack.setBehavior(Attack::OFF);
-          defense.setBehavior(Defense::out_of_running);  
+          defense.setBehavior(Defense::OFF);  
       } 
       if (content == 1) {
         attack.setBehavior(Attack::BALL_CHASE);
-        defense.setBehavior(Defense::out_of_running);  
+        defense.setBehavior(Defense::OFF);  
       }
       if (content == 2) {
         attack.setBehavior(Attack::OFF);
         defense.setBehavior(Defense::back_to_goal_withCAM);
+        if(defense.keeper_dashing != true){}
       }
       
       break;
