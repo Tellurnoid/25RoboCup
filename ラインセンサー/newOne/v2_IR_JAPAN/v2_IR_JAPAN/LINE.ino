@@ -8,7 +8,7 @@ int16_t minValue[32];
 int16_t maxValue[32];
 
 const int calibration_quantity = 400;
-const float BORDER_LINE = 0.7;
+const float BORDER_LINE = 0.4;  // 大きいほど緩い
 
 void calibrateLINE() {
   is_calibration = 1;
@@ -24,8 +24,8 @@ void calibrateLINE() {
     readLINE();
 
     for (int i = 0; i < NUM_LINE_SENSORS; i++) {
-      minValue[i] = min(minValue[i], sensorValue_LINE[i]);
-      maxValue[i] = max(maxValue[i], sensorValue_LINE[i]);
+      minValue[i] = min(minValue[i], (int16_t)(sensorValue_LINE[i] * 0.5f + minValue[i] * 0.5f));
+      maxValue[i] = max(maxValue[i], (int16_t)(sensorValue_LINE[i] * 0.5f + maxValue[i] * 0.5f));
     }
     Serial.println(k);
     delay(10);
@@ -51,10 +51,10 @@ void normalizeLINE() {
 
     lineValue[i] = (normalized > BORDER_LINE) ? 1 : 0;
 
-    Serial.print(lineValue[i]);
-    Serial.print(" : ");
+    // Serial.print(lineValue[i]);
+    // Serial.print(" : ");
   }
-  Serial.println(" ");
+  // Serial.println(" ");
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -170,7 +170,9 @@ void getLineAngle() {
       }
     }
     if (start != -1) {
-      num_c++;
+      // num_c++;
+      //追加、0を跨ぐときに、端を2つのクラスタとして捉えてしまうのを防止
+      if (lineValue[0] != 0) num_c++; // 端が繋がっていなかったら、クラスタを一つ増やす
     }
 
     if (num_c >= 3) {

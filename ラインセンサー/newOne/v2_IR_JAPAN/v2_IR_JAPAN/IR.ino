@@ -8,12 +8,12 @@ class Ball {
     static constexpr float ANGLE_DIFF = 11;
 
     static constexpr int16_t MAX_VALUE = 4095;
-    static constexpr uint8_t NUM_AVE = 10;  // センサーの読み取り移動平均回数
-    static constexpr uint8_t NUM_ANGLE_AVE = 10;  // 算出角度の移動平均回数
+    static constexpr uint8_t NUM_AVE = 5;  // センサーの読み取り移動平均回数//10
+    static constexpr uint8_t NUM_ANGLE_AVE = 3;  // 算出角度の移動平均回数//3
     
 
     static constexpr uint8_t NUM_SEARCH = 5;  // 奇数、一番強いセンサー+左右で調べるセンサーの合計
-    static constexpr uint8_t NO_BALL_VALUE = 100;
+    static constexpr uint8_t NO_BALL_VALUE = 10;
 
     int sensorValues[NUM_SENSORS];
 
@@ -81,37 +81,38 @@ class Ball {
     }
 
     int getBallAngle() {
-      // int max_index = getMaxIndex();
-      // int num_next_sensor = (NUM_SEARCH - 1) / 2;
+    //   int max_index = getMaxIndex();
+    //   int num_next_sensor = (NUM_SEARCH - 1) / 2;
 
-      // Vector ball_v = {0, 0};
+    //   Vector ball_v = {0, 0};
 
-      // for (int i = 0; i < NUM_SEARCH; i++) {
-      //   int index = (max_index - num_next_sensor + i + NUM_SENSORS) % NUM_SENSORS;  // %は負の値だとバグるから、NUM_SENSORS足して対策
-      //   Vector sensor_v = makeV(sensorAngles[index], sensorValues[index]);
-      //   ball_v = addV(ball_v, sensor_v);
-      // }
-      // if (ball_v.y * ball_v.y + ball_v.x * ball_v.x < NO_BALL_VALUE * NO_BALL_VALUE)  return 400;
+    //   for (int i = 0; i < NUM_SEARCH; i++) {
+    //     int index = (max_index - num_next_sensor + i + NUM_SENSORS) % NUM_SENSORS;  // %は負の値だとバグるから、NUM_SENSORS足して対策
+    //     Vector sensor_v = makeV(sensorAngles[index], sensorValues[index]);
+    //     ball_v = addV(ball_v, sensor_v);
+    //   }
+    //   if (ball_v.y * ball_v.y + ball_v.x * ball_v.x < NO_BALL_VALUE * NO_BALL_VALUE)  return 400;
       
-      // VectorRecord &vx = vx_record;
-      // total_vx -= vx.vectorRecords[vx.ave_index]; // 古いデータを削除
-      // total_vx += ball_v.x; //新データを追加
-      // vx.vectorRecords[vx.ave_index] = ball_v.x; // 新データを保存
+    //   VectorRecord &vx = vx_record;
+    //   total_vx -= vx.vectorRecords[vx.ave_index]; // 古いデータを削除
+    //   total_vx += ball_v.x; //新データを追加
+    //   vx.vectorRecords[vx.ave_index] = ball_v.x; // 新データを保存
 
-      // vx.ave_index = (vx.ave_index + 1) % NUM_ANGLE_AVE;
+    //   vx.ave_index = (vx.ave_index + 1) % NUM_ANGLE_AVE;
 
 
-      // VectorRecord &vy = vy_record;
-      // total_vy -= vy.vectorRecords[vy.ave_index]; // 古いデータを削除
-      // total_vy += ball_v.y; //新データを追加
-      // vy.vectorRecords[vy.ave_index] = ball_v.y; // 新データを保存
+    //   VectorRecord &vy = vy_record;
+    //   total_vy -= vy.vectorRecords[vy.ave_index]; // 古いデータを削除
+    //   total_vy += ball_v.y; //新データを追加
+    //   vy.vectorRecords[vy.ave_index] = ball_v.y; // 新データを保存
 
-      // vy.ave_index = (vy.ave_index + 1) % NUM_ANGLE_AVE;
+    //   vy.ave_index = (vy.ave_index + 1) % NUM_ANGLE_AVE;
 
-      // int angle = atan2((float)total_vy , (float)total_vx) * 180 / PI;
-      // angle += ANGLE_DIFF;
-      // angle = (angle + 360) % 360;
-      // return angle;
+    //   int angle = atan2((float)total_vy , (float)total_vx) * 180 / PI;
+    //   angle += ANGLE_DIFF;
+    //   angle = (angle + 360) % 360;
+    //   return angle;
+    // }
 
       int k = getMaxIndex();
       if (sensorValues[k] < NO_BALL_VALUE)  return 400;

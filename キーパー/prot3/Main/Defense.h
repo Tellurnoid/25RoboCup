@@ -16,8 +16,17 @@
         int16_t W;
         int16_t NW;
 
+        int16_t N_raw;
+        int16_t NE_raw;
+        int16_t E_raw;
+        int16_t SE_raw;
+        int16_t S_raw;
+        int16_t SW_raw;
+        int16_t W_raw;
+        int16_t NW_raw;
 
-        float leave_kp = 1.0f;
+
+        float leave_kp = 3.0f;
         float echo_dif = 500.0f;
         float central_power = 0;
         float central_angle;
@@ -33,13 +42,13 @@
 
 
         //脱出直前おしりトレース用
-                            bool    bottom_trace = false; //trueだとおしりでトレース
+                            bool    bottom_trace = true; //trueだとおしりでトレース
         static constexpr uint8_t bottom_trace_dis = 75; 
         static constexpr float   bottom_trace_kp = 1.5f;
         static constexpr float   lost_bottom_kp = 5.0f;////lost_lineV用
 
         //脱出直前サイドトレース用
-        uint8_t side_trace = 0;//
+        uint8_t side_trace = 1;//
         static constexpr uint8_t side_trace_dis = 75; 
         static constexpr float   side_trace_kp = 1.5f;
         static constexpr float   lost_side_kp = 5.0f;////lost_lineV用
@@ -55,13 +64,23 @@
         float new_data_ratio = 0.4;
         //壁の距離はキャリブレーションするべし///////////////////////////
         //後ろ壁ラインアウト対策
-        float wall_side = 150.0f;//ラインアウト対策用
-        float wall_S = 125.0f;   //ラインアウト対策用
+        float wall_side = 250.0f;//ラインアウト対策用
+        float wall_S = 110.0f;   //ラインアウト対策用
         float goal_area_n = 400.0f;//相手ゴール
-        float goal_area_s = 320.0f;//守るべきゴール
-        float wall_w = 593.0f;
+        float goal_area_s = 270.0f;//守るべきゴール
+        float wall_w = 635.0f;
+                float wall_h = 1808.0f;
 
-        float wall_h = 1236.0f;
+
+        //部室
+        // //壁の距離はキャリブレーションするべし///////////////////////////
+        // //後ろ壁ラインアウト対策
+        // float wall_side = 150.0f;//ラインアウト対策用
+        // float wall_S = 65.0f;   //ラインアウト対策用
+        // float goal_area_n = 400.0f;//相手ゴール
+        // float goal_area_s = 320.0f;//守るべきゴール
+        // float wall_w = 593.0f;
+        //float wall_h = 1236.0f;
 
         //超音波のみで計測した推定位置
         //コート中央を原点とする
@@ -111,7 +130,7 @@
             bool is_off_cam = false;//trueでカメラ無効化
 
             //<<<<<<<<重要>>>>>>>>>  true ⇒ 青に攻める  |  false ⇒ 黄色に攻める
-            bool is_atack_to_BLUE = true;
+            bool is_atack_to_BLUE = false;
 
             //守るゴール
             int16_t cam_angle = 400;
@@ -120,14 +139,15 @@
             int16_t cam_atack_angle = 400;
             int16_t cam_atack_dis   = -1;
             //ゴールから遠いと判断するしきい値
-            static constexpr int16_t cam_far_from_goal = 120;
+            static constexpr int16_t cam_far_from_goal = 150;
 
             //キーパーダッシュ
             bool is_on_dash = true;//falseでキーパーダッシュ無効化
-            int16_t dash_ball_dis = 5;
+            int16_t dash_ball_dis = 4;
             int dash_back_count = 0;
             int dash_count;
             static constexpr int how_much_dash = 400;
+            
 
             //キーパーダッシュ連続作動防止
             bool is_enough_time;
@@ -135,9 +155,16 @@
             const uint16_t wait_time = 3000; // 5秒（ミリ秒
             unsigned long debug_time;
 
+            //相手ゴール脱出を無効化
+            static constexpr bool off_front_leave = true;
+            //サイド脱出の無効化
+            static constexpr bool off_side_leave = false;
+
         public:
             //キーパーダッシュ アタッカーと共有
             bool keeper_dashing = false;
+            //キーパーダッシュ
+            float fronts_ave;
 
             //LED
             #define PIN 15
@@ -146,7 +173,7 @@
             Defense() : pixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800){}
             uint32_t LED_color;
             //ライントレースで使う
-            static constexpr float  lost_line_kp = 1.0f;//lost_lineV用
+            static constexpr float  lost_line_kp = 6.0f;//lost_lineV用
             static constexpr float line_default_kp = 4.00f;
                             float line_kp = 6.00f;
             static constexpr float line_ki = 0.00f;

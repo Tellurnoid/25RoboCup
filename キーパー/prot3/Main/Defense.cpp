@@ -3,7 +3,7 @@
 #include "Defense.h"
 #include <Adafruit_NeoPixel.h>
 
-
+//sound
 //////////////////////////////////////////////////////////// 超音波基礎関数//////////
     //多分使わない
     void Echo::calibrateW(){
@@ -32,6 +32,16 @@
         SW  = ave[5];
         W   = ave[6];
         NW  = ave[7];   
+
+        N_raw = data.dp.echoValues[0];
+        NE_raw = data.dp.echoValues[1];
+        E_raw = data.dp.echoValues[2];
+        SE_raw = data.dp.echoValues[3];
+        S_raw = data.dp.echoValues[4];
+        SW_raw = data.dp.echoValues[5];
+        W_raw = data.dp.echoValues[6];
+        NW_raw = data.dp.echoValues[7];
+        defense.fronts_ave = (N +NW + NE) /3;
     }
 
     Vector Echo::backWallBlockV(Vector v){
@@ -196,8 +206,10 @@ void Defense::debugSerial(){
     //  Serial.print(is_enough_time);
     //  Serial.print(",  time:");
     //  Serial.print(debug_time);
-      // Serial.print("is_on_yoko:");
-      // Serial.print(is_on_yoko);
+      // Serial.print("is_on_tate:");
+      // Serial.print(is_on_tate);
+      Serial.print("ave:");
+      Serial.print(fronts_ave);
       // Serial.print(", State:");
       // Serial.print(state);
       // Serial.print(" (");
@@ -206,8 +218,8 @@ void Defense::debugSerial(){
       // Serial.print(defense_v.y);
       // Serial.print(")  ");
 
-      // Serial.print(", Ball_dis=");
-      // Serial.print(ball_dis);
+      Serial.print(", Ball_dis=");
+      Serial.print(ball_dis);
 
       // Serial.print("Line(");
       // Serial.print(line_angle);
@@ -244,11 +256,21 @@ void Defense::debugSerial(){
       // Serial.print(echo.central_power); Serial.print(",");
       // Serial.print(echo.righter_power); Serial.print(",");
       // Serial.print(echo.lefter_power); 
+      Serial.print("blue(");
+      Serial.print(cam_atack_angle);
+      Serial.print(",");
+      Serial.print(cam_atack_dis);
+      Serial.print(")");
+      Serial.print(", yellow(");
+      Serial.print(cam_angle);
+      Serial.print(",");
+      Serial.print(cam_dis);
+      Serial.print(")");
 
       // Serial.print(", leave:");
       // Serial.print(echo.leaveLineV(leave_mode).x);Serial.print(",");Serial.print(echo.leaveLineV(leave_mode).y);
       // Serial.print(")");
-       Serial.print("leave count:");
+       Serial.print(", leave count:");
        Serial.print(leave_count);
   if(line_angle != 400){
     
@@ -313,7 +335,7 @@ void Defense::updateLine(){
     //  is_on_yoko = (abs(line_angle) < 20 || abs(line_angle)>170);
     //  is_on_tate = (abs(line_angle) > 70 && abs(line_angle) < 110);
      is_on_yoko = (abs(line_angle) < 20 || abs(line_angle)>170);
-     is_on_tate = (abs(line_angle) > 70 && abs(line_angle) < 110);
+     is_on_tate = (abs(line_angle) > 60 && abs(line_angle) < 120);
      echo.updateLineOrBottom();
   }
 
@@ -506,7 +528,7 @@ Vector Defense::lineV(){
     v = makeV(reverseAngle(line_angle),power);
     //last_line = makeV(reverseAngle(line_angle),line_kp*100);
     //機体速度に応じるやつ↓
-    last_line = makeV(reverseAngle(line_angle),lost_line_kp * vel_power);
+    last_line = makeV(reverseAngle(line_angle),lost_line_kp * 100);
 
     // //おしりトレースで見失ったときの減速対策
     // if(echo.bottom_trace && is_on_yoko && abs(line_angle) > 90){
@@ -547,6 +569,9 @@ void Defense::lineTrace(){
     if(line_angle == 400){
       state = lost_line;
     }
+  else if(isNeedToLeave() == 1){
+    state = leave_line;
+  }
     //ボール見えないとき中央に向かう
     else if(ball_angle == 400){
         lost_count = 0;
@@ -562,6 +587,7 @@ void Defense::lineTrace(){
     //脱出
     else if(isNeedToLeave()==1){
         state = leave_line;
+        v = {0,0};
     }
     //ラインもボールも認識中   通常のライントレース
     else{
@@ -592,7 +618,13 @@ void Defense::lostLine(){
     Vector v = makeV(reverseAngle(0),0);
     keeperDash_count = 0;
     if(line_angle != 400){
-      state = line_tracing;
+          //脱出
+     if(isNeedToLeave()==1){
+        state = leave_line;
+      }
+      else{
+        state = line_tracing; 
+      }
     }
     //ラインを見失って一定時間経過後、カメラで戻る
     else if(lost_count >= 400){
@@ -754,8 +786,9 @@ uint16_t Defense::isNeedToLeave(){
   //攻めるべきゴールに近いか
   //現在：相手ゴール見えて自陣見えない または 相手のゴールのほうが近い
   is_on_atack_goal = (
-                       (cam_atack_dis != 400 && cam_dis == 400) ||
-                       (cam_atack_angle != 400 && cam_angle != 400 && cam_atack_dis < cam_dis) 
+                       off_front_leave == false &&
+                       (cam_dis != 400) &&
+                       (cam_dis > 100) 
                      );
                     //(cam_far_from_goal && echo.N < echo.goal_area_n && echo.S > echo.goal_area_s*1.5)
   
@@ -774,7 +807,7 @@ uint16_t Defense::isNeedToLeave(){
   }
   //ゴールラインのトレースを始めたとき
   else if(
-           echo.S < echo.wall_S          &&
+           echo.S_raw < echo.wall_S          &&
            echo.N > echo.goal_area_s*1.5 &&
            is_on_yoko
           )
@@ -791,19 +824,21 @@ uint16_t Defense::isNeedToLeave(){
   }
   //タッチライン(右)のトレースを始めたとき
   else if(
-           cam_angle != 400
-           && 
-           cam_dis > cam_far_from_goal
+           off_side_leave == false
            &&
-           echo.E < echo.wall_side
+          //  cam_angle != 400
+          //  && 
+          //  cam_dis > cam_far_from_goal
+          //  &&
+           echo.E_raw < echo.wall_side
+          //  &&
+          //  echo.W > echo.wall_side 
            &&
-           echo.W > echo.wall_side *1.5  
-           &&
-           is_on_tate
+           echo.S_raw > 600
           )
            {
               leave_count++;
-              if(leave_count > 500){
+              if(leave_count >  100){
                 leave_mode = 'E';
                 state = leave_line;
                 return 1;
@@ -814,19 +849,21 @@ uint16_t Defense::isNeedToLeave(){
            }
 //タッチライン(左)のトレースを始めたとき
   else if(
-            cam_angle != 400
+            off_side_leave == false
             &&
-            cam_dis > cam_far_from_goal
+            // cam_angle != 400
+            // &&
+            // cam_dis > cam_far_from_goal
+            // &&
+            echo.W_raw < echo.wall_side
             &&
-            echo.W < echo.wall_side
-            &&
-            echo.E > echo.wall_side * 1.5
-            &&
-            is_on_tate
+            // echo.E > echo.wall_side 
+            // &&
+            echo.S_raw > 600
           )
            {
             leave_count++;
-            if(leave_count > 500){
+            if(leave_count > 100){
               leave_mode = 'W';
               state = leave_line;
               return 1;
@@ -861,7 +898,7 @@ uint16_t Defense::isNeedToLeave(){
       lefter_power  = leave_kp * abs((SE < NW)? echo_dif - SE: 0);
      righter_power = 0;
      lefter_power = 0;
-
+     central_power = leave_kp * 200;
       back_wall_power = 0;
       central_angle = 90;
       righter_angle = 45;
@@ -964,9 +1001,18 @@ Vector Defense::selfTraceV(float percent){
 void Defense::selfTrace(){
   Vector v;
   //ボールが見えたとき、ライン見えないときは通常のライントレース
-  if(ball_angle != 400 || line_angle == 400){
-    state = line_tracing;
-  }
+      if(isNeedToLeave()==1 && line_angle != 400){
+        state = leave_line;
+        defense_v = {0,0};
+    }
+
+  else if(ball_angle != 400 || line_angle == 400){
+    //脱出    else{
+      state = line_tracing;
+      defense_v = {0,0};
+    }
+    
+  
 //T字
   else if(isNeedToLeave()==500){
       lost_count = 0;
@@ -977,14 +1023,15 @@ void Defense::selfTrace(){
   //脱出
   else if(isNeedToLeave()==1){
       state = leave_line;
+      defense_v = {0,0};
   }
   //selfTraceV適用
   else {
     defense_v = assembleV(lineV(),selfTraceV(40),pwm_max);
+  }
     data.dp.main_v = defense_v;
     defense_rotate = gyro.controlAngle(0);          
     data.dp.main_rotate = defense_rotate; 
-  }
 }
 
 
@@ -998,12 +1045,13 @@ void Defense::selfTrace(){
 uint8_t Defense::isNeedTo_Dash(){
   bool is_ball_low_speed = (ball_speed < 15);
   bool near_ball = (ball_dis > dash_ball_dis);
-  bool N_ok  = echo.N  > 250;
+  
+  bool N_ok  = (echo.N  > 100);
   bool NE_ok = echo.NE > 250;
   bool NW_ok = echo.NW > 250;
   // if(near_ball && abs(ball_angle) < 20){
   // if(N_ok && NE_ok & NW_ok){
-  if (near_ball) {
+  if (near_ball && fronts_ave > 300) {
     return 1;
   }
   else{

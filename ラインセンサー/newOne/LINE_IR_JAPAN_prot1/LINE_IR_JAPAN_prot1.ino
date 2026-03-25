@@ -43,8 +43,8 @@ void loop(){
   //  printAllMUX();
   analogWrite(27, 255);
 
-  readMUX_onlyIR_debug2();
-  //readMUX_onlyLINE_debug_relative2();
+  //readMUX_onlyIR_debug2();
+  readMUX_onlyLINE_debug_relative2();
   // readMUX_onlyLINE_debug();
 }
 

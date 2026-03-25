@@ -26,12 +26,12 @@ void setup() {
   record.getLineRecord();
 
 
-  analogWrite(LINE_LED, 255);
-  calibrateLINE();
-  digitalWrite(LED, HIGH);
-  delay(1000);
-  digitalWrite(LED, LOW);
-  record.recordLine();  //キャリブレーションが終わったら記録
+  // analogWrite(LINE_LED, 255);
+  // calibrateLINE();
+  // digitalWrite(LED, HIGH);
+  // delay(1000);
+  // digitalWrite(LED, LOW);
+  // record.recordLine();  //キャリブレーションが終わったら記録
 }
 
 int8_t is_calibration = 0;
@@ -86,5 +86,5 @@ void loop() {
   }
   last_is_calibration = is_calibration;
   
-  // Serial.println(line_angle);
+  Serial.println(ball_angle);
 }

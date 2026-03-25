@@ -190,7 +190,8 @@ void readLINE(){
 
 
   for(uint8_t i = 0; i < 32; i++){
-    sensorValue_LINE[i] = rawData_LINE[ch_LINE[i]];
+    // sensorValue_LINE[i] = rawData_LINE[ch_LINE[i]];
+    sensorValue_LINE[i] = rawData_LINE[ch_LINE[i]] * 0.5 + sensorValue_LINE[i] * 0.5; // 移動平均
     // Serial.print(sensorValue_LINE[i] / 10);
     // Serial.print(":");
   }

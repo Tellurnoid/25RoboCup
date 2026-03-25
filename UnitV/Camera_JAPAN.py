@@ -14,9 +14,9 @@ clock = time.clock()
 
 img = sensor.snapshot()
 
-sensor.set_auto_gain(False, gain_db=50)
-sensor.set_auto_whitebal(False, rgb_gain_db=(77.0, 64.0, 128.0))  # R G B
-sensor.set_auto_exposure(False, exposure_us=400)
+sensor.set_auto_gain(False, gain_db=23)
+sensor.set_auto_whitebal(False, rgb_gain_db=(72.0, 62.0, 125.0))  # R G B
+sensor.set_auto_exposure(False, exposure_us=501)
 
 # ===============================
 # UART
@@ -54,10 +54,10 @@ def send_packet(data):
 # ========================================================================================
 
 # 青
-blue_threshold = [(72, 100, -3, 28, -43, -11)]
+blue_threshold = [(19, 84, -5, 57, -84, -8)]
 
 # 黄色
-yellow_threshold = [(53, 95, -23, 0, 32, 88)]
+yellow_threshold = [(67, 94, -34, 7, 38, 91)]
 
 cameraWidth  = 320
 cameraHeight = 240
@@ -103,7 +103,7 @@ while True:
     if blue_blobs:
         b = max(blue_blobs, key=lambda x: x.pixels())
         blue_angle, blue_dis = calc_blob_param(b)
-        img.binary(blue_threshold)  #Preview
+        #img.binary(blue_threshold)  #Preview
         img.draw_rectangle(b.rect(), color=(0, 0, 255))
         img.draw_cross(b.cx(), b.cy(), color=(0, 0, 255))
     else:
@@ -138,15 +138,14 @@ while True:
 
 
     send_packet(data)
-
     #print("exp:", sensor.get_exposure_us())
     #print("gain:", sensor.get_gain_db())
     #print("wb:", sensor.get_rgb_gain_db())
     # 値の目安がわからないとき：
     # すべてオートにして出力↓
-    # print("gain:", sensor.get_gain_db())
-    # print("exp:", sensor.get_exposure_us())
-    # print("wb:", sensor.get_rgb_gain_db())
+     #print("gain:", sensor.get_gain_db())
+     #print("exp:", sensor.get_exposure_us())
+     #print("wb:", sensor.get_rgb_gain_db())
 
     # print("----")
     # print("Blue   : angle = {:4d}, distance = {:5d}".format(blue_angle, blue_dis))
