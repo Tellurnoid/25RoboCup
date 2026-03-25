@@ -8,7 +8,7 @@ int16_t minValue[32];
 int16_t maxValue[32];
 
 const int calibration_quantity = 400;
-const float BORDER_LINE = 0.4;  // 大きいほど緩い
+const float BORDER_LINE = 0.3;  // 大きいほど緩い
 
 void calibrateLINE() {
   is_calibration = 1;

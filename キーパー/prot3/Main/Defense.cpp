@@ -1045,13 +1045,13 @@ void Defense::selfTrace(){
 uint8_t Defense::isNeedTo_Dash(){
   bool is_ball_low_speed = (ball_speed < 15);
   bool near_ball = (ball_dis > dash_ball_dis);
-  
+  bool angle_ok = (abs(ball_angle) < 50);
   bool N_ok  = (echo.N  > 100);
   bool NE_ok = echo.NE > 250;
   bool NW_ok = echo.NW > 250;
   // if(near_ball && abs(ball_angle) < 20){
   // if(N_ok && NE_ok & NW_ok){
-  if (near_ball && fronts_ave > 300) {
+  if (near_ball && angle_ok) {
     return 1;
   }
   else{
