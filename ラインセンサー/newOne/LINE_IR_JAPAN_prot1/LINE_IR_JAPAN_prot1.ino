@@ -45,7 +45,7 @@ void loop(){
 
   //readMUX_onlyIR_debug2();
   readMUX_onlyLINE_debug_relative2();
-  // readMUX_onlyLINE_debug();
+   //readMUX_onlyIR_debug();
 }
 
 void initMUX(){
@@ -103,7 +103,14 @@ void readMUX_onlyIR_debug(){
       Serial.print("IR: ");
       for (uint8_t ch = 0; ch < 16; ch++) {
         Serial.print(",");
+        if(sensorValue_IR[ch]/10 < 10){
+          Serial.print("  ");
+        }
+        else if(sensorValue_IR[ch]/10 < 100){
+          Serial.print(" ");
+        }
         Serial.print(sensorValue_IR[ch]/10);
+        
       }
       Serial.println();
 }

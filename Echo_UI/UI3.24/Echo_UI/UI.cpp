@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+// #include <Adafruit_NeoPixel.h>
 #include <Fonts/FreeSerif9pt7b.h>
 #include <Fonts/FreeSans12pt7b.h>
 #include <Fonts/FreeSans12pt7b.h>
@@ -30,6 +31,11 @@
         const size_t UI::NUM_APP = sizeof(UI::app) / sizeof(UI::app[0]);
 
     void UI::init() {
+      /////////////////////////
+      // pixels.begin();
+      // pixels.setPixelColor(0, pixels.Color(0, 0, 0));
+      // pixels.show();
+      /////////////////////
       Wire.setSDA(4);
       Wire.setSCL(5);
       Wire.begin();

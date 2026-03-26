@@ -9,7 +9,7 @@ class Kicker {
 
     #define SENSOR 27
 
-    static constexpr uint16_t CHARGE_BORDER = 500;
+    static constexpr uint16_t CHARGE_BORDER = 960;
 
     bool kicker_charge = false;
     bool kicking = false;

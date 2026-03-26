@@ -57,7 +57,7 @@ def send_packet(data):
 blue_threshold = [(31, 85, -13, 66, -91, -6)]
 
 # 黄色
-yellow_threshold = [(51, 98, -22, 2, 35, 86)]
+yellow_threshold = [(71, 98, -27, -8, 34, 84)]
 
 cameraWidth  = 320
 cameraHeight = 240

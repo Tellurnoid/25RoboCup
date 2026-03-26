@@ -3,6 +3,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+// #include <Adafruit_NeoPixel.h>
 #include <Fonts/FreeSerif9pt7b.h>
 #include <Fonts/FreeSans9pt7b.h>
 #include <Fonts/FreeSansBold24pt7b.h>
@@ -80,6 +81,13 @@ class UI{
         
 
     public:
+    //     /////LED///////////////////////////////////////////////////
+    //     Adafruit_NeoPixel* pixels;  // ポインタで受ける
+    //     #define PIN 16
+    //     #define NUMPIXELS 1
+    //    // Adafruit_NeoPixel pixel;
+    //     UI() : pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800){}
+    //     ///////////////////////////////////////////////
         static constexpr uint8_t  SCREEN_WIDTH  = 128;
         static constexpr uint8_t  SCREEN_HEIGHT = 64;  // 座標は0~63
         static constexpr int8_t   OLED_RESET    = -1;

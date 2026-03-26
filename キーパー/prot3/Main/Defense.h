@@ -63,24 +63,24 @@
         int16_t ave[8] = {0,0,0,0,0,0,0,0};
         float new_data_ratio = 0.4;
         //壁の距離はキャリブレーションするべし///////////////////////////
-        //後ろ壁ラインアウト対策
-        float wall_side = 250.0f;//ラインアウト対策用
-        float wall_S = 110.0f;   //ラインアウト対策用
-        float goal_area_n = 400.0f;//相手ゴール
-        float goal_area_s = 270.0f;//守るべきゴール
-        float wall_w = 635.0f;
-                float wall_h = 1808.0f;
+        // //後ろ壁ラインアウト対策
+        // float wall_side = 250.0f;//ラインアウト対策用
+        // float wall_S = 110.0f;   //ラインアウト対策用
+        // float goal_area_n = 400.0f;//相手ゴール
+        // float goal_area_s = 270.0f;//守るべきゴール
+        // float wall_w = 635.0f;
+        //         float wall_h = 1808.0f;
 
 
         //部室
-        // //壁の距離はキャリブレーションするべし///////////////////////////
-        // //後ろ壁ラインアウト対策
-        // float wall_side = 150.0f;//ラインアウト対策用
-        // float wall_S = 65.0f;   //ラインアウト対策用
-        // float goal_area_n = 400.0f;//相手ゴール
-        // float goal_area_s = 320.0f;//守るべきゴール
-        // float wall_w = 593.0f;
-        //float wall_h = 1236.0f;
+        //壁の距離はキャリブレーションするべし///////////////////////////
+        //後ろ壁ラインアウト対策
+        float wall_side = 150.0f;//ラインアウト対策用
+        float wall_S = 65.0f;   //ラインアウト対策用
+        float goal_area_n = 400.0f;//相手ゴール
+        float goal_area_s = 320.0f;//守るべきゴール
+        float wall_w = 593.0f;
+        float wall_h = 1236.0f;
 
         //超音波のみで計測した推定位置
         //コート中央を原点とする
@@ -130,12 +130,13 @@
             bool is_off_cam = false;//trueでカメラ無効化
 
             //<<<<<<<<重要>>>>>>>>>  true ⇒ 青に攻める  |  false ⇒ 黄色に攻める
-            bool is_atack_to_BLUE = false;
+            bool is_atack_to_BLUE = true;
 
             //守るゴール
             int16_t cam_angle = 400;
             int16_t cam_dis = -1;
             //攻めるゴール
+        
             int16_t cam_atack_angle = 400;
             int16_t cam_atack_dis   = -1;
             //ゴールから遠いと判断するしきい値
@@ -162,9 +163,10 @@
 
         public:
             //キーパーダッシュ アタッカーと共有
-            bool keeper_dashing = false;
             //キーパーダッシュ
+            bool keeper_dashing = false;
             float fronts_ave;
+            //
 
             //LED
             #define PIN 15
@@ -261,6 +263,7 @@
             void selfTrace();
             uint16_t isNeedToLeave();//0:問題なし 1:脱出  2:500 
 
+            uint8_t getH_axis();//0:正面エリア 1:右側エリア 2
             uint8_t isNeedTo_Dash();
             uint8_t isNeedTo_BackFromDash();
 

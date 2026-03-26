@@ -86,5 +86,6 @@ void loop() {
   }
   last_is_calibration = is_calibration;
   
-  Serial.println(ball_angle);
+  //Serial.println(ball_angle);
+
 }

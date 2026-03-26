@@ -153,6 +153,7 @@ void Echo::updateLineOrBottom(){
 
 void Defense::off(){
   ledOff();
+ // Serial.println(analogRead(28));
 }
 
 //アタッカー側で呼び出す用
@@ -807,8 +808,8 @@ uint16_t Defense::isNeedToLeave(){
   }
   //ゴールラインのトレースを始めたとき
   else if(
-           echo.S_raw < echo.wall_S          &&
-           echo.N > echo.goal_area_s*1.5 &&
+           echo.S < echo.wall_S          &&
+          //  echo.N > echo.goal_area_s*1.5 &&
            is_on_yoko
           )
       {
@@ -830,15 +831,15 @@ uint16_t Defense::isNeedToLeave(){
           //  && 
           //  cam_dis > cam_far_from_goal
           //  &&
-           echo.E_raw < echo.wall_side
-          //  &&
-          //  echo.W > echo.wall_side 
+           echo.E < echo.wall_side
            &&
-           echo.S_raw > 600
+           echo.W > echo.wall_side  * 1.5
+           &&
+           echo.S_raw > 400
           )
            {
               leave_count++;
-              if(leave_count >  100){
+              if(leave_count >  200){
                 leave_mode = 'E';
                 state = leave_line;
                 return 1;
@@ -855,15 +856,15 @@ uint16_t Defense::isNeedToLeave(){
             // &&
             // cam_dis > cam_far_from_goal
             // &&
-            echo.W_raw < echo.wall_side
+            echo.W < echo.wall_side
             &&
-            // echo.E > echo.wall_side 
-            // &&
-            echo.S_raw > 600
+            echo.E > echo.wall_side *1.5
+            &&
+            echo.S > 600
           )
            {
             leave_count++;
-            if(leave_count > 100){
+            if(leave_count > 200){
               leave_mode = 'W';
               state = leave_line;
               return 1;
@@ -898,7 +899,7 @@ uint16_t Defense::isNeedToLeave(){
       lefter_power  = leave_kp * abs((SE < NW)? echo_dif - SE: 0);
      righter_power = 0;
      lefter_power = 0;
-     central_power = leave_kp * 200;
+     central_power = leave_kp * 200;/////
       back_wall_power = 0;
       central_angle = 90;
       righter_angle = 45;
@@ -1041,17 +1042,26 @@ void Defense::selfTrace(){
 
 
 ////////////////////////////////////////////////////////キーパーダッシュ////////////////////////
+uint8_t Defense::getH_axis(){
+  // if(cam_angle != 400){
+    
+  // }
+  // //超音波でヨコを測る
+  // else{
+  //   // if(echo.E < 330)
+  // }
+  return 0;
+}
 
 uint8_t Defense::isNeedTo_Dash(){
   bool is_ball_low_speed = (ball_speed < 15);
   bool near_ball = (ball_dis > dash_ball_dis);
-  bool angle_ok = (abs(ball_angle) < 50);
-  bool N_ok  = (echo.N  > 100);
-  bool NE_ok = echo.NE > 250;
-  bool NW_ok = echo.NW > 250;
-  // if(near_ball && abs(ball_angle) < 20){
-  // if(N_ok && NE_ok & NW_ok){
-  if (near_ball && angle_ok) {
+  bool angle_ok  = (abs(ball_angle) < 50);
+  bool N_ok      = (echo.N  > 100);
+  bool NE_ok     = (echo.NE > 250);
+  bool NW_ok     = (echo.NW > 250);
+
+  if(near_ball && angle_ok && N_ok){
     return 1;
   }
   else{
@@ -1059,22 +1069,24 @@ uint8_t Defense::isNeedTo_Dash(){
   }
 }
 
+
 //キーパーダッシュやめる条件
 uint8_t Defense::isNeedTo_BackFromDash(){
-  bool is_too_much_back = (dash_back_count > 100);
-  bool is_too_much_run  = (dash_count > how_much_dash);
-  if(
-    //  echo.S < int16_t(echo.wall_h * 0.5) 
-    // ||
-    // is_too_much_back
-    // ||
-       is_too_much_run
-    ){
-    return 0;
-  }
-  else{
-    return 1;
-  }
+  // bool is_too_much_back = (dash_back_count > 100);
+  // bool is_too_much_run  = (dash_count > how_much_dash);
+  // if(
+  //   //  echo.S < int16_t(echo.wall_h * 0.5) 
+  //   // ||
+  //   // is_too_much_back
+  //   // ||
+  //      is_too_much_run
+  //   ){
+  //   return 0;
+  // }
+  // else{
+  //   return 1;
+  // }
+  return 0;
 }
 Vector Defense::leaveDashV(){
   Vector v;
