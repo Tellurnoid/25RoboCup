@@ -25,7 +25,8 @@
             {4,"Ball",&UI::app_ball},
             {5,"Echo",&UI::app_echo},
             {6,"Camera",&UI::app_cam},
-            {7,"Kicker",&UI::app_kicker}
+            {7,"Kicker",&UI::app_kicker},
+            {8,"Goal",  &UI::app_goal}
         };
         // 要素数
         const size_t UI::NUM_APP = sizeof(UI::app) / sizeof(UI::app[0]);
@@ -162,8 +163,18 @@
       else if(cursor_val_int == 1){
         display.print("DIFENSE");
       }
+      display.setFont();
+      display.setCursor(0,0);
+      if(is_attack_to_blue){
+        display.println("Attack BLUE");
+        display.print("Defend YELLOW");
+      }
+      else{
+        display.println("Attack YELLOW");
+        display.print("Defend BLUE");
+      }
       if(enter!=1 && is_on_game ==true){
-        display.fillRect(0,0,128,64,1);
+        display.fillRect(0,0,128,64,0);
        // display.clearDisplay();
         display.setCursor(18,28);
         display.setTextColor(0);
@@ -549,6 +560,69 @@ void UI::app_kicker(){
           }
         }
 
+
+        void UI::app_goal(){
+          display.clearDisplay();
+          display.setFont();
+          display.setCursor(0,0);
+          display.print("Attack:");
+          display.setCursor(0,50);
+          display.print("Defend:");
+          display.setFont(&FreeSans9pt7b);
+          display.drawLine(0,32,128,32,1);
+          display.setTextColor(1);
+          if(cursor_val_int == 0){
+            display.setCursor(38,28);
+            display.print("YELLOW");
+            display.setCursor(38,55);
+            display.print("BLUE");
+
+          }
+          else if(cursor_val_int == 1){
+            display.setCursor(38,28);
+            display.print("BLUE");
+            display.setCursor(38,55);
+            display.print("YELLOW");
+          }
+          if(back != 0){
+            app_state = 0;
+            display.fillRect(0,62,128,64,1);
+            sound.back();
+          }
+          if(enter==1){
+            //コマンド実行/////////////////////////////////////////////////////////////////
+
+            is_attack_to_blue = !is_attack_to_blue;
+            sound.start();
+          }
+          //カーソル移動
+          else if(left == 2){
+            display.fillRect(63,60,3,4,1);
+            long_press = long_press + 1.00f;
+            display.fillRect(64,60,64 * long_press / change_time, 4 ,1);
+            display.fillRect(64 - 64 * long_press / change_time,60,64 * long_press / change_time, 4 ,1);
+          }
+          else if(right == 2){
+            display.fillRect(63,60,3,4,1);
+            long_press = long_press + 1.00f;
+            display.fillRect(64 * long_press / change_time,60,64 - (64 * long_press / change_time), 4 ,1);
+            display.fillRect(64,60,64 -(64 * long_press / change_time), 4 ,1);
+          }
+      //左
+      if(left==2 && long_press == change_time){
+          cursor_val_int = ((cursor_val_int + NUM_MODE - 1) % NUM_MODE);
+          sound.cursor();
+          display.drawRect(0,0,128,64,1);
+          long_press = 0;
+        }
+      //右
+      if(right==2 && long_press == change_time){
+          cursor_val_int = ((cursor_val_int + 1) % NUM_MODE);
+          sound.cursor();
+          display.drawRect(0,0,128,64,1);
+          long_press = 0;
+        }
+}
         //任意のint変数を変更するUI(参照渡し)
         void UI::changeIntVal(const char* name,int &val ,int min,int max,int default_val){
             bool is_changed = false;

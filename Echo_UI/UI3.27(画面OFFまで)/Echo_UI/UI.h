@@ -67,7 +67,7 @@ class UI{
         bool is_on_game = false;
         float long_press;
         static constexpr uint16_t NUM_MODE = 2;
-        float change_time = 20;
+        float change_time = 10;//20
 
         //値変更関数用
         int count = 0;

@@ -12,7 +12,7 @@ Data data;
 #define LINE_LED 27
 
 void setup() {
-  pinMode(BUTTON, INPUT_PULLUP);
+  // pinMode(BUTTON, INPUT_PULLUP);
   pinMode(LED, OUTPUT);
   pinMode(LINE_LED, OUTPUT);
 
@@ -62,17 +62,17 @@ void loop() {
   }
 
 
-  if(digitalRead(BUTTON) == 0 && is_calibration == 0) {
-    calibrateLINE();
-    digitalWrite(LED, HIGH);
-    delay(1000);
-    digitalWrite(LED, LOW);
-    record.recordLine();  //キャリブレーションが終わったら記録
-    // digitalWrite(LED, HIGH);
-    // delay(1000);
-    // digitalWrite(LED, LOW);
-    // Serial.println("recorded");
-  }
+  // if(digitalRead(BUTTON) == 0 && is_calibration == 0) {
+  //   calibrateLINE();
+  //   digitalWrite(LED, HIGH);
+  //   delay(1000);
+  //   digitalWrite(LED, LOW);
+  //   record.recordLine();  //キャリブレーションが終わったら記録
+  //   // digitalWrite(LED, HIGH);
+  //   // delay(1000);
+  //   // digitalWrite(LED, LOW);
+  //   // Serial.println("recorded");
+  // }
 
   if (last_is_calibration == 1 && is_calibration == 0) {
     digitalWrite(LED, HIGH);

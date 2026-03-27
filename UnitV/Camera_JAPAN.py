@@ -16,7 +16,7 @@ img = sensor.snapshot()
 
 sensor.set_auto_gain(False, gain_db=23)
 sensor.set_auto_whitebal(False, rgb_gain_db=(72.0, 62.0, 125.0))  # R G B
-sensor.set_auto_exposure(False, exposure_us=501)
+sensor.set_auto_exposure(False, exposure_us=401)
 
 # ===============================
 # UART
@@ -54,10 +54,10 @@ def send_packet(data):
 # ========================================================================================
 
 # 青
-blue_threshold = [(31, 85, -13, 66, -91, -6)]
+blue_threshold = [(20, 48, -11, 51, -76, -4)]
 
 # 黄色
-yellow_threshold = [(71, 98, -27, -8, 34, 84)]
+yellow_threshold = [(61, 84, -18, 6, 30, 80)]
 
 cameraWidth  = 320
 cameraHeight = 240
