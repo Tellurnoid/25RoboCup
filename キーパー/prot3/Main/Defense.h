@@ -26,7 +26,9 @@
         int16_t NW_raw;
 
 
-        float leave_kp = 3.0f;
+        //●脱出速度
+        float leave_kp = 4.0f;
+
         float echo_dif = 500.0f;
         float central_power = 0;
         float central_angle;
@@ -41,46 +43,49 @@
         Vector back_wall = {0,0};
 
 
-        //脱出直前おしりトレース用
-                            bool    bottom_trace = true; //trueだとおしりでトレース
-        static constexpr uint8_t bottom_trace_dis = 75; 
-        static constexpr float   bottom_trace_kp = 1.5f;
-        static constexpr float   lost_bottom_kp = 5.0f;////lost_lineV用
+        //●脱出直前おしりトレース用
+                            bool  bottom_trace      = true; //true ⇒ おしりトレース有効化
+        static constexpr uint8_t  bottom_trace_dis  = 75; 
+        static constexpr float    bottom_trace_kp   = 5.0f;//1.5f
+        static constexpr float    lost_bottom_kp    = 5.0f;////lost_lineV用
 
-        //脱出直前サイドトレース用
+        //●脱出直前サイドトレース用
         uint8_t side_trace = 1;//
-        static constexpr uint8_t side_trace_dis = 75; 
-        static constexpr float   side_trace_kp = 1.5f;
-        static constexpr float   lost_side_kp = 5.0f;////lost_lineV用
+        static constexpr uint8_t  side_trace_dis = 75; 
+        static constexpr float    side_trace_kp  = 1.5f;
+        static constexpr float    lost_side_kp   = 5.0f;////5.0lost_lineV用
 
         void convertLine_sideOrBottom();
         void updateLineOrBottom();
 
-        //超音波復帰用
+        //●超音波復帰用
         static constexpr float lost_goal_echo_kp = 1.2;
         static constexpr int16_t speed_back = 300;
 
         int16_t ave[8] = {0,0,0,0,0,0,0,0};
+        //●超音波移動平均 
         float new_data_ratio = 0.4;
-        //壁の距離はキャリブレーションするべし///////////////////////////
-        // //後ろ壁ラインアウト対策
-        // float wall_side = 250.0f;//ラインアウト対策用
-        // float wall_S = 110.0f;   //ラインアウト対策用
-        // float goal_area_n = 400.0f;//相手ゴール
-        // float goal_area_s = 270.0f;//守るべきゴール
-        // float wall_w = 635.0f;
-        //         float wall_h = 1808.0f;
+
+
+        //●壁の距離///////////////////////////
+        //後ろ壁ラインアウト対策
+        float wall_side = 250.0f;//ラインアウト対策用
+        float wall_S = 110.0f;   //ラインアウト対策用
+        float goal_area_n = 400.0f;//相手ゴール
+        float goal_area_s = 270.0f;//守るべきゴール
+        float wall_w = 635.0f;
+                float wall_h = 1808.0f;
 
 
         //部室
         //壁の距離はキャリブレーションするべし///////////////////////////
         //後ろ壁ラインアウト対策
-        float wall_side = 150.0f;//ラインアウト対策用
-        float wall_S = 65.0f;   //ラインアウト対策用
-        float goal_area_n = 400.0f;//相手ゴール
-        float goal_area_s = 320.0f;//守るべきゴール
-        float wall_w = 593.0f;
-        float wall_h = 1236.0f;
+        // float wall_side = 150.0f;//ラインアウト対策用
+        // float wall_S = 65.0f;   //ラインアウト対策用
+        // float goal_area_n = 400.0f;//相手ゴール
+        // float goal_area_s = 320.0f;//守るべきゴール
+        // float wall_w = 593.0f;
+        // float wall_h = 1236.0f;
 
         //超音波のみで計測した推定位置
         //コート中央を原点とする
@@ -106,13 +111,11 @@
             Echo echo;
             Adafruit_NeoPixel* pixels;  // ポインタで受ける
 
-            //デバッグ用LED
-        //     Adafruit_NeoPixel pixels;
-        // LedController(uint16_t num, uint8_t pin)
-        //   : pixels(num, pin, NEO_GRB + NEO_KHZ800) {}
-
             //キーパー全体で使う
+            //●falseでシリアル、LED止める
             static constexpr bool is_use_debug = true;
+
+
             static constexpr uint8_t LED = 15;
             static constexpr uint8_t SW = 3;
             uint16_t keeperDash_count = 0;
@@ -124,45 +127,53 @@
             float vel_x;
             float vel_y;
 
-
-
             //カメラ
-            bool is_off_cam = false;//trueでカメラ無効化
+            //●trueでカメラ無効化
+            bool is_off_cam = false;
 
-            //<<<<<<<<重要>>>>>>>>>  true ⇒ 青に攻める  |  false ⇒ 黄色に攻める
+            //●<<<<重要>>>>> true ⇒ 青に攻める | false ⇒ 黄色に攻める
             bool is_atack_to_BLUE = true;
+
+            //●ゴールから遠いと判断するしきい値
+            static constexpr int16_t cam_far_from_goal = 150;
+
 
             //守るゴール
             int16_t cam_angle = 400;
             int16_t cam_dis = -1;
             //攻めるゴール
-        
             int16_t cam_atack_angle = 400;
             int16_t cam_atack_dis   = -1;
-            //ゴールから遠いと判断するしきい値
-            static constexpr int16_t cam_far_from_goal = 150;
 
             //キーパーダッシュ
-            bool is_on_dash = true;//falseでキーパーダッシュ無効化
+            //●falseでキーパーダッシュ無効化
+            bool is_on_dash = true;
+
+            //●近いと判断するball_dis
             int16_t dash_ball_dis = 4;
+
+
             int dash_back_count = 0;
             int dash_count;
             static constexpr int how_much_dash = 400;
             
 
-            //キーパーダッシュ連続作動防止
+            //●キーパーダッシュ連続作動防止
+            const uint16_t wait_time = 3000; //3秒
+
             bool is_enough_time;
             unsigned long start_time;
-            const uint16_t wait_time = 3000; // 5秒（ミリ秒
             unsigned long debug_time;
 
-            //相手ゴール脱出を無効化
+            //●trueで、相手ゴール脱出を無効化
             static constexpr bool off_front_leave = true;
-            //サイド脱出の無効化
+            //●trueで、サイド脱出の無効化
             static constexpr bool off_side_leave = false;
 
+            //●サイド脱出のカウントしきい値
+            static constexpr uint8_t side_leave_timing = 200;
+
         public:
-            //キーパーダッシュ アタッカーと共有
             //キーパーダッシュ
             bool keeper_dashing = false;
             float fronts_ave;
@@ -174,14 +185,19 @@
             Adafruit_NeoPixel pixel;
             Defense() : pixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800){}
             uint32_t LED_color;
+
             //ライントレースで使う
-            static constexpr float  lost_line_kp = 6.0f;//lost_lineV用
-            static constexpr float line_default_kp = 4.00f;
-                            float line_kp = 6.00f;
+            //●lost_lineV kp
+            static constexpr float  lost_line_kp = 6.0f;
+            static constexpr float line_default_kp = 5.00f;//4.0f
+
+                             float line_kp = 6.00f;
             static constexpr float line_ki = 0.00f;
             static constexpr float line_kd = 0.00f;
-            //速度を使うかどうか
+
+            //●速度を使うかどうか
             bool is_use_ball_speed = true;
+
             float line_P;
             float line_I;
             float line_D;
@@ -204,7 +220,10 @@
             float line_angle;
             float line_dis; 
             float angleZ;
+
+            //●最高速度
             float pwm_max = 780.0f;
+
             bool is_on_tate = false;
             bool is_on_yoko = false;
             bool is_on_atack_goal = false;

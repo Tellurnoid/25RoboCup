@@ -808,9 +808,11 @@ uint16_t Defense::isNeedToLeave(){
   }
   //ゴールラインのトレースを始めたとき
   else if(
-           echo.S < echo.wall_S          &&
-          //  echo.N > echo.goal_area_s*1.5 &&
-           is_on_yoko
+          echo.S < echo.wall_S         
+          &&
+          echo.N > echo.goal_area_s
+          &&
+          is_on_yoko
           )
       {
       leave_mode = 'S';
@@ -835,11 +837,11 @@ uint16_t Defense::isNeedToLeave(){
            &&
            echo.W > echo.wall_side  * 1.5
            &&
-           echo.S_raw > 400
+           echo.S > echo.goal_area_s * 1.5
           )
            {
               leave_count++;
-              if(leave_count >  200){
+              if(leave_count >  side_leave_timing){
                 leave_mode = 'E';
                 state = leave_line;
                 return 1;
@@ -860,11 +862,11 @@ uint16_t Defense::isNeedToLeave(){
             &&
             echo.E > echo.wall_side *1.5
             &&
-            echo.S > 600
+            echo.S > echo.goal_area_s * 1.5
           )
            {
             leave_count++;
-            if(leave_count > 200){
+            if(leave_count > side_leave_timing){
               leave_mode = 'W';
               state = leave_line;
               return 1;
