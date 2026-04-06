@@ -243,8 +243,8 @@ void Defense::debugSerial(){
       // Serial.print(")");
       Serial.print(", N=");
       Serial.print(echo.N); 
-      //Serial.print(" ,NE=");
-      // Serial.print(echo.NE); 
+      Serial.print(" ,NE=");
+      Serial.print(echo.NE); 
       Serial.print(" ,E=");Serial.print(echo.E); 
        //Serial.print(" ,SE=");
       // Serial.print(echo.SE);
@@ -252,8 +252,8 @@ void Defense::debugSerial(){
        //Serial.print(" ,SW=");
       // Serial.print(echo.SW);
       Serial.print(" ,W="); Serial.print(echo.W); 
-      // Serial.print(" ,NW=");
-      // Serial.print(echo.NW); Serial.print(",");
+      Serial.print(" ,NW=");
+      Serial.print(echo.NW); Serial.print(",");
       // Serial.print(",   powers=");
       // Serial.print(echo.central_power); Serial.print(",");
       // Serial.print(echo.righter_power); Serial.print(",");
@@ -268,7 +268,8 @@ void Defense::debugSerial(){
       Serial.print(",");
       Serial.print(cam_dis);
       Serial.print(")");
-
+      Serial.print("Mode:");
+      Serial.print(leave_mode);
       // Serial.print(", leave:");
       // Serial.print(echo.leaveLineV(leave_mode).x);Serial.print(",");Serial.print(echo.leaveLineV(leave_mode).y);
       // Serial.print(")");
@@ -357,7 +358,7 @@ void Defense::updateBall(){
 
 void Defense::updateCam(){
     //黄色を守り、青に攻める
-     if(is_atack_to_BLUE == true){
+     if(data.dp.is_attack_to_blue == true){
         cam_angle       = data.dp.yellow_angle;
         cam_dis         = data.dp.yellow_distance;
         cam_atack_angle = data.dp.blue_angle;
@@ -789,9 +790,13 @@ uint16_t Defense::isNeedToLeave(){
   //攻めるべきゴールに近いか
   //現在：相手ゴール見えて自陣見えない または 相手のゴールのほうが近い
   is_on_atack_goal = (
-                       off_front_leave == false &&
-                       (cam_dis != 400) &&
-                       (cam_dis > 100) 
+                       cam_atack_angle != 400
+                        &&
+                       cam_atack_dis > 0
+                        &&
+                       cam_atack_dis < cam_far_from_goal
+                       && 
+                       echo.S > echo.goal_area_s * 3
                      );
                     //(cam_far_from_goal && echo.N < echo.goal_area_n && echo.S > echo.goal_area_s*1.5)
   
@@ -839,18 +844,20 @@ uint16_t Defense::isNeedToLeave(){
            &&
            echo.W > echo.wall_side  * 1.5
            &&
-           echo.S > echo.goal_area_s * 1.5
+           cam_dis > cam_far_from_goal
+           &&
+           echo.S > echo.goal_area_s
           )
            {
-              leave_count++;
-              if(leave_count >  side_leave_timing){
+              // leave_count++;
+              // if(leave_count >  side_leave_timing){
                 leave_mode = 'E';
                 state = leave_line;
                 return 1;
-              }
-              else{
-                return 0;
-              }
+              // }
+              // else{
+              //   return 0;
+              // }
            }
 //タッチライン(左)のトレースを始めたとき
   else if(
@@ -864,18 +871,21 @@ uint16_t Defense::isNeedToLeave(){
             &&
             echo.E > echo.wall_side *1.5
             &&
-            echo.S > echo.goal_area_s * 1.5
+           cam_dis > cam_far_from_goal
+           &&
+           echo.S > echo.goal_area_s
+
           )
            {
-            leave_count++;
-            if(leave_count > side_leave_timing){
+            // leave_count++;
+            // if(leave_count > side_leave_timing){
               leave_mode = 'W';
               state = leave_line;
               return 1;
-            }
-            else{
-              return 0;
-            }
+            // }
+            // else{
+            //   return 0;
+            // }
           }
   //脱出の必要がないと判断
   else{
@@ -1063,13 +1073,13 @@ uint8_t Defense::isNeedTo_Dash(){
   bool NW_on = false;
 
   bool is_ball_low_speed = (ball_speed < 15);
-  bool near_ball = (ball_dis > dash_ball_dis);
-  bool angle_ok  = (abs(ball_angle) < 50);
-  bool N_ok      = (echo.N  > 100);
-  bool NE_ok     = (echo.NE > 250);
-  bool NW_ok     = (echo.NW > 250);
+  bool near_ball = (ball_dis >= dash_ball_dis);
+  bool angle_ok  = (abs(ball_angle) < dash_ball_angle);
+  bool N_ok      = (echo.N  > dash_echo_front);
+  bool NE_ok     = (echo.NE > dash_echo_side);
+  bool NW_ok     = (echo.NW > dash_echo_side);
 
-  if(N_ok && NE_ok && NW_ok){
+  if(N_ok && NE_ok && NW_ok && near_ball && angle_ok){
     return 1;
   }
   else{

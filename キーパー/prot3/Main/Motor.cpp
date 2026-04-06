@@ -52,4 +52,5 @@ void Sensor::init() {
 void Sensor::update() {
   ball_catch = analogRead(BALL_ZONE) < BALL_CATCH_BORDER;
   data.dp.ball_catch = ball_catch;
+  //Serial.println(analogRead(BALL_ZONE));
 }

@@ -167,10 +167,10 @@ void readMUX_onlyLINE_debug(){
 
   for (uint8_t i = 0; i < 32; i++) {
       Serial.print(",");
-        if(sensorValue_LINE[i] < 10){Serial.print("   ");}
-        else if(sensorValue_LINE[i] < 100){Serial.print("  ");}
-        else if(sensorValue_LINE[i] < 1000){Serial.print(" ");}
-      Serial.print(sensorValue_LINE[i]/100);
+        if(sensorValue_LINE[i] < 10){Serial.print(" ");}
+       // else if(sensorValue_LINE[i] < 100){Serial.print("  ");}
+      //  else if(sensorValue_LINE[i] < 10){Serial.print(" ");}
+      Serial.print(sensorValue_LINE[i]);
   }
 
   Serial.println();

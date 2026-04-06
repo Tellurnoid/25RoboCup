@@ -165,7 +165,7 @@
       }
       display.setFont();
       display.setCursor(0,0);
-      if(is_attack_to_blue){
+      if(is_attack_to_blue == true){
         display.println("Attack BLUE");
         display.print("Defend YELLOW");
       }
@@ -571,14 +571,14 @@ void UI::app_kicker(){
           display.setFont(&FreeSans9pt7b);
           display.drawLine(0,32,128,32,1);
           display.setTextColor(1);
-          if(cursor_val_int == 0){
+          if(is_attack_to_blue == false){
             display.setCursor(38,28);
             display.print("YELLOW");
             display.setCursor(38,55);
             display.print("BLUE");
 
           }
-          else if(cursor_val_int == 1){
+          else if(is_attack_to_blue == true){
             display.setCursor(38,28);
             display.print("BLUE");
             display.setCursor(38,55);
@@ -590,10 +590,10 @@ void UI::app_kicker(){
             sound.back();
           }
           if(enter==1){
-            is_attack_to_blue = !is_attack_to_blue;
-            command.sendCommand(MAIN, GOAL, is_attack_to_blue ? 1 : 0);
+            // is_attack_to_blue = !is_attack_to_blue;
+            
 
-            sound.start();
+            sound.error();
           }
           //カーソル移動
           else if(left == 2){
@@ -613,6 +613,8 @@ void UI::app_kicker(){
           cursor_val_int = ((cursor_val_int + NUM_MODE - 1) % NUM_MODE);
           sound.cursor();
           display.drawRect(0,0,128,64,1);
+          command.sendCommand(MAIN, GOAL, is_attack_to_blue ? 1 : 0);
+          is_attack_to_blue = !is_attack_to_blue;
           long_press = 0;
         }
       //右
@@ -620,6 +622,8 @@ void UI::app_kicker(){
           cursor_val_int = ((cursor_val_int + 1) % NUM_MODE);
           sound.cursor();
           display.drawRect(0,0,128,64,1);
+          command.sendCommand(MAIN, GOAL, is_attack_to_blue ? 1 : 0);
+          is_attack_to_blue = !is_attack_to_blue;
           long_press = 0;
         }
 }

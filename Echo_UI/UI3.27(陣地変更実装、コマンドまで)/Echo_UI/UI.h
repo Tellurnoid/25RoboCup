@@ -118,10 +118,10 @@ class UI{
 
         //Camera用
         int16_t ang_blue = 0;
-        uint8_t ang_yellow = 0;
-        uint8_t cd_blue = 0;
-        uint8_t cd_yellow = 0;
-        uint8_t which_cam = 0;//0:青が前,黄色が後ろ   1:黄色が前,青が後ろ
+        int16_t ang_yellow = 0;
+        int16_t cd_blue = 0;
+        int16_t cd_yellow = 0;
+        int16_t which_cam = 0;//0:青が前,黄色が後ろ   1:黄色が前,青が後ろ
 
         //echo用
         int16_t ave[8] = {0,0,0,0,0,0,0,0};

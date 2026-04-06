@@ -73,7 +73,7 @@
         //●壁の距離///////////////////////////
         //後ろ壁ラインアウト対策
         float wall_side = 168.0f;//ラインアウト対策用
-        float wall_S = 156.0f;   //ラインアウト対策用
+        float wall_S = 90.0f;   //ラインアウト対策用
         float goal_area_n = 400.0f;//相手ゴール
         float goal_area_s = 350.0f;//守るべきゴール
         float wall_w = 650.0f;
@@ -135,10 +135,10 @@
             bool is_off_cam = false;
 
             //●<<<<重要>>>>> true ⇒ 青に攻める | false ⇒ 黄色に攻める
-            bool is_atack_to_BLUE = true;
+            //bool is_atack_to_BLUE = true;
 
             //●ゴールから遠いと判断するしきい値
-            static constexpr int16_t cam_far_from_goal = 150;
+            static constexpr int16_t cam_far_from_goal = 200;
 
 
             //守るゴール
@@ -148,12 +148,14 @@
             int16_t cam_atack_angle = 400;
             int16_t cam_atack_dis   = -1;
 
-            //キーパーダッシュ
+            //キーパーダッシュ///////////////////////////////
             //●falseでキーパーダッシュ無効化
             bool on_dash = true;
-
-            //●近いと判断するball_dis
-            int16_t dash_ball_dis = 3;
+            //●近いと判断するball_dis n以上
+            int16_t dash_ball_dis = 5;
+            float   dash_ball_angle = 45;
+            float   dash_echo_side = 250;//NE,NW
+            float   dash_echo_front = 400;
 
             //ナナメ前の無効化判断
             //int16_t echo_off_angle = 120;///////仮
@@ -172,7 +174,7 @@
             unsigned long dash_interval_now;
 
             //●trueで、相手ゴール脱出を無効化
-            static constexpr bool off_front_leave = true;
+            static constexpr bool off_front_leave = false;
             //●trueで、サイド脱出の無効化
             static constexpr bool off_side_leave = false;
 
@@ -195,7 +197,7 @@
             //ライントレースで使う
             //●lost_lineV kp
             static constexpr float  lost_line_kp = 6.0f;
-            static constexpr float line_default_kp = 5.00f;//4.0f
+            static constexpr float line_default_kp = 6.00f;//4.0f
             static constexpr float T_line_minus_power = -1.3;//T字の反発力
 
                              float line_kp = 6.00f;
